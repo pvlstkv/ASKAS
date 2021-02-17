@@ -3,18 +3,29 @@ package com.example.javaserver.controller.authentication;
 import com.example.javaserver.controller.authentication.model.Token;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.model.User;
+import com.example.javaserver.model.UserRole;
 import com.example.javaserver.repo.UserRepo;
 import com.example.javaserver.config.JwtUtil;
+import com.example.javaserver.service.JwtService;
+import com.example.javaserver.service.RequestHandlerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 public class AuthController {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private RequestHandlerService requestHandlerService;
 
     private final JwtUtil jwtUtil;
 
@@ -24,14 +35,14 @@ public class AuthController {
 
     @GetMapping("/hello")
     public ResponseEntity<?> hi(@RequestHeader (name="Authorization") String token){
-
-        return new ResponseEntity<>(new Message("Привет Мир"),HttpStatus.OK);
+        return requestHandlerService.proceed(token, () -> new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK),EnumSet.allOf(UserRole.class));
     }
 
 
 
     @PostMapping("/registration")
     public ResponseEntity<?> regUser(@RequestBody User user){
+
         if(user.getLogin() == null){
             return new ResponseEntity<>(new Message("Введите логин"),HttpStatus.BAD_REQUEST);
         }
