@@ -1,6 +1,7 @@
 package com.example.javaserver.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "_user")
