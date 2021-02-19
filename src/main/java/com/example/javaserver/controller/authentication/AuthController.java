@@ -1,5 +1,6 @@
 package com.example.javaserver.controller.authentication;
 
+import com.example.javaserver.basemodel.ContextUser;
 import com.example.javaserver.controller.authentication.model.Token;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.model.User;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 @RestController
 public class AuthController {
@@ -37,8 +39,6 @@ public class AuthController {
     public ResponseEntity<?> hi(@RequestHeader (name="Authorization") String token){
         return requestHandlerService.proceed(token, () -> new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK),EnumSet.allOf(UserRole.class));
     }
-
-
 
     @PostMapping("/registration")
     public ResponseEntity<?> regUser(@RequestBody User user){

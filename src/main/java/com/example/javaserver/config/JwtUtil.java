@@ -32,11 +32,15 @@ public class JwtUtil {
                 .parseClaimsJws(authToken)
                 .getBody();
     }
-    public Long extractUserId(String token) {
-        return Long.valueOf(getClaimsFromToken(token)
-                .getSubject());
-    }
 
+    public Integer extractUserId(String token) {
+        Claims body = Jwts.parser()
+                .setSigningKey(secret.getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+        Integer userId = (Integer) body.get("user_id");
+        return userId;
+    }
 
     public String extractUserRole(String token) {
         Claims body = Jwts.parser()
@@ -47,7 +51,6 @@ public class JwtUtil {
         return role;
     }
 
-
     public boolean validateToken(String authToken) {
         return getClaimsFromToken(authToken)
                 .getExpiration()
@@ -57,14 +60,13 @@ public class JwtUtil {
     public String generateToken(User user){
         HashMap<String,Object> claims = new HashMap<>();
         claims.put("role",user.getRole());
+        claims.put("user_id",user.getId());
 
         Long expirationSeconds = Long.parseLong(expirationTime);
         Date createDate = new Date();
         Date expirationDate = new Date(createDate.getTime() + expirationSeconds * 1000);
-
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getId().toString())
                 .setIssuedAt(createDate)
                 .setExpiration(expirationDate)
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))

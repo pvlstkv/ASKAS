@@ -2,7 +2,7 @@ package com.example.javaserver.basemodel;
 
 public class ContextUser {
     private String roleUser;
-    private Long idUser;
+    private Integer idUser;
 
     public String getRoleUser() {
         return roleUser;
@@ -12,12 +12,11 @@ public class ContextUser {
         this.roleUser = roleUser;
     }
 
-    public Long getIdUser() {
+    public Integer getIdUser() {
         return idUser;
     }
 
-    public void setIdUser(Long idUser) {
+    public void setIdUser(Integer idUser) {
         this.idUser = idUser;
     }
-
 }
