@@ -1,4 +1,4 @@
-package com.example.javaserver.service;
+package com.example.javaserver.service.user;
 
 import com.example.javaserver.basemodel.ContextUser;
 import com.example.javaserver.config.JwtUtil;

@@ -1,4 +1,4 @@
-package com.example.javaserver.controller.authentication.model;
+package com.example.javaserver.controller.user.model;
 
 public class Token {
     public String token;

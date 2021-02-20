@@ -1,4 +1,4 @@
-package com.example.javaserver.service;
+package com.example.javaserver.service.user;
 
 import com.example.javaserver.basemodel.ContextUser;
 import com.example.javaserver.basemodel.Message;
@@ -10,9 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.function.Supplier;
 
 @Service
