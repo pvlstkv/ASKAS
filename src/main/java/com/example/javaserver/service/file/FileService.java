@@ -1,6 +1,6 @@
 package com.example.javaserver.service.file;
 
-import com.example.javaserver.basemodel.ContextUser;
+import com.example.javaserver.basemodel.UserContext;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.model.User;
 import com.example.javaserver.model.UserFile;
@@ -19,12 +19,12 @@ import java.util.Optional;
 
 @Service
 public class FileService {
+    private final EnumSet<UserRole> rolesCanReadAnyFiles =
+            EnumSet.of(UserRole.TEACHER, UserRole.ADMIN);
+
     private final UserRepo userRepo;
     //private final SubjectRepo subjectRepo;
     private final UserFileRepo userFileRepo;
-
-    private final EnumSet<UserRole> rolesCanReadAnyFiles =
-            EnumSet.of(UserRole.TEACHER, UserRole.ADMIN);
 
     @Autowired
     public FileService(UserRepo userRepo, /*SubjectRepo subjectRepo,*/ UserFileRepo userFileRepo) {
@@ -35,7 +35,7 @@ public class FileService {
 
     @Transactional
     public ResponseEntity<?> uploadFile(
-            ContextUser contextUser,
+            UserContext userContext,
             String name,
             String subjectName,
             MultipartFile file
@@ -52,7 +52,7 @@ public class FileService {
             return new ResponseEntity<>(new Message("Ошибка чтения файла"), HttpStatus.EXPECTATION_FAILED);
         }
 
-        Integer userId = contextUser.getIdUser();
+        Integer userId = userContext.getUserId();
         User user = userRepo.getOne(userId);
         UserFile userFile = new UserFile(name, user, /*subjectOpt.get()*/null, data);
         try {
@@ -66,7 +66,7 @@ public class FileService {
 
     @Transactional
     public ResponseEntity<?> downloadFile(
-            ContextUser contextUser,
+            UserContext userContext,
             String name
     ) {
         Optional<UserFile> fileOpt = userFileRepo.findUserFileByNameEquals(name);
@@ -74,7 +74,7 @@ public class FileService {
             return new ResponseEntity<>(new Message("Файл с таким именем не найден"), HttpStatus.EXPECTATION_FAILED);
         }
 
-        Integer userId = contextUser.getIdUser();
+        Integer userId = userContext.getUserId();
         User requester = userRepo.getOne(userId);
         UserFile file = fileOpt.get();
         User fileOwner = file.getUser();

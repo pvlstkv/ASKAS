@@ -5,21 +5,21 @@ import com.example.javaserver.config.JwtUtil;
 import com.example.javaserver.controller.user.model.Token;
 import com.example.javaserver.model.User;
 import com.example.javaserver.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
+    private final RequestHandlerService requestHandlerService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private RequestHandlerService requestHandlerService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public UserService(UserRepo userRepo, RequestHandlerService requestHandlerService, JwtUtil jwtUtil) {
+        this.userRepo = userRepo;
+        this.requestHandlerService = requestHandlerService;
+        this.jwtUtil = jwtUtil;
+    }
 
     public ResponseEntity<?> logUser(User user){
         if(user.getLogin() == null){

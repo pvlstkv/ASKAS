@@ -1,12 +1,11 @@
 package com.example.javaserver.service.user;
 
-import com.example.javaserver.basemodel.ContextUser;
+import com.example.javaserver.basemodel.UserContext;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.config.JwtUtil;
 import com.example.javaserver.model.UserRole;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,17 +15,19 @@ import java.util.function.Function;
 
 @Service
 public class RequestHandlerService {
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
-    @Autowired
-    private JwtService jwtService;
+    public RequestHandlerService(JwtUtil jwtUtil, JwtService jwtService) {
+        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
+    }
 
     public ResponseEntity<?> proceed(String token,
-                                     Function<ContextUser, ResponseEntity<?>> supplier,
+                                     Function<UserContext, ResponseEntity<?>> supplier,
                                      EnumSet<UserRole> setRole){
         try {
-            ContextUser user = jwtService.modelAuth(token);
+            UserContext user = jwtService.modelAuth(token);
             if(setRole.contains(UserRole.valueOf(user.getRoleUser()))){
                 return supplier.apply(user);
             } else {

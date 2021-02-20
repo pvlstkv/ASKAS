@@ -3,8 +3,6 @@ package com.example.javaserver.controller.user;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.model.User;
 import com.example.javaserver.model.UserRole;
-import com.example.javaserver.repo.UserRepo;
-import com.example.javaserver.config.JwtUtil;
 import com.example.javaserver.service.user.RequestHandlerService;
 import com.example.javaserver.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +14,15 @@ import java.util.*;
 
 @RestController
 public class AuthorizationController {
+    private final RequestHandlerService requestHandlerService;
+    private final UserService userService;
 
     @Autowired
-    private RequestHandlerService requestHandlerService;
+    public AuthorizationController(RequestHandlerService requestHandlerService, UserService userService) {
+        this.requestHandlerService = requestHandlerService;
+        this.userService = userService;
+    }
 
-    @Autowired
-    private UserService userService;
 
     @GetMapping("/hello")
     public ResponseEntity<?> hi(@RequestHeader (name="Authorization") String token){

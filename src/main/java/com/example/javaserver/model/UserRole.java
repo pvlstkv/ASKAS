@@ -12,6 +12,4 @@ public enum UserRole {
     public int getIdRole(){
         return id;
     }
-
-
 }
