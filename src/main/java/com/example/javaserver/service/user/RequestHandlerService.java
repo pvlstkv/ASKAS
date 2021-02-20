@@ -28,7 +28,7 @@ public class RequestHandlerService {
                                      EnumSet<UserRole> setRole){
         try {
             UserContext user = jwtService.modelAuth(token);
-            if(setRole.contains(UserRole.valueOf(user.getRoleUser()))){
+            if(setRole.contains(UserRole.valueOf(user.getUserRole()))){
                 return supplier.apply(user);
             } else {
                 return new ResponseEntity<>(new Message("У вас нет прав к данному ресурсу"),HttpStatus.NOT_FOUND);

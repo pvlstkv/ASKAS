@@ -7,15 +7,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
+    private final JwtUtil jwtUtil;
+
     @Autowired
-    private JwtUtil jwtUtil;
+    public JwtService(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
     public UserContext modelAuth(String token){
         //token = token.substring(7);
         UserContext userContext = new UserContext();
-        userContext.setIdUser(jwtUtil.extractUserId(token));
-        userContext.setRoleUser(jwtUtil.extractUserRole(token));
+        userContext.setUserId(jwtUtil.extractUserId(token));
+        userContext.setUserRole(jwtUtil.extractUserRole(token));
         return userContext;
     }
-
 }
