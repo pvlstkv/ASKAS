@@ -25,7 +25,7 @@ public class AuthorizationController {
 
     @GetMapping("/hello")
     public ResponseEntity<?> hi(@RequestHeader (name="Authorization") String token){
-        return requestHandlerService.proceed(token, () -> new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK),EnumSet.allOf(UserRole.class));
+        return requestHandlerService.proceed(token, (c) -> new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK),EnumSet.allOf(UserRole.class));
     }
 
     @PostMapping("/login")
