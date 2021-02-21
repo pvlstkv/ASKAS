@@ -1,5 +1,6 @@
 package com.example.javaserver;
 
+import com.example.javaserver.service.schedule.ParserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
