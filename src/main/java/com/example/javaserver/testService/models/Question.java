@@ -2,6 +2,7 @@ package com.example.javaserver.testService.models;
 
 
 import com.example.javaserver.model.Subject;
+import com.example.javaserver.testService.models.InOutComingModels.RequestedQuestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -40,6 +41,14 @@ public class Question {
 
     public String getType() {
         return type;
+    }
+
+    public List<AnswerChoice> getAnswerChoiceList() {
+        return answerChoiceList;
+    }
+
+    public void setAnswerChoiceList(List<AnswerChoice> answerChoiceList) {
+        this.answerChoiceList = answerChoiceList;
     }
 
     public void setType(String type) {
@@ -89,20 +98,20 @@ public class Question {
         this.complexity = complexity;
     }
 
-//    public Question(RequestedQuestion requestedQuestion, Subject subject) {
-//        this.id = requestedQuestion.getId();
-//        this.subject = subject;
-//        this.question = requestedQuestion.getQuestion();
-//        this.complexity = requestedQuestion.getComplexity();
-//        this.answerChoiceList = requestedQuestion.getAnswers().stream().map(strAns ->
-//                new AnswerChoice(strAns, false)).collect(Collectors.toList());
-//        if (this.answerChoiceList.size() == 0) {
-//            this.answerChoiceList.add(new AnswerChoice(requestedQuestion.getRightAnswers().get(0), true));
-//            return;
-//        }
-//        this.answerChoiceList.stream().filter(answerChoice -> requestedQuestion.getRightAnswers().contains(answerChoice.getAnswer()))
-//                .forEach(answerChoice -> answerChoice.setRight(true));
-//    }
+    public Question(RequestedQuestion requestedQuestion, Subject subject) {
+        this.id = requestedQuestion.getId();
+        this.subject = subject;
+        this.question = requestedQuestion.getQuestion();
+        this.complexity = requestedQuestion.getComplexity();
+        this.answerChoiceList = requestedQuestion.getAnswers().stream().map(strAns ->
+                new AnswerChoice(strAns, false)).collect(Collectors.toList());
+        if (this.answerChoiceList.size() == 0) {
+            this.answerChoiceList.add(new AnswerChoice(requestedQuestion.getRightAnswers().get(0), true));
+            return;
+        }
+        this.answerChoiceList.stream().filter(answerChoice -> requestedQuestion.getRightAnswers().contains(answerChoice.getAnswer()))
+                .forEach(answerChoice -> answerChoice.setRight(true));
+    }
 
     public Question(Integer id, String question, Double complexity) {
         this.id = id;

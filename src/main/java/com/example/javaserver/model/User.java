@@ -47,6 +47,14 @@ public class User {
         return email;
     }
 
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
