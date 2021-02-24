@@ -23,7 +23,7 @@ public class User {
 
     //    @OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id")
     private List<Subject> subjects = new ArrayList<>();
     //todo to add a gender!!!!!!
 
