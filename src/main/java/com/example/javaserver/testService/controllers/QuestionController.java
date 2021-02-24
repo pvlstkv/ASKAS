@@ -24,10 +24,7 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<?> hi(){
-        return  new ResponseEntity<>("Hello world",HttpStatus.OK);
-    }
+
     @ApiOperation(value = "")
     @PostMapping("/questions")
 //    public ResponseEntity<?> createQuestions(@RequestBody RequestedTest requestedTest, @RequestHeader (name="Authorization") String token) {
