@@ -5,6 +5,9 @@ import com.example.javaserver.testService.models.InOutComingModels.RequestedAnsw
 //import com.example.javaserver.testService.models.InOutComingModels.RequestedTest;
 //import com.example.javaserver.testService.models.Question;
 //import com.example.javaserver.testService.repo.QuestionRepo;
+import com.example.javaserver.testService.models.InOutComingModels.RequestedTest;
+import com.example.javaserver.testService.models.Question;
+import com.example.javaserver.testService.repo.QuestionRepo;
 import com.example.javaserver.testService.services.QuestionService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,8 @@ import java.util.*;
 //@CrossOrigin(origins = "http://localhost:8080")
 public class QuestionController {
 
-//    @Autowired
-//    private QuestionRepo questionRepo;
+    @Autowired
+    private QuestionRepo questionRepo;
 
     @Autowired
     private QuestionService questionService;
@@ -27,54 +30,51 @@ public class QuestionController {
 
     @ApiOperation(value = "")
     @PostMapping("/questions")
-//    public ResponseEntity<?> createQuestions(@RequestBody RequestedTest requestedTest, @RequestHeader (name="Authorization") String token) {
-    public ResponseEntity<?> createQuestions( @RequestHeader (name="Authorization") String token) {
-        return questionService.createQuestions(token);
+    public ResponseEntity<?> createQuestions(@RequestBody RequestedTest requestedTest, @RequestHeader(name = "Authorization") String token) {
+        return questionService.createQuestions(requestedTest, token);
     }
 
 
     @PutMapping("/questions")
-//    public ResponseEntity<?> updateQuestions(@RequestBody RequestedTest requestedTest,  @RequestHeader (name="Authorization") String token) {
-    public ResponseEntity<?> updateQuestions(  @RequestHeader (name="Authorization") String token) {
-        return questionService.updateQuestions(token);
+    public ResponseEntity<?> updateQuestions(@RequestBody RequestedTest requestedTest, @RequestHeader(name = "Authorization") String token) {
+        return questionService.updateQuestions(requestedTest, token);
     }
 
     @DeleteMapping("/questions")
-    public ResponseEntity<?> deleteManyQuestions(@RequestBody List<Long> ids,  @RequestHeader (name="Authorization") String token){
+    public ResponseEntity<?> deleteManyQuestions(@RequestBody List<Long> ids, @RequestHeader(name = "Authorization") String token) {
         return questionService.deleteManyQuestions(ids, token);
     }
 
     @DeleteMapping("/question")
-    public ResponseEntity<?> deleteOneQuestion(@RequestParam (value = "limit") Long id,  @RequestHeader (name="Authorization") String token){
+    public ResponseEntity<?> deleteOneQuestion(@RequestParam(value = "limit") Long id, @RequestHeader(name = "Authorization") String token) {
         return questionService.deleteManyQuestions(new ArrayList<>(Collections.singletonList(id)), token);
     }
 
     @DeleteMapping("/all-questions")
-    public ResponseEntity<?> deleteAllQuestion(@RequestHeader (name="Authorization") String token){
+    public ResponseEntity<?> deleteAllQuestion(@RequestHeader(name = "Authorization") String token) {
         return questionService.deleteAllQuestions(token);
     }
 
     @GetMapping("/test/{subject}")
-    public ResponseEntity<?> getTest(@PathVariable String subject, @RequestParam (value = "limit") Integer count,
-                                     @RequestHeader (name="Authorization") String token){
+    public ResponseEntity<?> getTest(@PathVariable String subject, @RequestParam(value = "limit") Integer count,
+                                     @RequestHeader(name = "Authorization") String token) {
         return questionService.createTest(subject, count, token);
     }
 
     @PostMapping("/test/checking")
     public ResponseEntity<?> checkTest(@RequestBody List<RequestedAnswer> requestedAnswers,
-                                       @RequestHeader (name="Authorization") String token){
+                                       @RequestHeader(name = "Authorization") String token) {
         return questionService.checkTest(requestedAnswers, token);
     }
 
     @GetMapping("/all-questions")
-    public ResponseEntity<?> findAll( @RequestHeader (name="Authorization") String token) {
-//        List<Question> question = questionRepo.findAll();
-//        return new ResponseEntity<>(question, HttpStatus.FOUND);
-        return new ResponseEntity<>(HttpStatus.FOUND);
+    public ResponseEntity<?> findAll(@RequestHeader(name = "Authorization") String token) {
+        List<Question> question = questionRepo.findAll();
+        return new ResponseEntity<>(question, HttpStatus.FOUND);
     }
 
     @GetMapping("/all-questions/{subject}")
-    public ResponseEntity<?> findAllBySubject(@PathVariable (value = "subject") String subject,  @RequestHeader (name="Authorization") String token) {
+    public ResponseEntity<?> findAllBySubject(@PathVariable(value = "subject") String subject, @RequestHeader(name = "Authorization") String token) {
         return questionService.findAllBySubject(subject, token);
     }
 
