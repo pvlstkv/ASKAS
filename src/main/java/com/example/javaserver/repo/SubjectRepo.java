@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface SubjectRepo  extends CrudRepository<Subject, Long> {
     Optional<Subject> findByName(String name);
+    boolean existsByName(String name);
 
 }

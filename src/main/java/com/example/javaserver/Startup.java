@@ -2,6 +2,8 @@ package com.example.javaserver;
 
 import com.example.javaserver.model.User;
 import com.example.javaserver.model.UserRole;
+import com.example.javaserver.model.common_data.Subject;
+import com.example.javaserver.repo.SubjectRepo;
 import com.example.javaserver.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -13,23 +15,32 @@ public class Startup implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepo userRepo;
 
+    private final SubjectRepo subjectRepo;
+
     @Autowired
-    public Startup(UserRepo userRepo) {
+    public Startup(UserRepo userRepo, SubjectRepo subjectRepo) {
         this.userRepo = userRepo;
+        this.subjectRepo = subjectRepo;
     }
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
-        if(!userRepo.existsByLogin("admin")){
-            User admin = new User("admin","admin", UserRole.ADMIN);
+
+        if (!subjectRepo.existsByName("АЛМ")) {
+            Subject subject = new Subject();
+            subject.setName("АЛМ");
+            subjectRepo.save(subject);
+        }
+        if (!userRepo.existsByLogin("admin")) {
+            User admin = new User("admin", "admin", UserRole.ADMIN);
             userRepo.save(admin);
         }
-        if(!userRepo.existsByLogin("user")){
-            User admin = new User("user","user", UserRole.USER);
+        if (!userRepo.existsByLogin("user")) {
+            User admin = new User("user", "user", UserRole.USER);
             userRepo.save(admin);
         }
-        if(!userRepo.existsByLogin("teacher")){
-            User admin = new User("teacher","teacher", UserRole.TEACHER);
+        if (!userRepo.existsByLogin("teacher")) {
+            User admin = new User("teacher", "teacher", UserRole.TEACHER);
             userRepo.save(admin);
         }
 
