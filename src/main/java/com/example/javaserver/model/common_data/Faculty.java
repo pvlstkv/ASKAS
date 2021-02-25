@@ -1,6 +1,6 @@
 package com.example.javaserver.model.common_data;
 
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
-@Data
+
 @Table(name = "faculties")
 public class Faculty implements Serializable {
     @Id

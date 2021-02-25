@@ -31,14 +31,14 @@ public class User implements Serializable {
     private String phone;
 
     @ManyToOne
-    StudyGroup studyGroup;
+    private StudyGroup studyGroup;
 
     private UserRole role;
 
     //    @OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "subject_id", referencedColumnName = "id")
-    private List<Subject> subjects = new ArrayList<>();
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+//    private List<Subject> subjects = new ArrayList<>();
     //todo to add a gender!!!!!!
 
     public User() { }
@@ -142,13 +142,6 @@ public class User implements Serializable {
         this.role = role;
     }
 
-    public List<Subject> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(List<Subject> subjects) {
-        this.subjects = subjects;
-    }
 
     @Override
     public String toString() {

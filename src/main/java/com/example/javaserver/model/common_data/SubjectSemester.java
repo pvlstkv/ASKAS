@@ -1,13 +1,13 @@
 package com.example.javaserver.model.common_data;
 
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 
 @SuppressWarnings("unused")
 @Entity
-@Data
+
 @Table(name = "subject_semesters")
 public class SubjectSemester {
     @Id

@@ -1,7 +1,6 @@
 package com.example.javaserver.model.common_data;
 
 import com.example.javaserver.model.User;
-import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @Entity
-@Data
+
 @Table(name = "study_groups")
 public class StudyGroup implements Serializable {
     @Id

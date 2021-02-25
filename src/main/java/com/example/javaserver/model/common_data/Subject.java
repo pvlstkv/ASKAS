@@ -1,7 +1,7 @@
 package com.example.javaserver.model.common_data;
 
 import com.example.javaserver.model.User;
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -9,7 +9,7 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
-@Data
+
 @Table(name = "subjects")
 public class Subject {
     @Id
@@ -31,10 +31,10 @@ public class Subject {
 //    private List<Question> question;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<SubjectSemester> semesters;
+    private Set<SubjectSemester> semesters;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Department department;
+    private Department department;
 
     public Subject() { }
 

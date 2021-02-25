@@ -1,7 +1,7 @@
 package com.example.javaserver.model.common_data;
 
 import com.example.javaserver.model.User;
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 
 @SuppressWarnings("unused")
 @Entity
-@Data
+
 @Table(name = "studyings")
 public class Studying implements Serializable {
     @Id
