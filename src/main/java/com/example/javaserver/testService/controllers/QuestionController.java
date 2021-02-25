@@ -1,10 +1,8 @@
 package com.example.javaserver.testService.controllers;
 
 
+import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedAnswer;
-//import com.example.javaserver.testService.models.InOutComingModels.RequestedTest;
-//import com.example.javaserver.testService.models.Question;
-//import com.example.javaserver.testService.repo.QuestionRepo;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedTest;
 import com.example.javaserver.testService.models.Question;
 import com.example.javaserver.testService.repo.QuestionRepo;
@@ -15,10 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:8080")
+@RequestMapping(value = "api/testing")
 public class QuestionController {
 
     @Autowired
@@ -27,6 +27,10 @@ public class QuestionController {
     @Autowired
     private QuestionService questionService;
 
+    @GetMapping("/hello")
+    public ResponseEntity<?> hi(){
+        return new ResponseEntity<>(new Message("Привет я работаю"),HttpStatus.OK);
+    }
 
     @ApiOperation(value = "")
     @PostMapping("/questions")
@@ -77,13 +81,5 @@ public class QuestionController {
     public ResponseEntity<?> findAllBySubject(@PathVariable(value = "subject") String subject, @RequestHeader(name = "Authorization") String token) {
         return questionService.findAllBySubject(subject, token);
     }
-
-//    @GetMapping("{id}")
-//    public ResponseEntity<?> findById(@PathVariable (value = "id") Long subject) {
-//        Question q = questionRepo.findById(subject).get();
-//        Question question = q;
-//        return new ResponseEntity<>(question,HttpStatus.OK);
-//    }
-
 
 }

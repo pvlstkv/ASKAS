@@ -4,8 +4,6 @@ package com.example.javaserver.testService.models;
 import com.example.javaserver.model.common_data.Subject;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedQuestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -22,14 +20,12 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY)
     private Subject subject;
 
-
-//    @Column(columnDefinition = "TEXT")
+//    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
     private String question;
 
     @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
-
 
     private Double complexity;
 
@@ -75,9 +71,7 @@ public class Question {
         this.id = id;
     }
 
-
-    public Question() {
-    }
+    public Question() {    }
 
     public Double getComplexity() {
         return complexity;
@@ -107,15 +101,5 @@ public class Question {
         this.question = question;
         this.complexity = complexity;
     }
-
-    //    public Question(RequestedQuestion requestedQuestion) {
-//        this.title = requestedQuestion.getTitle();
-//        this.question = requestedQuestion.getQuestionText();
-//        this.rightAnswers = requestedQuestion.getRightAnswers();
-//        this.answerChoiceList = new ArrayList<>();
-//        for (String oneAnswerChoice : requestedQuestion.getAnswersChoice()) {
-//            this.answerChoiceList.add(new AnswerChoice(oneAnswerChoice));
-//        }
-//    }
 
 }
