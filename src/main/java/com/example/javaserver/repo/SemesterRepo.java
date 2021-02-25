@@ -1,7 +1,7 @@
 package com.example.javaserver.repo;
 
-import com.example.javaserver.model.common_data.Semester;
+import com.example.javaserver.model.common_data.Studying;
 import org.springframework.data.repository.CrudRepository;
 
-public interface SemesterRepo  extends CrudRepository<Semester, Long> {
+public interface SemesterRepo  extends CrudRepository<Studying, Long> {
 }

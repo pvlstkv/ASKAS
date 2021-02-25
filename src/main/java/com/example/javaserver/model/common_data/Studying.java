@@ -10,8 +10,8 @@ import java.time.OffsetDateTime;
 @SuppressWarnings("unused")
 @Entity
 @Data
-@Table(name = "semesters")
-public class Semester implements Serializable {
+@Table(name = "studyings")
+public class Studying implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
@@ -30,7 +30,7 @@ public class Semester implements Serializable {
 
     private OffsetDateTime updatedAt;
 
-    public Semester() { }
+    public Studying() { }
 
     public Integer getId() {
         return id;
