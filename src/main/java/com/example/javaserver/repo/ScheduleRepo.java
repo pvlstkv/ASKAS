@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-public interface ScheduleRepo extends CrudRepository<Schedule, Integer> {
+public interface ScheduleRepo extends CrudRepository<Schedule, Long> {
     List<Schedule> findByNameGroup(String nameGroup);
-    List<Schedule> findByNameGroupAndAndNumberDayAndAndNumberWeek(String nameGroup,Integer numberDay,Integer numberWeek);
+    List<Schedule> findByNameGroupAndNumberDayAndNumberWeek(String nameGroup, Integer numberDay, Integer numberWeek);
     boolean existsByNameGroup(String nameGroup);
     @Transactional
     long deleteByNameGroup(String nameGroup);

@@ -20,9 +20,11 @@ public class Semester implements Serializable {
     private User user;
 
     @OneToOne
-    private SubjectInTeaching subjectInTeaching;
+    private Subject subject;
 
     private int numberOfSemesters;
+
+    private Mark mark;
 
     private OffsetDateTime createdAt;
 
@@ -44,14 +46,6 @@ public class Semester implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public SubjectInTeaching getSubjectInTeaching() {
-        return subjectInTeaching;
-    }
-
-    public void setSubjectInTeaching(SubjectInTeaching subjectInTeaching) {
-        this.subjectInTeaching = subjectInTeaching;
     }
 
     public int getNumberOfSemesters() {

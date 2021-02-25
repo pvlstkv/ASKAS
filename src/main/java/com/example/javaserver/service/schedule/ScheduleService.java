@@ -61,7 +61,7 @@ public class ScheduleService {
     public void fillListDays(String nameGroup, List<Day> days, int numWeek){
         for (int i = 1; i < 8; i++) {
             Day day = new Day(i,numWeek);
-            List<Schedule> scheduleList = scheduleRepo.findByNameGroupAndAndNumberDayAndAndNumberWeek(nameGroup,i,numWeek);
+            List<Schedule> scheduleList = scheduleRepo.findByNameGroupAndNumberDayAndNumberWeek(nameGroup,i,numWeek);
             List<Couple> couples = getCouple(scheduleList);
             if(couples.size() != 0){
                 day.setCoupels(couples);
