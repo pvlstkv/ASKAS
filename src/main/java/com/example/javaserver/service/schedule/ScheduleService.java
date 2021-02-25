@@ -3,22 +3,42 @@ package com.example.javaserver.service.schedule;
 import com.example.javaserver.controller.schedule.model.Couple;
 import com.example.javaserver.controller.schedule.model.Day;
 import com.example.javaserver.controller.schedule.model.Group;
-import com.example.javaserver.model.User;
 import com.example.javaserver.model.schedule.Schedule;
 import com.example.javaserver.repo.ScheduleRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ScheduleService {
-    @Autowired
-    private ScheduleRepo scheduleRepo;
+    private final ScheduleRepo scheduleRepo;
+    private final ParserService parserService;
+
+    public ScheduleService(ScheduleRepo scheduleRepo, ParserService parserService) {
+        this.scheduleRepo = scheduleRepo;
+        this.parserService = parserService;
+    }
+
+    public ResponseEntity<?> iteratingThroughGroups() {
+        int part;
+        int numberGroup;
+        String baseUrl;
+        for (int i = 1; i < 4; i++) {
+            for (int j = 1; j < 120; j++) {
+                part = i;
+                numberGroup = j;
+                baseUrl = "https://www.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
+                try {
+                    parserService.parserGroup(baseUrl);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     public ResponseEntity<?> getScheduleGroup(String nameGroup){
         Group group = new Group(nameGroup);
@@ -28,6 +48,16 @@ public class ScheduleService {
         group.setDays(days);
         return new ResponseEntity<>(group,HttpStatus.OK);
     }
+
+    public ResponseEntity<?> getListScheduleGroups(){
+        List<Schedule> scheduleList = (List<Schedule>) scheduleRepo.findAll();
+        Set<String> res = new LinkedHashSet<>();
+        for (int i = 0; i < scheduleList.size(); i++) {
+            res.add(scheduleList.get(i).getNameGroup());
+        }
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
     public void fillListDays(String nameGroup, List<Day> days, int numWeek){
         for (int i = 1; i < 8; i++) {
             Day day = new Day(i,numWeek);
@@ -59,5 +89,6 @@ public class ScheduleService {
         couple.setInfo(schedule.getInfo());
         return couple;
     }
+
 
 }

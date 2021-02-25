@@ -6,18 +6,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
 public class ParserService {
-
-    @Autowired
-    private ScheduleRepo scheduleRepo;
+    private final ScheduleRepo scheduleRepo;
 
     private ArrayList<String> listHtmlPage;
     private ArrayList<String> listNameGroup;
@@ -25,7 +23,8 @@ public class ParserService {
     private final Map<String,Integer> weekStudy = new HashMap<>();
     private final Map<String,Integer> typeSubject = new HashMap<>();
 
-    public ParserService() {
+    public ParserService(ScheduleRepo scheduleRepo) {
+        this.scheduleRepo = scheduleRepo;
         scheduleList = new ArrayList<>();
         listNameGroup =  new ArrayList<>();
         //дни недели
@@ -42,10 +41,10 @@ public class ParserService {
         typeSubject.put("Лаб", 3);
     }
 
-    public ResponseEntity<?> parserGroup(String urlGroup) {
+    public void parserGroup(String urlGroup) {
         try {
             //При наличие доступа к станици с расписанием парсим все элементы тега р
-           listHtmlPage = new ArrayList<>();
+            listHtmlPage = new ArrayList<>();
             Document document = Jsoup.connect(urlGroup).get();
             document.outputSettings(new Document.OutputSettings().prettyPrint(false));//makes html() preserve linebreaks and spacing
             document.select("br").append("\\n");
@@ -68,10 +67,8 @@ public class ParserService {
             }
             scheduleForDay();
             saveAll();
-            return null;
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -197,15 +194,24 @@ public class ParserService {
         }
     }
 
+    @Transactional
+    public void deleteGroup(String nameGroup){
+        scheduleRepo.deleteByNameGroup(nameGroup);
+    }
+
     public void saveAll(){
         for (int i = 0; i < listNameGroup.size(); i++) {
             String nameGroup = listNameGroup.get(i);
+            if(scheduleRepo.existsByNameGroup(nameGroup)){
+                deleteGroup(nameGroup);
+            }
             for (int j = 0; j < scheduleList.size(); j++) {
                 Schedule schedule = new Schedule(scheduleList.get(j));
                 schedule.setNameGroup(nameGroup);
                 scheduleRepo.save(schedule);
             }
         }
+        scheduleList = new ArrayList<>();
+        listNameGroup =  new ArrayList<>();
     }
-
 }

@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-
 @RestController
 public class AuthorizationController {
     private final RequestHandlerService requestHandlerService;
@@ -23,10 +21,9 @@ public class AuthorizationController {
         this.userService = userService;
     }
 
-
     @GetMapping("/hello")
-    public ResponseEntity<?> hi(@RequestHeader (name="Authorization") String token){
-        return requestHandlerService.proceed(token, (c) -> new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK),EnumSet.allOf(UserRole.class));
+    public ResponseEntity<?> hi(){
+        return new ResponseEntity<>(new Message("Привет я работаю"),HttpStatus.OK);
     }
 
     @PostMapping("/login")
