@@ -1,10 +1,13 @@
 package com.example.javaserver.model.common_data;
 
 import com.example.javaserver.model.User;
+import com.example.javaserver.testService.models.Question;
 
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -14,7 +17,7 @@ import java.util.Set;
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String name;
 
@@ -34,6 +37,9 @@ public class Subject {
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Question> question = new ArrayList<>();
+
     public Subject() { }
 
     public String getDecryption() {
@@ -44,23 +50,23 @@ public class Subject {
         this.decryption = description;
     }
 
-//    public List<Question> getQuestion() {
-//        return question;
-//    }
-//
-//    public void setQuestion(List<Question> question) {
-//        this.question = question;
-//    }
+    public List<Question> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(List<Question> question) {
+        this.question = question;
+    }
 
     public Subject(String name) {
         this.name = name;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
