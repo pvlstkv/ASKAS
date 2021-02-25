@@ -1,7 +1,7 @@
 package com.example.javaserver.model;
 
-import com.example.javaserver.model.commonData.StudyGroup;
-import com.example.javaserver.model.commonData.Subject;
+import com.example.javaserver.model.common_data.StudyGroup;
+import com.example.javaserver.model.common_data.Subject;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package com.example.javaserver.model.commonData;
+package com.example.javaserver.model.common_data;
 
 import lombok.Data;
 

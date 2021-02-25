@@ -1,6 +1,7 @@
-package com.example.javaserver.model;
+package com.example.javaserver.model.user_file;
 
-import com.example.javaserver.model.commonData.Subject;
+import com.example.javaserver.model.User;
+import com.example.javaserver.model.common_data.Subject;
 import com.sun.istack.NotNull;
 import javax.persistence.*;
 import java.io.Serializable;

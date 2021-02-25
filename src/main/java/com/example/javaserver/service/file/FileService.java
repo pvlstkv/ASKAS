@@ -3,7 +3,7 @@ package com.example.javaserver.service.file;
 import com.example.javaserver.basemodel.UserContext;
 import com.example.javaserver.basemodel.Message;
 import com.example.javaserver.model.User;
-import com.example.javaserver.model.UserFile;
+import com.example.javaserver.model.user_file.UserFile;
 import com.example.javaserver.model.UserRole;
 import com.example.javaserver.repo.UserFileRepo;
 import com.example.javaserver.repo.UserRepo;

@@ -1,13 +1,10 @@
-package com.example.javaserver.model.commonData;
+package com.example.javaserver.model.common_data;
 
 import com.example.javaserver.model.User;
-import com.example.javaserver.model.commonData.Department;
-import com.example.javaserver.model.commonData.SubjectSemester;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
