@@ -24,8 +24,6 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User createdBy;
 
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
@@ -88,14 +86,6 @@ public class Subject {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
     }
 
     public Set<SubjectSemester> getSemesters() {
