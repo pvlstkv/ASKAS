@@ -1,24 +1,38 @@
 package com.example.javaserver.model;
 
+import com.example.javaserver.model.commonData.StudyGroup;
+import com.example.javaserver.model.commonData.Subject;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 @Entity
-//@Table(name = "user")
-public class User {
+@Table(name = "users")
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String login;
+
     private String password;
+
     private String email;
+
     private String firstName;
+
     private String lastName;
+
     private String patronymic;
+
     private String phone;
-    private String groupName;
+
+    @ManyToOne
+    StudyGroup studyGroup;
+
     private UserRole role;
 
     //    @OneToMany(mappedBy = "", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -27,8 +41,7 @@ public class User {
     private List<Subject> subjects = new ArrayList<>();
     //todo to add a gender!!!!!!
 
-    public User() {
-    }
+    public User() { }
 
     public User(String login, String password, UserRole role) {
         this.login = login;
@@ -36,7 +49,7 @@ public class User {
         this.role = role;
     }
 
-    public User(Integer id, String login, String password, String email, String firstName, String lastName, String patronymic, String phone, String groupName, UserRole role) {
+    public User(Integer id, String login, String password, String email, String firstName, String lastName, String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -45,7 +58,7 @@ public class User {
         this.lastName = lastName;
         this.patronymic = patronymic;
         this.phone = phone;
-        this.groupName = groupName;
+        this.studyGroup = studyGroup;
         this.role = role;
     }
 
@@ -89,12 +102,12 @@ public class User {
         this.phone = phone;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public StudyGroup getStudyGroup() {
+        return studyGroup;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setStudyGroup(StudyGroup studyGroup) {
+        this.studyGroup = studyGroup;
     }
 
     public Integer getId() {
@@ -127,6 +140,14 @@ public class User {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public List<Subject> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Subject> subjects) {
+        this.subjects = subjects;
     }
 
     @Override

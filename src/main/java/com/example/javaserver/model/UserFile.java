@@ -1,5 +1,6 @@
 package com.example.javaserver.model;
 
+import com.example.javaserver.model.commonData.Subject;
 import com.sun.istack.NotNull;
 import javax.persistence.*;
 import java.io.Serializable;
