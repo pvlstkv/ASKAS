@@ -1,6 +1,6 @@
 package com.example.javaserver.repo;
 
-import com.example.javaserver.model.UserFile;
+import com.example.javaserver.model.user_file.UserFile;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

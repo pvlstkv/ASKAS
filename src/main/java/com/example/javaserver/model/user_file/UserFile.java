@@ -1,5 +1,8 @@
-package com.example.javaserver.model;
+package com.example.javaserver.model.user_file;
 
+import com.example.javaserver.model.User;
+import com.example.javaserver.model.common_data.Subject;
+import com.example.javaserver.model.common_data.SubjectSemester;
 import com.sun.istack.NotNull;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,9 +26,9 @@ public class UserFile implements Serializable {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_semester_id")
     //@NotNull
-    private Subject subject;
+    private SubjectSemester subjectSemester;
 
     @Lob
     //@NotBlank
@@ -33,10 +36,10 @@ public class UserFile implements Serializable {
 
     public UserFile() {}
 
-    public UserFile(String name, User user, Subject subject, byte[] data) {
+    public UserFile(String name, User user, SubjectSemester subjectSemester, byte[] data) {
         this.name = name;
         this.user = user;
-        this.subject = subject;
+        this.subjectSemester = subjectSemester;
         this.data = data;
     }
 
@@ -64,12 +67,12 @@ public class UserFile implements Serializable {
         this.user = user;
     }
 
-    public Subject getSubject() {
-        return subject;
+    public SubjectSemester getSubjectSemester() {
+        return subjectSemester;
     }
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
+    public void setSubjectSemester(SubjectSemester subjectSemester) {
+        this.subjectSemester = subjectSemester;
     }
 
     public byte[] getData() {

@@ -63,7 +63,7 @@ public class UserService {
         if(user.getPhone() == null){
 
         }
-        if(user.getGroupName() == null){
+        if(user.getStudyGroup() == null){
 
         }
         if(userRepo.existsByLogin(user.getLogin())){

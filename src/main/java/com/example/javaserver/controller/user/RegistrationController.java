@@ -32,7 +32,7 @@ public class RegistrationController {
             @RequestHeader("token") String token,
             @RequestBody User user
     ){
-        return requestHandlerService.proceed(token,(с) -> userService.regUser(user), EnumSet.of(UserRole.ADMIN));
+        return requestHandlerService.proceed(token,(c) -> userService.regUser(user), EnumSet.of(UserRole.ADMIN));
     }
 
 }
