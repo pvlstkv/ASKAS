@@ -21,4 +21,25 @@ public class JwtService {
         userContext.setUserRole(jwtUtil.extractUserRole(token));
         return userContext;
     }
+
+
+    public boolean isAdminOrTeacher(UserContext userContext) {
+        return isAdmin(userContext) || isTeacher(userContext);
+    }
+
+    public boolean isAdminOrTeacherOrStudent(UserContext userContext) {
+        return isAdminOrTeacher(userContext) || isStudent(userContext);
+    }
+
+    public boolean isAdmin(UserContext userContext) {
+        return userContext.getUserRole().equals("admin");
+    }
+
+    public boolean isTeacher(UserContext userContext) {
+        return userContext.getUserRole().equals("teacher");
+    }
+
+    public boolean isStudent(UserContext userContext) {
+        return userContext.getUserRole().equals("student");
+    }
 }

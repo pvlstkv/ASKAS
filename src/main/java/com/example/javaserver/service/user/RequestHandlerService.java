@@ -27,6 +27,7 @@ public class RequestHandlerService {
                                      Function<UserContext, ResponseEntity<?>> supplier,
                                      EnumSet<UserRole> setRole){
         try {
+            // todo rename user to userContext
             UserContext user = jwtService.modelAuth(token);
             if(setRole.contains(UserRole.valueOf(user.getUserRole()))){
                 return supplier.apply(user);
