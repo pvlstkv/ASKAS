@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "departments")
 public class Department implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String shortName;

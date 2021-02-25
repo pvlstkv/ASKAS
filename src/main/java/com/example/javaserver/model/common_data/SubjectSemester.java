@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 @Table(name = "subject_semesters")
 public class SubjectSemester {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
     int numberOfSemester;

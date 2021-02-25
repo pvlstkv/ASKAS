@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "study_groups")
 public class StudyGroup implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private Integer code;

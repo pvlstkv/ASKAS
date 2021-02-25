@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Table(name = "studyings")
 public class Studying implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @OneToOne
