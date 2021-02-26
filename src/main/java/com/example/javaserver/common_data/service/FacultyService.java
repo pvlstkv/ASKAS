@@ -20,7 +20,7 @@ public class FacultyService {
     }
 
     @Transactional
-    public ResponseEntity<?> createFaculty(Faculty faculty) {
+    public ResponseEntity<?> create(Faculty faculty) {
         facultyRepo.save(faculty);
         return new ResponseEntity<>(new Message("Факультет успешно создан"), HttpStatus.OK);
     }

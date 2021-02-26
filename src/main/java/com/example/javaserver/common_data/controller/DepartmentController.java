@@ -1,9 +1,9 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.common_data.model.Faculty;
-import com.example.javaserver.common_data.service.FacultyService;
+import com.example.javaserver.common_data.model.Department;
+import com.example.javaserver.common_data.service.DepartmentService;
 import com.example.javaserver.general.service.RequestHandlerService;
+import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,25 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.EnumSet;
 
 @RestController
-@RequestMapping("/faculty")
-public class FacultyController {
+@RequestMapping("/department")
+public class DepartmentController {
     private final RequestHandlerService requestHandlerService;
-    private final FacultyService facultyService;
+    private final DepartmentService departmentService;
 
     @Autowired
-    public FacultyController(RequestHandlerService requestHandlerService, FacultyService facultyService) {
+    public DepartmentController(RequestHandlerService requestHandlerService, DepartmentService departmentService) {
         this.requestHandlerService = requestHandlerService;
-        this.facultyService = facultyService;
+        this.departmentService = departmentService;
     }
 
     @PostMapping("/creation")
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody Faculty faculty
+            @RequestBody Department department
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.create(faculty),
+                (c) -> departmentService.create(department),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
