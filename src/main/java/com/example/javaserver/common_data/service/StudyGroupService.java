@@ -1,7 +1,9 @@
 package com.example.javaserver.common_data.service;
 
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
+import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -17,11 +19,13 @@ import java.util.Set;
 @Service
 public class StudyGroupService {
     private final StudyGroupRepo studyGroupRepo;
+    private final SubjectSemesterRepo subjectSemesterRepo;
     private final UserRepo userRepo;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepo studyGroupRepo, UserRepo userRepo) {
+    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, UserRepo userRepo) {
         this.studyGroupRepo = studyGroupRepo;
+        this.subjectSemesterRepo = subjectSemesterRepo;
         this.userRepo = userRepo;
     }
 
@@ -39,6 +43,18 @@ public class StudyGroupService {
 
         Set<User> users = userRepo.getUsersByIdIn(userIds);
         group.get().getStudents().addAll(users);
+        return new ResponseEntity<>(new Message("Пользователи были добавлены в группу"), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> addSubjectSemesters(Long studyGroupId, Set<Long> subjectSemesterIds) {
+        Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
+        if (!group.isPresent()) {
+            return new ResponseEntity<>(new Message("Учебная группа с указанным id не найдена"), HttpStatus.BAD_REQUEST);
+        }
+
+        Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
+        group.get().getSubjectSemesters().addAll(subjectSemesters);
         return new ResponseEntity<>(new Message("Пользователи были добавлены в группу"), HttpStatus.OK);
     }
 }
