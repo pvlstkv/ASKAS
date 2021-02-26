@@ -1,10 +1,10 @@
 package com.example.javaserver;
 
-import com.example.javaserver.model.User;
-import com.example.javaserver.model.UserRole;
-import com.example.javaserver.model.common_data.Subject;
-import com.example.javaserver.repo.SubjectRepo;
-import com.example.javaserver.repo.UserRepo;
+import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.repo.SubjectRepo;
+import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

@@ -1,12 +1,12 @@
 package com.example.javaserver.testService.services;
 
-import com.example.javaserver.basemodel.Message;
+import com.example.javaserver.general.model.Message;
 
-import com.example.javaserver.model.UserRole;
-import com.example.javaserver.model.common_data.Subject;
-import com.example.javaserver.repo.SubjectRepo;
-import com.example.javaserver.service.user.JwtService;
-import com.example.javaserver.service.user.RequestHandlerService;
+import com.example.javaserver.user.model.UserRole;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.repo.SubjectRepo;
+import com.example.javaserver.general.service.JwtService;
+import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.testService.models.AnswerChoice;
 import com.example.javaserver.testService.models.InOutComingModels.*;
 import com.example.javaserver.testService.models.Question;
