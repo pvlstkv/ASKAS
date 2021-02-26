@@ -1,7 +1,7 @@
 package com.example.javaserver.testService.controllers;
 
 
-import com.example.javaserver.basemodel.Message;
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedAnswer;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedTest;
 import com.example.javaserver.testService.models.Question;

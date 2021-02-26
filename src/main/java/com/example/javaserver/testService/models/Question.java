@@ -1,7 +1,7 @@
 package com.example.javaserver.testService.models;
 
 
-import com.example.javaserver.model.common_data.Subject;
+import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.testService.models.InOutComingModels.RequestedQuestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
