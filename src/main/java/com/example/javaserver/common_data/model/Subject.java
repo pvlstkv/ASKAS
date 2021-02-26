@@ -41,22 +41,6 @@ public class Subject {
 
     public Subject() { }
 
-    public String getDecryption() {
-        return decryption;
-    }
-
-    public void setDecryption(String description) {
-        this.decryption = description;
-    }
-
-    public List<Question> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(List<Question> question) {
-        this.question = question;
-    }
-
     public Subject(String name) {
         this.name = name;
     }
@@ -75,6 +59,14 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDecryption() {
+        return decryption;
+    }
+
+    public void setDecryption(String decryption) {
+        this.decryption = decryption;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -107,5 +99,13 @@ public class Subject {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public List<Question> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(List<Question> question) {
+        this.question = question;
     }
 }

@@ -4,6 +4,7 @@ package com.example.javaserver.common_data.model;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -24,6 +25,9 @@ public class SubjectSemester {
 
     @ManyToOne(fetch = FetchType.LAZY)
     Subject subject;
+
+    @ManyToMany(mappedBy = "subjectSemesters")
+    private Set<StudyGroup> studyGroups;
 
     OffsetDateTime createdAt;
 

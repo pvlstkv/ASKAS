@@ -33,4 +33,16 @@ public class SubjectController {
                 EnumSet.of(UserRole.ADMIN)
         );
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByUserId(
+            @RequestHeader("token") String token,
+            @RequestParam("user_id") Integer userId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.searchByUserId(userId),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
 }

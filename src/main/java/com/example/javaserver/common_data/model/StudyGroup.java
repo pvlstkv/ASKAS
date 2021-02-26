@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -32,10 +33,17 @@ public class StudyGroup implements Serializable {
     private Integer yearOfStudyStart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Department department;
+    private Department department;
 
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<User> students = new ArrayList<>();
+    private List<User> students;
+
+    @ManyToMany
+    @JoinTable(
+            name = "groups_subjects",
+            joinColumns = {@JoinColumn(name = "study_group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subject_semester_id")})
+    private Set<SubjectSemester> subjectSemesters;
 
     public StudyGroup() { }
 
@@ -117,5 +125,13 @@ public class StudyGroup implements Serializable {
 
     public void setStudents(List<User> students) {
         this.students = students;
+    }
+
+    public Set<SubjectSemester> getSubjectSemesters() {
+        return subjectSemesters;
+    }
+
+    public void setSubjectSemesters(Set<SubjectSemester> subjectSemesters) {
+        this.subjectSemesters = subjectSemesters;
     }
 }
