@@ -33,4 +33,17 @@ public class SubjectSemesterController {
                 EnumSet.of(UserRole.ADMIN)
         );
     }
+
+    @PostMapping("/subject")
+    public ResponseEntity<?> setSubject(
+            @RequestHeader("token") String token,
+            @RequestParam("subject_semester_id") Long subjectSemesterId,
+            @RequestParam("subject_id") Long subjectId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectSemesterService.setSubject(subjectSemesterId, subjectId),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
 }
