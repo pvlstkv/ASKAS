@@ -2,6 +2,7 @@ package com.example.javaserver.testService.services;
 
 import com.example.javaserver.general.model.Message;
 
+import com.example.javaserver.testService.models.saving_results.PassedTest;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.repo.SubjectRepo;
@@ -141,6 +142,7 @@ public class QuestionService {
         return new ResponseEntity<>(submittedResult, HttpStatus.OK);
     }
 
+    //todo refactor this method and submitted models!!!!!
     /**
      * functiob of checking answers of questions
      *
@@ -155,9 +157,11 @@ public class QuestionService {
         List<String> listOfUserAnswers;
         List<SubmittedResultQuestion> submittedResultQuestions = new ArrayList<>();
         List<UserAnswer> checkedUserAnswers = new ArrayList<>();
+        PassedTest passedTest = new PassedTest();
         boolean isFounded = false;
         for (RequestedAnswer currentUserAnswer : requestedAnswers) {
             currentCheckingQuestion = questionRepo.findById(currentUserAnswer.getQuestionId()).get();
+
             // if user gave answers equal or less than in the original question
             currentCheckingQuestion.getAnswerChoiceList()
                     .stream().filter(AnswerChoice::getRight).
