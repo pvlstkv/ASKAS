@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/study-group")
@@ -30,6 +31,19 @@ public class StudyGroupController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> studyGroupService.create(studyGroup),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @PostMapping("/enrollment")
+    public ResponseEntity<?> create(
+            @RequestHeader("token") String token,
+            @RequestParam("study_group_id") Long studyGroupId,
+            @RequestBody Set<Integer> userIds
+            ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> studyGroupService.enroll(studyGroupId, userIds),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
