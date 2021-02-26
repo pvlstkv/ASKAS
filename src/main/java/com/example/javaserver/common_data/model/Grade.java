@@ -1,10 +1,11 @@
 package com.example.javaserver.common_data.model;
 
+@SuppressWarnings("unused")
 public enum Grade {
-    FIVE,
-    FOUR,
-    THREE,
-    UNSATISFACTORILY,
+    NOT_PASSED,
     PASSED,
-    NOT_PASSED
+    UNSATISFACTORILY,
+    THREE,
+    FOUR,
+    FIVE
 }

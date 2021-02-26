@@ -24,7 +24,7 @@ public class StudyGroupController {
 
     @PostMapping("/creation")
     public ResponseEntity<?> create(
-            @RequestParam("token") String token,
+            @RequestHeader("token") String token,
             @RequestBody StudyGroup studyGroup
     ) {
         return requestHandlerService.proceed(

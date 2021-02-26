@@ -22,6 +22,6 @@ public class SubjectSemesterService {
     @Transactional
     public ResponseEntity<?> create(SubjectSemester subjectSemester) {
         subjectSemesterRepo.save(subjectSemester);
-        return new ResponseEntity<>(new Message("Предметный семестр успешно создан"), HttpStatus.OK);
+        return new ResponseEntity<>(new Message("Семестр предмета успешно создан"), HttpStatus.OK);
     }
 }

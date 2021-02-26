@@ -24,7 +24,7 @@ public class SubjectSemesterController {
 
     @PostMapping("/creation")
     public ResponseEntity<?> create(
-            @RequestParam("token") String token,
+            @RequestHeader("token") String token,
             @RequestBody SubjectSemester subjectSemester
     ) {
         return requestHandlerService.proceed(

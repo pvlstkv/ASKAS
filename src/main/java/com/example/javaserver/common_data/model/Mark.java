@@ -22,9 +22,6 @@ public class Mark implements Serializable {
     @OneToOne
     private SubjectSemester subjectSemester;
 
-    // wtf?
-    //private int numberOfSemesters;
-
     private Grade grade;
 
     private OffsetDateTime createdAt;
@@ -47,6 +44,22 @@ public class Mark implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public SubjectSemester getSubjectSemester() {
+        return subjectSemester;
+    }
+
+    public void setSubjectSemester(SubjectSemester subjectSemester) {
+        this.subjectSemester = subjectSemester;
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
     }
 
     public OffsetDateTime getCreatedAt() {

@@ -24,7 +24,7 @@ public class MarkController {
 
     @PostMapping("/creation")
     public ResponseEntity<?> create(
-            @RequestParam("token") String token,
+            @RequestHeader("token") String token,
             @RequestBody Mark mark
     ) {
         return requestHandlerService.proceed(
