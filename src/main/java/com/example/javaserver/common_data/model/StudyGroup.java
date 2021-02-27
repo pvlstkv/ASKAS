@@ -40,7 +40,7 @@ public class StudyGroup implements Serializable {
 
     @ManyToMany
     @JoinTable(
-            name = "groups_subjects",
+            name = "study_groups_subject_semesters",
             joinColumns = {@JoinColumn(name = "study_group_id")},
             inverseJoinColumns = {@JoinColumn(name = "subject_semester_id")})
     private Set<SubjectSemester> subjectSemesters;
