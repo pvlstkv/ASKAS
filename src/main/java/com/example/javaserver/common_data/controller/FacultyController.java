@@ -1,7 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.FacultyIn;
-import com.example.javaserver.general.specification.SearchCriteria;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.common_data.service.FacultyService;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -40,11 +39,35 @@ public class FacultyController {
     @GetMapping
     public ResponseEntity<?> search(
             @RequestHeader("token") String token,
-            @RequestBody Collection<SearchCriteria> criteria
+            @RequestBody Set<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
                 (c) -> facultyService.search(criteria),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> update(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Long id
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> facultyService.update(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delete(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> facultyService.delete(ids),
                 EnumSet.allOf(UserRole.class)
         );
     }

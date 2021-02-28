@@ -1,5 +1,6 @@
 package com.example.javaserver.general.specification;
 
+import com.example.javaserver.general.criteria.SearchCriteria;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;

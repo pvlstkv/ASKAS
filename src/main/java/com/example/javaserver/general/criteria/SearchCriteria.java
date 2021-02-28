@@ -1,4 +1,4 @@
-package com.example.javaserver.general.specification;
+package com.example.javaserver.general.criteria;
 
 @SuppressWarnings("unused")
 public class SearchCriteria {

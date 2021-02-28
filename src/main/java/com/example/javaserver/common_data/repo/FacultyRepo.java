@@ -5,8 +5,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public interface FacultyRepo extends CrudRepository<Faculty, Long>, JpaSpecificationExecutor<Faculty> {
+public interface FacultyRepo extends
+        CrudRepository<Faculty, Long>,
+        JpaSpecificationExecutor<Faculty>
+{
+    void deleteAllByIdIn(Collection<Long> ids);
 }

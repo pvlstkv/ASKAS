@@ -4,7 +4,7 @@ import com.example.javaserver.common_data.controller.client_model.FacultyIn;
 import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.repo.FacultyRepo;
 import com.example.javaserver.general.specification.CommonSpecification;
-import com.example.javaserver.general.specification.SearchCriteria;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -34,7 +34,7 @@ public class FacultyService {
         return new ResponseEntity<>(new Message("Факультет успешно создан"), HttpStatus.OK);
     }
 
-    public ResponseEntity<?> search(Collection<SearchCriteria> criteria) {
+    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);
             List<Faculty> faculties = facultyRepo.findAll(specification);
@@ -42,5 +42,16 @@ public class FacultyService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> update() {
+        return new ResponseEntity<>(new Message("Найденные факультеты были успешно изменены"), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> delete(Set<Long> ids) {
+        facultyRepo.deleteAllByIdIn(ids);
+        return new ResponseEntity<>(new Message("Найденные факультеты были успешно удалены"), HttpStatus.OK);
     }
 }
