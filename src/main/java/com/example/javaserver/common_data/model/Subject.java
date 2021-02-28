@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testService.models.Question;
+import com.example.javaserver.testService.old_version.models.Question;
 
 
 import javax.persistence.*;

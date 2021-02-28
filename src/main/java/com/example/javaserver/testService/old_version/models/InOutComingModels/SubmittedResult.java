@@ -1,4 +1,4 @@
-package com.example.javaserver.testService.models.InOutComingModels;
+package com.example.javaserver.testService.old_version.models.InOutComingModels;
 
 import java.util.List;
 

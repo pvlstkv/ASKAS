@@ -1,4 +1,4 @@
-package com.example.javaserver.testService.models;//package com.example.testService.models;
+package com.example.javaserver.testService.old_version.models;//package com.example.testService.models;
 
 import javax.persistence.*;
 import java.util.List;

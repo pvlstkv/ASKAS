@@ -1,4 +1,4 @@
-package com.example.javaserver.testService.models;
+package com.example.javaserver.testService.new_version.models;
 
 public class UserAnswer {
     private String answer;
