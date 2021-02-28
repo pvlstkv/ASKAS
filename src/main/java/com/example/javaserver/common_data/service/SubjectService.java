@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -58,6 +59,11 @@ public class SubjectService {
                 ids.stream().map(Number::intValue).collect(Collectors.toSet()) // todo эту херню убрать
         );
         return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAll() {
+        Collection<Subject> subjects = subjectRepo.findAllBy();
+        return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
     public ResponseEntity<?> search(Set<SearchCriteria> criteria) {

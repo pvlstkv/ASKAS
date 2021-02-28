@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +53,11 @@ public class DepartmentService {
     public ResponseEntity<?> delete(Set<Long> ids) {
         departmentRepo.deleteAllByIdIn(ids);
         return new ResponseEntity<>(new Message("Найденные кафедры были успешно удалены"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAll() {
+        Collection<Department> departments = departmentRepo.findAllBy();
+        return new ResponseEntity<>(departments, HttpStatus.OK);
     }
 
     public ResponseEntity<?> search(Set<SearchCriteria> criteria) {

@@ -45,6 +45,11 @@ public class FacultyService {
         return new ResponseEntity<>(new Message("Найденные факультеты были успешно изменены"), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getAll() {
+        Collection<Faculty> faculties = facultyRepo.findAllBy();
+        return new ResponseEntity<>(faculties, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);

@@ -60,6 +60,17 @@ public class FacultyController {
         );
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> search(
+            @RequestHeader("token") String token
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> facultyService.getAll(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
     @GetMapping("/criteria-search")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token,

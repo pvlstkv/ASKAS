@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.repo;
 
 import com.example.javaserver.common_data.model.Department;
+import com.example.javaserver.common_data.model.Faculty;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
@@ -11,4 +12,5 @@ public interface DepartmentRepo extends
         JpaSpecificationExecutor<Department>
 {
     void deleteAllByIdIn(Collection<Long> ids);
+    Collection<Department> findAllBy();
 }

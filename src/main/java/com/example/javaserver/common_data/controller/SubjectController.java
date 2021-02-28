@@ -49,6 +49,17 @@ public class SubjectController {
         );
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> search(
+            @RequestHeader("token") String token
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.getAll(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
     @GetMapping("/criteria-search")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token,

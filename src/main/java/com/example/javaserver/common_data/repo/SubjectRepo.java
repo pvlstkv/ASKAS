@@ -1,5 +1,6 @@
 package com.example.javaserver.common_data.repo;
 
+import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.Subject;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -15,4 +16,5 @@ public interface SubjectRepo extends
     Optional<Subject> findByName(String name);
     boolean existsByName(String name);
     void deleteAllByIdIn(Collection<Integer> ids);
+    Collection<Subject> findAllBy();
 }

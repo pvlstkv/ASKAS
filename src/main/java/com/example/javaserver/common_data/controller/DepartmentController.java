@@ -49,6 +49,17 @@ public class DepartmentController {
         );
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> search(
+            @RequestHeader("token") String token
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> departmentService.getAll(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
     @GetMapping("/criteria-search")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token,
