@@ -1,8 +1,8 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.model.StudyGroup;
-import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.controller.client_model.SubjectIn;
+import com.example.javaserver.common_data.model.*;
+import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.user.model.User;
@@ -21,17 +21,39 @@ import java.util.stream.Collectors;
 public class SubjectService {
     private final SubjectRepo subjectRepo;
     private final UserRepo userRepo;
+    private final DepartmentRepo departmentRepo;
 
     @Autowired
-    public SubjectService(SubjectRepo subjectRepo, UserRepo userRepo) {
+    public SubjectService(SubjectRepo subjectRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
         this.subjectRepo = subjectRepo;
         this.userRepo = userRepo;
+        this.departmentRepo = departmentRepo;
     }
 
     @Transactional
-    public ResponseEntity<?> create(Subject subject) {
+    public ResponseEntity<?> create(SubjectIn subjectIn) {
+        Subject subject = new Subject();
+        subject.setName(subjectIn.name);
+        subject.setDecryption(subjectIn.decryption);
+
+        if (subjectIn.departmentId != null) {
+            Optional<Department> department = departmentRepo.findById(subjectIn.departmentId);
+            if (!department.isPresent()) {
+                return new ResponseEntity<>(new Message("Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            }
+            subject.setDepartment(department.get());
+        }
+
         subjectRepo.save(subject);
         return new ResponseEntity<>(new Message("Предмет успешно создан"), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> delete(Set<Long> ids) {
+        subjectRepo.deleteAllByIdIn(
+                ids.stream().map(Number::intValue).collect(Collectors.toSet()) // todo эту херню убрать
+        );
+        return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
     }
 
     public ResponseEntity<?> searchByUserId(Integer userId) {
