@@ -56,7 +56,7 @@ public class FacultyController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> facultyService.update(),
-                EnumSet.allOf(UserRole.class)
+                EnumSet.of(UserRole.ADMIN)
         );
     }
 
@@ -68,7 +68,7 @@ public class FacultyController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> facultyService.delete(ids),
-                EnumSet.allOf(UserRole.class)
+                EnumSet.of(UserRole.ADMIN)
         );
     }
 }
