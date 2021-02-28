@@ -1,8 +1,8 @@
-package com.example.javaserver.testService.models;
+package com.example.javaserver.testService.old_version.models;
 
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.testService.models.InOutComingModels.RequestedQuestion;
+import com.example.javaserver.testService.old_version.models.InOutComingModels.RequestedQuestion;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;

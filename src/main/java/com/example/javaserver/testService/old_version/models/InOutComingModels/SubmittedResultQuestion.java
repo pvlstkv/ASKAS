@@ -1,11 +1,11 @@
-package com.example.javaserver.testService.models.InOutComingModels;
+package com.example.javaserver.testService.old_version.models.InOutComingModels;
 
 
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.testService.models.AnswerChoice;
-import com.example.javaserver.testService.models.Question;
-import com.example.javaserver.testService.models.UserAnswer;
+import com.example.javaserver.testService.old_version.models.AnswerChoice;
+import com.example.javaserver.testService.old_version.models.Question;
+import com.example.javaserver.testService.old_version.models.UserAnswer;
 
 import java.util.List;
 import java.util.stream.Collectors;

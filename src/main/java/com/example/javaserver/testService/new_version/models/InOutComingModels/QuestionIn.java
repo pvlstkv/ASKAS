@@ -1,36 +1,39 @@
-package com.example.javaserver.testService.models.InOutComingModels;
+package com.example.javaserver.testService.new_version.models.InOutComingModels;
 
 
-import com.example.javaserver.testService.models.Question;
+import com.example.javaserver.testService.new_version.configs.QuestionType;
+import com.example.javaserver.testService.new_version.models.Question;
 
 import java.util.List;
 
-public class RequestedQuestion extends SubmittedQuestion {
-    private  List<String> rightAnswers;
+public class QuestionIn extends QuestionOut {
+    private List<String> rightAnswers;
     private Double complexity;
 
-    public RequestedQuestion() {
+    public QuestionIn() {
     }
 
-    public RequestedQuestion(List<String> rightAnswers, Double complexity) {
+    public QuestionIn(List<String> rightAnswers, Double complexity) {
         this.rightAnswers = rightAnswers;
         this.complexity = complexity;
     }
 
-    public RequestedQuestion(Question question, List<String> rightAnswers, Double complexity) {
+    public QuestionIn(Question question, List<String> rightAnswers, Double complexity) {
         super(question);
         this.rightAnswers = rightAnswers;
         this.complexity = complexity;
     }
 
-    public RequestedQuestion(Long id, String question, List<String> answers, List<String> rightAnswers, Double complexity) {
-        super(id, question, answers);
+    public QuestionIn(Long id, String question, List<String> answers, QuestionType questionType,
+                      List<String> rightAnswers, Double complexity) {
+        super(id, question, answers, questionType);
         this.rightAnswers = rightAnswers;
         this.complexity = complexity;
     }
 
-    public RequestedQuestion(String question, List<String> answers, List<String> rightAnswers, Double complexity) {
-        super(question, answers);
+    public QuestionIn(String question, List<String> answers, QuestionType questionType,
+                      List<String> rightAnswers, Double complexity) {
+        super(question, answers, questionType);
         this.rightAnswers = rightAnswers;
         this.complexity = complexity;
     }
