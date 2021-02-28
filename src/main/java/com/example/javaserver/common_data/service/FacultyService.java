@@ -34,6 +34,17 @@ public class FacultyService {
         return new ResponseEntity<>(new Message("Факультет успешно создан"), HttpStatus.OK);
     }
 
+    @Transactional
+    public ResponseEntity<?> delete(Set<Long> ids) {
+        facultyRepo.deleteAllByIdIn(ids);
+        return new ResponseEntity<>(new Message("Найденные факультеты были успешно удалены"), HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> update() {
+        return new ResponseEntity<>(new Message("Найденные факультеты были успешно изменены"), HttpStatus.OK);
+    }
+
     public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);
@@ -42,16 +53,5 @@ public class FacultyService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @Transactional
-    public ResponseEntity<?> update() {
-        return new ResponseEntity<>(new Message("Найденные факультеты были успешно изменены"), HttpStatus.OK);
-    }
-
-    @Transactional
-    public ResponseEntity<?> delete(Set<Long> ids) {
-        facultyRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные факультеты были успешно удалены"), HttpStatus.OK);
     }
 }

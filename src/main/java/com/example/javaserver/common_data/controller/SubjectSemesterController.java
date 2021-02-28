@@ -2,6 +2,7 @@ package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,18 @@ public class SubjectSemesterController {
                 token,
                 (c) -> subjectSemesterService.setSubject(subjectSemesterId, subjectId),
                 EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @GetMapping("/criteria-search")
+    public ResponseEntity<?> search(
+            @RequestHeader("token") String token,
+            @RequestBody Set<SearchCriteria> criteria
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectSemesterService.search(criteria),
+                EnumSet.allOf(UserRole.class)
         );
     }
 }

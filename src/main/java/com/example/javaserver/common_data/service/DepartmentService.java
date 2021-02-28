@@ -5,13 +5,17 @@ import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.FacultyRepo;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.specification.CommonSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -48,5 +52,15 @@ public class DepartmentService {
     public ResponseEntity<?> delete(Set<Long> ids) {
         departmentRepo.deleteAllByIdIn(ids);
         return new ResponseEntity<>(new Message("Найденные кафедры были успешно удалены"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+        try {
+            Specification<Department> specification = CommonSpecification.of(criteria);
+            List<Department> departments = departmentRepo.findAll(specification);
+            return new ResponseEntity<>(departments, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+        }
     }
 }

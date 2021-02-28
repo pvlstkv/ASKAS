@@ -4,15 +4,19 @@ import com.example.javaserver.common_data.controller.client_model.SubjectIn;
 import com.example.javaserver.common_data.model.*;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.SubjectRepo;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,6 +58,16 @@ public class SubjectService {
                 ids.stream().map(Number::intValue).collect(Collectors.toSet()) // todo эту херню убрать
         );
         return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+        try {
+            Specification<Subject> specification = CommonSpecification.of(criteria);
+            List<Subject> subjects = subjectRepo.findAll(specification);
+            return new ResponseEntity<>(subjects, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ResponseEntity<?> searchByUserId(Integer userId) {

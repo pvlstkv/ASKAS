@@ -3,6 +3,7 @@ package com.example.javaserver.common_data.controller;
 import com.example.javaserver.common_data.controller.client_model.SubjectIn;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.service.SubjectService;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,6 @@ public class SubjectController {
         );
     }
 
-    @GetMapping
-    public ResponseEntity<?> searchByUserId(
-            @RequestHeader("token") String token,
-            @RequestParam("userId") Integer userId
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectService.searchByUserId(userId),
-                EnumSet.allOf(UserRole.class)
-        );
-    }
-
     @DeleteMapping
     public ResponseEntity<?> delete(
             @RequestHeader("token") String token,
@@ -57,6 +46,30 @@ public class SubjectController {
                 token,
                 (c) -> subjectService.delete(ids),
                 EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @GetMapping("/criteria-search")
+    public ResponseEntity<?> search(
+            @RequestHeader("token") String token,
+            @RequestBody Set<SearchCriteria> criteria
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.search(criteria),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<?> searchByUserId(
+            @RequestHeader("token") String token,
+            @RequestParam("userId") Integer userId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.searchByUserId(userId),
+                EnumSet.allOf(UserRole.class)
         );
     }
 }

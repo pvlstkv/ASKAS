@@ -36,15 +36,15 @@ public class FacultyController {
         );
     }
 
-    @GetMapping
-    public ResponseEntity<?> search(
+    @DeleteMapping
+    public ResponseEntity<?> delete(
             @RequestHeader("token") String token,
-            @RequestBody Set<SearchCriteria> criteria
+            @RequestBody Set<Long> ids
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.search(criteria),
-                EnumSet.allOf(UserRole.class)
+                (c) -> facultyService.delete(ids),
+                EnumSet.of(UserRole.ADMIN)
         );
     }
 
@@ -60,15 +60,15 @@ public class FacultyController {
         );
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(
+    @GetMapping("/criteria-search")
+    public ResponseEntity<?> search(
             @RequestHeader("token") String token,
-            @RequestBody Set<Long> ids
+            @RequestBody Set<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.delete(ids),
-                EnumSet.of(UserRole.ADMIN)
+                (c) -> facultyService.search(criteria),
+                EnumSet.allOf(UserRole.class)
         );
     }
 }

@@ -5,13 +5,17 @@ import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.specification.CommonSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -66,5 +70,15 @@ public class SubjectSemesterService {
 
         subjectSemester.get().setSubject(subject.get());
         return new ResponseEntity<>(new Message("Семестр был успешно привязан к предмету"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+        try {
+            Specification<SubjectSemester> specification = CommonSpecification.of(criteria);
+            List<SubjectSemester> subjectSemesters = subjectSemesterRepo.findAll(specification);
+            return new ResponseEntity<>(subjectSemesters, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+        }
     }
 }
