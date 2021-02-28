@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/subject-semester")
@@ -22,23 +23,35 @@ public class SubjectSemesterController {
         this.subjectSemesterService = subjectSemesterService;
     }
 
-    @PostMapping("/creation")
+    @PutMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody SubjectSemester subjectSemester
+            @RequestBody SubjectSemesterIn subjectSemesterIn
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> subjectSemesterService.create(subjectSemester),
+                (c) -> subjectSemesterService.create(subjectSemesterIn),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
 
-    @PostMapping("/subject")
+    @DeleteMapping
+    public ResponseEntity<?> delete(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectSemesterService.delete(ids),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @PatchMapping
     public ResponseEntity<?> setSubject(
             @RequestHeader("token") String token,
-            @RequestParam("subject_semester_id") Long subjectSemesterId,
-            @RequestParam("subject_id") Long subjectId
+            @RequestParam("subjectSemesterId") Long subjectSemesterId,
+            @RequestParam("subjectId") Long subjectId
     ) {
         return requestHandlerService.proceed(
                 token,
