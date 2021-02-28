@@ -1,5 +1,6 @@
-package com.example.javaserver.common_data.repo.specification;
+package com.example.javaserver.general.specification;
 
+@SuppressWarnings("unused")
 public class SearchCriteria {
     private String key;
     private String operation;

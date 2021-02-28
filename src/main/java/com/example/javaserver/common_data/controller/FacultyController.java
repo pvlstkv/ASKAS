@@ -1,7 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.FacultyIO;
-import com.example.javaserver.common_data.repo.specification.SearchCriteria;
+import com.example.javaserver.common_data.controller.client_model.FacultyIn;
+import com.example.javaserver.general.specification.SearchCriteria;
 import com.example.javaserver.common_data.service.FacultyService;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -27,24 +28,24 @@ public class FacultyController {
     @PutMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody FacultyIO facultyIO
+            @RequestBody FacultyIn facultyIn
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.create(facultyIO),
+                (c) -> facultyService.create(facultyIn),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
 
     @GetMapping
-    public ResponseEntity<?> modify(
+    public ResponseEntity<?> search(
             @RequestHeader("token") String token,
-            @RequestBody Set<SearchCriteria> criteria
+            @RequestBody Collection<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
                 (c) -> facultyService.search(criteria),
-                EnumSet.of(UserRole.ADMIN)
+                EnumSet.allOf(UserRole.class)
         );
     }
 }
