@@ -2,6 +2,11 @@ package com.example.javaserver.common_data.model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -23,9 +28,15 @@ public class SubjectSemester {
 
     boolean hasCourseProject;
 
+    @JsonProperty("subjectId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
     Subject subject;
 
+    @JsonProperty("studentGroupIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany(mappedBy = "subjectSemesters")
     private Set<StudyGroup> studyGroups;
 

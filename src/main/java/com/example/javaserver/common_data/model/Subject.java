@@ -1,6 +1,10 @@
 package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.testService.models.Question;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 import javax.persistence.*;
@@ -30,12 +34,21 @@ public class Subject {
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
 
+    @JsonProperty("subjectSemesterIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
+    @JsonProperty("questionIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 

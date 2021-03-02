@@ -2,6 +2,8 @@ package com.example.javaserver.common_data.model;
 
 
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -24,12 +26,21 @@ public class Department implements Serializable {
 
     private OffsetDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonProperty("facultyId")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToOne
     Faculty faculty;
 
+    @JsonProperty("studyGroupIds")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<StudyGroup> studyGroups;
 
+    @JsonProperty("subjectIds")
+    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Subject> subjects;
 
