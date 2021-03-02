@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentService {
@@ -58,6 +59,15 @@ public class DepartmentService {
     public ResponseEntity<?> getAll() {
         Collection<Department> departments = departmentRepo.findAllBy();
         return new ResponseEntity<>(departments, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAllShortNames() {
+        Collection<String> shortNames = departmentRepo
+                .findAllBy()
+                .stream()
+                .map(Department::getShortName)
+                .collect(Collectors.toSet());
+        return new ResponseEntity<>(shortNames, HttpStatus.OK);
     }
 
     public ResponseEntity<?> search(Set<SearchCriteria> criteria) {

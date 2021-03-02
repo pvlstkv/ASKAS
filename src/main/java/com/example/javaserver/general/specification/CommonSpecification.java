@@ -36,7 +36,6 @@ public class CommonSpecification<T> implements Specification<T> {
         String key = criteria.getKey();
         Object value = criteria.getValue();
 
-        Path<String> keyPath = root.get(key);
         String valueString = value.toString();
 
         switch (operation) {

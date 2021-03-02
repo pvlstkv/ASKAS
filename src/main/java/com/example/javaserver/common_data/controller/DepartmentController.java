@@ -60,6 +60,17 @@ public class DepartmentController {
         );
     }
 
+    @GetMapping("/all/short-names")
+    public ResponseEntity<?> searchAllShortNames(
+            @RequestHeader("token") String token
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> departmentService.getAllShortNames(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
     @GetMapping("/criteria-search")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token,
