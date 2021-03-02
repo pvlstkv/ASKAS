@@ -41,21 +41,19 @@ public class CommonSpecification<T> implements Specification<T> {
         }
         Object value = criteria.getValue();
 
-        if (value == null) {
-            return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
-        }
-
-        String valueString = value.toString();
-
         switch (operation) {
-            case "=": return builder.equal(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case "!=": return builder.notEqual(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case ">": return builder.greaterThan(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case "<": return builder.lessThan(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case ">=": return builder.greaterThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case "<=": return builder.lessThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            case ":": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
-            default: return null;
+            case "==": return builder.equal(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "!=": return builder.notEqual(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case ">": return builder.greaterThan(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "<": return builder.lessThan(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case ">=": return builder.greaterThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "<=": return builder.lessThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case ":": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "isNull": return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isNotNull": return builder.isNotNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isTrue": return builder.isTrue(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isFalse": return builder.isFalse(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            default: throw new IllegalStateException("Некорректный оператор сравнения");
         }
     }
 }

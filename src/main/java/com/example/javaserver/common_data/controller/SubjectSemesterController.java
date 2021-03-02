@@ -48,7 +48,7 @@ public class SubjectSemesterController {
         );
     }
 
-    @PatchMapping
+    @PatchMapping("/assign")
     public ResponseEntity<?> setSubject(
             @RequestHeader("token") String token,
             @RequestParam("subjectSemesterId") Long subjectSemesterId,
