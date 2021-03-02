@@ -1,7 +1,6 @@
 package com.example.javaserver.common_data.model;
 
 
-
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 
@@ -16,24 +15,25 @@ public class SubjectSemester {
 
     int numberOfSemester;
 
-    SubjectControlType controlType;
+    private SubjectControlType controlType;
 
     boolean hasCourseWork;
 
     boolean hasCourseProject;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Subject subject;
+    private Subject subject;
 
-    OffsetDateTime createdAt;
+    private OffsetDateTime createdAt;
 
-    OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     // in the nearest future something like this
     // int countOfLecture;
     // int countOfLabWork;
 
-    public SubjectSemester() { }
+    public SubjectSemester() {
+    }
 
     public long getId() {
         return id;

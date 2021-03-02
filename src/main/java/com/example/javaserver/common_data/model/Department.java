@@ -1,7 +1,6 @@
 package com.example.javaserver.common_data.model;
 
 
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -25,15 +24,16 @@ public class Department implements Serializable {
     private OffsetDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Faculty faculty;
+    private Faculty faculty;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<StudyGroup> studyGroups;
+    private Set<StudyGroup> studyGroups;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Subject> subjects;
+    private Set<Subject> subjects;
 
-    public Department() { }
+    public Department() {
+    }
 
     public Integer getId() {
         return id;

@@ -1,27 +1,67 @@
-//package com.example.javaserver.testService.old_version.models.saving_results;
-//
-//import com.example.javaserver.user.model.User;
-//
-//import javax.persistence.*;
-//import java.io.Serializable;
-//import java.time.OffsetDateTime;
-//import java.util.Set;
-//
-//@Entity
-//public class PassedTest implements Serializable {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Integer id;
-//    @OneToOne
-//    private User user;
-//    @OneToMany(mappedBy = "passed_test", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<PassedQuestion> passedQuestions;
-//
-//    private OffsetDateTime passedAt;
-//    private double rating;
-//
-//    public PassedTest() {
-//    }
-//
-//
-//}
+package com.example.javaserver.testService.new_version.models.saving_results;
+
+import com.example.javaserver.testService.new_version.models.saving_results.PassedQuestion;
+import com.example.javaserver.user.model.User;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+import java.util.Set;
+
+@Entity
+@Table(name = "passed_tests")
+public class PassedTest implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @OneToOne
+    private User user;
+    @OneToMany(mappedBy = "passedTest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PassedQuestion> passedQuestions;
+
+    private OffsetDateTime passedAt;
+    private double rating;
+
+    public PassedTest() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<PassedQuestion> getPassedQuestions() {
+        return passedQuestions;
+    }
+
+    public void setPassedQuestions(Set<PassedQuestion> passedQuestions) {
+        this.passedQuestions = passedQuestions;
+    }
+
+    public OffsetDateTime getPassedAt() {
+        return passedAt;
+    }
+
+    public void setPassedAt(OffsetDateTime passedAt) {
+        this.passedAt = passedAt;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+}

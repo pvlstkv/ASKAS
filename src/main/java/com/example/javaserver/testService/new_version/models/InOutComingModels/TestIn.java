@@ -1,8 +1,6 @@
 package com.example.javaserver.testService.new_version.models.InOutComingModels;
 
 
-import com.example.javaserver.testService.new_version.models.Test;
-
 import java.util.List;
 
 public class TestIn {

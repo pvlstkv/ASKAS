@@ -32,12 +32,13 @@ public class StudyGroup implements Serializable {
     private Integer yearOfStudyStart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Department department;
+    private Department department;
 
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<User> students = new ArrayList<>();
+    private List<User> students = new ArrayList<>();
 
-    public StudyGroup() { }
+    public StudyGroup() {
+    }
 
     public Integer getId() {
         return id;
