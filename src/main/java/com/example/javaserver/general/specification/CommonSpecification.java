@@ -41,6 +41,10 @@ public class CommonSpecification<T> implements Specification<T> {
         }
         Object value = criteria.getValue();
 
+        if (value == null) {
+            return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
+        }
+
         String valueString = value.toString();
 
         switch (operation) {
