@@ -28,8 +28,8 @@ public class QuestionController {
     private QuestionService questionService;
 
     @GetMapping("/hello")
-    public ResponseEntity<?> hi(){
-        return new ResponseEntity<>(new Message("Привет я работаю"),HttpStatus.OK);
+    public ResponseEntity<?> hi() {
+        return new ResponseEntity<>(new Message("Привет я работаю"), HttpStatus.OK);
     }
 
     @ApiOperation(value = "")
@@ -59,10 +59,13 @@ public class QuestionController {
         return questionService.deleteAllQuestions(token);
     }
 
-    @GetMapping("/test/{subject}")
-    public ResponseEntity<?> getTest(@PathVariable String subject, @RequestParam(value = "limit") Integer count,
-                                     @RequestHeader(name = "Authorization") String token) {
-        return questionService.createTest(subject, count, token);
+    @GetMapping("/test/{subj_id}/{theme_id}")
+    public ResponseEntity<?> getTest(/*PathVariable String subject,*/
+            @RequestParam(value = "subj_id") Long subjectId,
+            @RequestParam(value = "theme_id") Long themeId,
+            @RequestParam(value = "limit") Integer count,
+            @RequestHeader(name = "Authorization") String token) {
+        return questionService.createTest(subjectId, themeId, count, token);
     }
 
     @PostMapping("/test/checking")
@@ -76,10 +79,10 @@ public class QuestionController {
         List<Question> question = questionRepo.findAll();
         return new ResponseEntity<>(question, HttpStatus.FOUND);
     }
-
-    @GetMapping("/all-questions/{subject}")
-    public ResponseEntity<?> findAllBySubject(@PathVariable(value = "subject") String subject, @RequestHeader(name = "Authorization") String token) {
-        return questionService.findAllBySubject(subject, token);
-    }
+//
+//    @GetMapping("/all-questions/{subject}")
+//    public ResponseEntity<?> findAllBySubject(@PathVariable(value = "subject") String subject, @RequestHeader(name = "Authorization") String token) {
+//        return questionService.findAllBySubject(subject, token);
+//    }
 
 }

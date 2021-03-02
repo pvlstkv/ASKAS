@@ -1,7 +1,7 @@
 package com.example.javaserver.testService.old_version.models.saving_results;
 
-import com.example.javaserver.testService.old_version.models.AnswerChoice;
-import com.example.javaserver.testService.old_version.models.Question;
+import com.example.javaserver.testService.old_version.models.AnswerChoiceOld;
+import com.example.javaserver.testService.old_version.models.QuestionOld;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,18 +13,18 @@ public class PassedQuestion implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToOne
-    private Question question;
+    private QuestionOld questionOld;
     @OneToMany(mappedBy = "passed_question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AnswerChoice> userAnswers;
+    private Set<AnswerChoiceOld> userAnswers;
 
-    public PassedQuestion(Integer id, Question question, Set<AnswerChoice> userAnswers) {
+    public PassedQuestion(Integer id, QuestionOld questionOld, Set<AnswerChoiceOld> userAnswers) {
         this.id = id;
-        this.question = question;
+        this.questionOld = questionOld;
         this.userAnswers = userAnswers;
     }
 
-    public PassedQuestion(Question question, Set<AnswerChoice> userAnswers) {
-        this.question = question;
+    public PassedQuestion(QuestionOld questionOld, Set<AnswerChoiceOld> userAnswers) {
+        this.questionOld = questionOld;
         this.userAnswers = userAnswers;
     }
 
@@ -39,19 +39,19 @@ public class PassedQuestion implements Serializable {
         this.id = id;
     }
 
-    public Question getQuestion() {
-        return question;
+    public QuestionOld getQuestion() {
+        return questionOld;
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
+    public void setQuestion(QuestionOld questionOld) {
+        this.questionOld = questionOld;
     }
 
-    public Set<AnswerChoice> getUserAnswers() {
+    public Set<AnswerChoiceOld> getUserAnswers() {
         return userAnswers;
     }
 
-    public void setUserAnswers(Set<AnswerChoice> userAnswers) {
+    public void setUserAnswers(Set<AnswerChoiceOld> userAnswers) {
         this.userAnswers = userAnswers;
     }
 }

@@ -9,5 +9,5 @@ import java.util.List;
 
 
 public interface QuestionRepo extends JpaRepository<Question, Integer> {
-    List<Question> findAllByIdAndTheme(Long id, String theme);
+    List<Question> findAllByIdAndByThemeId(Long id, Long themeId);
 }

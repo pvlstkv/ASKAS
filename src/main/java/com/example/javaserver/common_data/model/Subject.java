@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testService.old_version.models.Question;
+//import com.example.javaserver.testService.old_version.models.Question;
+import com.example.javaserver.testService.new_version.models.Question;
 
 
 import javax.persistence.*;
@@ -26,9 +27,8 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
-
-//    @OneToMany(mappedBy = "subject")
-//    private List<Question> question;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Theme> themes;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
@@ -40,6 +40,11 @@ public class Subject {
     private List<Question> question = new ArrayList<>();
 
     public Subject() { }
+
+    public Subject(String name, Set<Theme> themes) {
+        this.name = name;
+        this.themes = themes;
+    }
 
     public String getDecryption() {
         return decryption;

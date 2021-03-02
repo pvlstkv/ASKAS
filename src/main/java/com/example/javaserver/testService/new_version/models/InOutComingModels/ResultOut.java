@@ -4,20 +4,20 @@ package com.example.javaserver.testService.new_version.models.InOutComingModels;
 import java.util.List;
 
 public class ResultOut {
-    private List<QuestionOut> questions;
+    private List<AnswerInOut> answerInOuts;
     private Long rating;
 
-    public ResultOut(List<QuestionOut> questions, Long rating) {
-        this.questions = questions;
+    public ResultOut(List<AnswerInOut> answerInOuts, Long rating) {
+        this.answerInOuts = answerInOuts;
         this.rating = rating;
     }
 
-    public List<QuestionOut> getQuestions() {
-        return questions;
+    public List<AnswerInOut> getQuestions() {
+        return answerInOuts;
     }
 
-    public void setQuestions(List<QuestionOut> questions) {
-        this.questions = questions;
+    public void setQuestions(List<AnswerInOut> answerInOuts) {
+        this.answerInOuts = answerInOuts;
     }
 
     public Long getRating() {

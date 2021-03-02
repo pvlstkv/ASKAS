@@ -88,6 +88,16 @@ public class Question {
         this.complexity = complexity;
     }
 
+    public List<String> fetchRightAnswers() {
+        return this.answerChoiceList.stream().filter(AnswerChoice::getRight)
+                .map(AnswerChoice::getAnswer).collect(Collectors.toList());
+    }
+
+    public List<String> fetchValuesOfAnswerChoice() {
+        return this.answerChoiceList.stream().map(AnswerChoice::getAnswer).collect(Collectors.toList());
+    }
+
+
     public Question(QuestionIn questionIn, Subject subject) {
         this.id = questionIn.getId();
         this.subject = subject;

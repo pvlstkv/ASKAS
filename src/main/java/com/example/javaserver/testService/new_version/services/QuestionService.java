@@ -9,7 +9,7 @@ import com.example.javaserver.testService.new_version.models.AnswerChoice;
 import com.example.javaserver.testService.new_version.models.InOutComingModels.*;
 import com.example.javaserver.testService.new_version.models.Question;
 import com.example.javaserver.testService.new_version.models.UserAnswer;
-import com.example.javaserver.testService.new_version.models.saving_results.PassedTest;
+//import com.example.javaserver.testService.new_version.models.saving_results.PassedTest;
 import com.example.javaserver.testService.new_version.repo.QuestionRepo;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,12 +111,12 @@ public class QuestionService {
     }
 
 
-    public ResponseEntity<?> createTest(Long subjectId, String theme, int countOfQuestions, String token) {
-        return requestHandlerService.proceed(token, userContext -> makeTestFromDBQuestions(subjectId, theme, countOfQuestions),
+    public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions, String token) {
+        return requestHandlerService.proceed(token, userContext -> makeTestFromDBQuestions(subjectId, themeId, countOfQuestions),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
     }
 
-    private ResponseEntity<?> makeTestFromDBQuestions(Long subjectId, String theme, int countOfQuestions) {
+    private ResponseEntity<?> makeTestFromDBQuestions(Long subjectId, Long themeId, int countOfQuestions) {
 
         if (countOfQuestions < 1)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -126,7 +126,7 @@ public class QuestionService {
             String response = String.format("Предмета" + doesntExistById, subjectId);
             return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        List<Question> questions4Test = questionRepo.findAllByIdAndTheme(subjectId, theme);
+        List<Question> questions4Test = questionRepo.findAllByIdAndByThemeId(subjectId, themeId);
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);
@@ -134,102 +134,98 @@ public class QuestionService {
         for (Question originalQuestion : questions4Test) {
             questionsOut.add(new QuestionOut(originalQuestion));
         }
-       
         return new ResponseEntity<>(questionsOut, HttpStatus.OK);
     }
 
     public ResponseEntity<?> checkTest(List<AnswerInOut> userTest, String token) {
-        return requestHandlerService.proceed(token, userContext -> generateTestResult(userTest),
+        return requestHandlerService.proceed(token, userContext -> checkingAnswers(userTest),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
     }
 
-    private ResponseEntity<ResultOut> generateTestResult(List<AnswerInOut> requestedAnswers) {
-        // checking answers //проверка ответов
-        List<Object> resultsOfChecking = checkingAnswers(requestedAnswers);
-        double rightAnswersCount = (double) resultsOfChecking.get(2);
-        long resInPercent = Math.round(rightAnswersCount * 100.0 / requestedAnswers.size());
-        ResultOut resultOut = new ResultOut(
-                (List<AnswerInOut>) resultsOfChecking.get(1),
-                resInPercent);
-        return new ResponseEntity<>(submittedResult, HttpStatus.OK);
+    private ResponseEntity<ResultOut> checkingAnswers(List<AnswerInOut> incomingQuestionsWithUserAnswer) {
+        Question currentCheckingQuestion;
+        Optional<Question> optionalQuestion;
+        CheckedQuestion checkedQuestion;
+        List<AnswerInOut> answerInOutList = new ArrayList<>();
+        double totalRating = 0.0;
+        for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
+            optionalQuestion = questionRepo.findById(oneAnswer.getQuestionId());
+            if (!optionalQuestion.isPresent()) {
+                answerInOutList.add(new AnswerInOut(oneAnswer.getQuestionId(), null));
+            }
+            currentCheckingQuestion = optionalQuestion.get();
+            switch (currentCheckingQuestion.getQuestionType()) {
+                case MATCH:
+                    // todo there are some problems...
+                    break;
+                case WRITE:
+                case CHOOSE:
+                    checkedQuestion = checkChooseAndWriteTypeQuestion(currentCheckingQuestion, oneAnswer.getAnswers());
+                    totalRating += checkedQuestion.getRating();
+                    answerInOutList.add(checkedQuestion.getAnswerInOut());
+                    break;
+                case SEQUENCE:
+                    checkedQuestion = checkSequenceTypeQuestion(currentCheckingQuestion, oneAnswer.getAnswers());
+                    totalRating += checkedQuestion.getRating();
+                    answerInOutList.add(checkedQuestion.getAnswerInOut());
+                    break;
+            }
+        }
+        long resInPersent = Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
+        ResultOut res = new ResultOut(answerInOutList, resInPersent);
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
-    //todo refactor this method and submitted models!!!!!
-
-    /**
-     * functiob of checking answers of questions
-     *
-     * @param requestedAnswers a list if user answers
-     * @return a list of 3 objects: 0 - the name of subject, 1 - the list of checked answers, 2 - the value of right answers
-     */
-    private List<Object> checkingAnswers(List<AnswerInOut> requestedAnswers) {
-        List<Object> resultsOfChecking = new ArrayList<>();
+    private CheckedQuestion checkChooseAndWriteTypeQuestion(Question checkingQuestion,
+                                                            List<String> listOfUserAnswers) {
         double rightAnswersCounter = 0;
-        Question currentCheckingQuestion; // question from db
-        List<String> listOfRightAnswers = new ArrayList<>();
-        List<String> listOfUserAnswers;
-        List<AnswerInOut> rightAnswers = new ArrayList<>();
-        // use switch case to check any type questions
-        List<QuesitonResultOut> submittedResultQuestions = new ArrayList<>();
-        List<UserAnswer> checkedUserAnswers = new ArrayList<>();
-        PassedTest passedTest = new PassedTest();
-        boolean isFounded = false;
-        for (AnswerInOut currentUserAnswer : requestedAnswers) {
-            currentCheckingQuestion = questionRepo.findById(currentUserAnswer.getQuestionId()).get();
-
-            // if user gave answers equal or less than in the original question
-            currentCheckingQuestion.getAnswerChoiceList()
-                    .stream().filter(AnswerChoice::getRight).
-                    forEach(oneAnswer -> listOfRightAnswers.add(oneAnswer.getAnswer()));
-            listOfUserAnswers = currentUserAnswer.getAnswers();
-            if (listOfRightAnswers.size() == 0)
-                listOfRightAnswers.add("");
-            for (String userAnswer : listOfUserAnswers) {
-                isFounded = false; // is founded an user answer among right answers
-                for (String rightAnswer : listOfRightAnswers) {
-                    if (rightAnswer.equals(userAnswer)) {
-                        // if user gave right answers more than in the original question, then the answer is making true and adding points
-                        if (currentUserAnswer.getAnswers().size() <= listOfRightAnswers.size()) {
-                            rightAnswersCounter += 1.0 / listOfRightAnswers.size();
-                            checkedUserAnswers.add(new UserAnswer(userAnswer, true));
-                        } else { // if user gave right answers more than in the original question, then answers is making false
-                            checkedUserAnswers.add(new UserAnswer(userAnswer, false));
-                        }
-                        isFounded = true;
-                        break;
+        List<String> listOfRightAnswers = checkingQuestion.fetchRightAnswers();
+        for (String userAnswer : listOfUserAnswers) {
+            for (String rightAnswer : listOfRightAnswers) {
+                if (rightAnswer.equals(userAnswer)) {
+                    // if user gave right answers more than in the original question, then the answer is making true and adding points
+                    if (listOfUserAnswers.size() <= listOfRightAnswers.size()) {
+                        rightAnswersCounter += 1.0 / listOfRightAnswers.size();
                     }
-                }
-                if (!isFounded) {
-                    checkedUserAnswers.add(new UserAnswer(userAnswer, false));
+                    break;
                 }
             }
-            submittedResultQuestions.add(new QuesitonResultOut(currentCheckingQuestion, new ArrayList<>(checkedUserAnswers)));
-            checkedUserAnswers.clear();
-            listOfRightAnswers.clear();
         }
-
-        resultsOfChecking.add(questionRepo.findById(requestedAnswers.get(0).
-                getQuestionId()).get().getSubject().getName()); // the name of subject
-        resultsOfChecking.add(submittedResultQuestions); // checked answers
-        resultsOfChecking.add(rightAnswersCounter); // the value of right answers
-
-        return resultsOfChecking;
+        AnswerInOut out = new AnswerInOut(checkingQuestion.getId(), listOfRightAnswers);
+        return new CheckedQuestion(out, rightAnswersCounter);
     }
 
-
-    public ResponseEntity<?> findAllBySubjectAndTheme(String subject, String theme, String token) {
-        return requestHandlerService.proceed(token, userContext -> fetchAllQuestionsFromDB(subject, theme),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-    }
-
-    private ResponseEntity<?> fetchAllQuestionsFromDB(String subject, String theme) {
-        Optional<Subject> tempSubject = subjectRepo.findByName(subject);
-        if (!tempSubject.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    private CheckedQuestion checkSequenceTypeQuestion(Question checkingQuestion, List<String> listOfUserAnswers) {
+        double rightAnswersCounter = 0;
+        List<String> rightSequence = checkingQuestion.fetchRightAnswers();
+        int sizeRS = rightSequence.size();
+        if (listOfUserAnswers.size() != sizeRS)
+            return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), listOfUserAnswers), 0.0);
+        for (int i = 0; i < sizeRS; i++) {
+            if (rightSequence.get(i).equals(listOfUserAnswers.get(i))) {
+                rightAnswersCounter += 1.0 / sizeRS;
+            }
         }
-        Integer idOfSubject = tempSubject.get().getId();
-        Iterable<Question> questions = questionRepo.findAllByIdAndTheme(idOfSubject.longValue(), theme);
-        return new ResponseEntity<>(questions, HttpStatus.OK);
+        return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), rightSequence), rightAnswersCounter);
     }
+
+//    private CheckedQuestion checkMatchTypeQuestions(Question checkingQuestion, List<String> listOfUserAnswers){
+//
+//    }
+
+//    public ResponseEntity<?> findAllBySubjectAndTheme(String subject, String theme, String token) {
+//        return requestHandlerService.proceed(token, userContext -> fetchAllQuestionsFromDB(subject, theme),
+//                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
+//    }
+//
+//    private ResponseEntity<?> fetchAllQuestionsFromDB(String subject, String theme) {
+//        Optional<Subject> tempSubject = subjectRepo.findByName(subject);
+//        if (!tempSubject.isPresent()) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        Integer idOfSubject = tempSubject.get().getId();
+//        Iterable<Question> questions = questionRepo.findAllByIdAndTheme(idOfSubject.longValue(), theme);
+//        return new ResponseEntity<>(questions, HttpStatus.OK);
+//    }
 
 }
