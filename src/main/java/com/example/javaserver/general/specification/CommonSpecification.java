@@ -48,7 +48,8 @@ public class CommonSpecification<T> implements Specification<T> {
             case "<": return builder.lessThan(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case ">=": return builder.greaterThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case "<=": return builder.lessThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
-            case ":": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "::": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
+            case "!:": return builder.notLike(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case "isNull": return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
             case "isNotNull": return builder.isNotNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
             case "isTrue": return builder.isTrue(subKey == null ? root.get(key) : root.get(key).get(subKey));
