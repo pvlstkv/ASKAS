@@ -40,13 +40,13 @@ public class CommonSpecification<T> implements Specification<T> {
         String valueString = value.toString();
 
         switch (operation) {
-            case "=": return builder.equal(keyPath, valueString);
-            case "!=": return builder.notEqual(keyPath, valueString);
-            case ">": return builder.greaterThan(keyPath, valueString);
-            case "<": return builder.lessThan(keyPath, valueString);
-            case ">=": return builder.greaterThanOrEqualTo(keyPath, valueString);
-            case "<=": return builder.lessThanOrEqualTo(keyPath, valueString);
-            case ":": return builder.like(keyPath, valueString);
+            case "=": return builder.equal(root.get(key), valueString);
+            case "!=": return builder.notEqual(root.get(key), valueString);
+            case ">": return builder.greaterThan(root.get(key), valueString);
+            case "<": return builder.lessThan(root.get(key), valueString);
+            case ">=": return builder.greaterThanOrEqualTo(root.get(key), valueString);
+            case "<=": return builder.lessThanOrEqualTo(root.get(key), valueString);
+            case ":": return builder.like(root.get(key), valueString);
             default: return null;
         }
     }

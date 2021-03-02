@@ -50,7 +50,11 @@ public class FacultyService {
         return new ResponseEntity<>(faculties, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> searchByExamples(Set<FacultyIn> examples) {
+        return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+    }
+
+    public ResponseEntity<?> searchByCriteria(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);
             List<Faculty> faculties = facultyRepo.findAll(specification);

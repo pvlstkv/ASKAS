@@ -61,7 +61,7 @@ public class FacultyController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> search(
+    public ResponseEntity<?> searchByCriteria(
             @RequestHeader("token") String token
     ) {
         return requestHandlerService.proceed(
@@ -71,14 +71,26 @@ public class FacultyController {
         );
     }
 
+    @GetMapping
+    public ResponseEntity<?> searchByExamples(
+            @RequestHeader("token") String token,
+            @RequestBody Set<FacultyIn> examples
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> facultyService.searchByExamples(examples),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
     @GetMapping("/criteria-search")
-    public ResponseEntity<?> search(
+    public ResponseEntity<?> searchByCriteria(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.search(criteria),
+                (c) -> facultyService.searchByCriteria(criteria),
                 EnumSet.allOf(UserRole.class)
         );
     }
