@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/testing/new")
+@RequestMapping(value = "api/testing/")
 public class QuestionController {
 
     @Autowired
@@ -59,7 +59,7 @@ public class QuestionController {
         return questionService.deleteAllQuestions(token);
     }
 
-    @GetMapping("/test/{subj_id}/{theme_id}")
+    @GetMapping("/test")
     public ResponseEntity<?> getTest(/*PathVariable String subject,*/
             @RequestParam(value = "subj_id") Long subjectId,
             @RequestParam(value = "theme_id") Long themeId,

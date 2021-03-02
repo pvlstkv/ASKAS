@@ -2,6 +2,7 @@ package com.example.javaserver.testService.new_version.models;
 
 
 import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.testService.new_version.configs.QuestionType;
 import com.example.javaserver.testService.new_version.models.InOutComingModels.QuestionIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,17 +17,20 @@ import java.util.stream.Collectors;
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     private Subject subject;
     //    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
     private String question;
-    private String theme; // todo like required annotation like the question field
+    // todo like the required annotation like the question field
     private QuestionType questionType;
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
     private Double complexity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Theme theme;
 
 
     public List<AnswerChoice> getAnswerChoiceList() {
@@ -45,11 +49,15 @@ public class Question {
         this.subject = subject;
     }
 
-    public String getTheme() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Theme getTheme() {
         return theme;
     }
 
-    public void setTheme(String theme) {
+    public void setTheme(Theme theme) {
         this.theme = theme;
     }
 
@@ -69,12 +77,8 @@ public class Question {
         this.questionType = questionType;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Question() {
@@ -98,11 +102,13 @@ public class Question {
     }
 
 
-    public Question(QuestionIn questionIn, Subject subject) {
+    public Question(QuestionIn questionIn, Subject subject, Theme theme) {
         this.id = questionIn.getId();
         this.subject = subject;
         this.question = questionIn.getQuestion();
         this.complexity = questionIn.getComplexity();
+        this.theme = theme;
+        this.questionType=questionIn.getQuestionType();
         this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
                 new AnswerChoice(strAns, false)).collect(Collectors.toList());
         if (this.answerChoiceList.size() == 0) {
@@ -113,10 +119,5 @@ public class Question {
                 .forEach(answerChoice -> answerChoice.setRight(true));
     }
 
-    public Question(Integer id, String question, Double complexity) {
-        this.id = id;
-        this.question = question;
-        this.complexity = complexity;
-    }
 
 }

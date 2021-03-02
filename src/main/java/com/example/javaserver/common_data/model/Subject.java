@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
 //import com.example.javaserver.testService.old_version.models.Question;
+
 import com.example.javaserver.testService.new_version.models.Question;
 
 
@@ -17,7 +18,7 @@ import java.util.Set;
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -39,10 +40,23 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 
-    public Subject() { }
+    public Subject() {
+    }
 
     public Subject(String name, Set<Theme> themes) {
         this.name = name;
+        this.themes = themes;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(Set<Theme> themes) {
         this.themes = themes;
     }
 
@@ -64,14 +78,6 @@ public class Subject {
 
     public Subject(String name) {
         this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {

@@ -1,17 +1,22 @@
 package com.example.javaserver.testService.new_version.models.InOutComingModels;
 
 
+import com.example.javaserver.testService.new_version.models.Test;
+
 import java.util.List;
 
 public class TestIn {
     private Long subjectId;
-    private List<QuestionIn> requestedQuestions;
-    private String theme;
+    private List<QuestionIn> questionIns;
+    private Long themeId;
 
-    public TestIn(Long subjectId, List<QuestionIn> requestedQuestions, String theme) {
+    public TestIn() {
+    }
+
+    public TestIn(Long subjectId, List<QuestionIn> questionIns, Long themeId) {
         this.subjectId = subjectId;
-        this.requestedQuestions = requestedQuestions;
-        this.theme = theme;
+        this.questionIns = questionIns;
+        this.themeId = themeId;
     }
 
     public Long getSubjectId() {
@@ -22,19 +27,19 @@ public class TestIn {
         this.subjectId = subjectId;
     }
 
-    public List<QuestionIn> getRequestedQuestions() {
-        return requestedQuestions;
+    public List<QuestionIn> getQuestionIns() {
+        return questionIns;
     }
 
-    public void setRequestedQuestions(List<QuestionIn> requestedQuestions) {
-        this.requestedQuestions = requestedQuestions;
+    public void setQuestionIns(List<QuestionIn> questionIns) {
+        this.questionIns = questionIns;
     }
 
-    public String getTheme() {
-        return theme;
+    public Long getThemeId() {
+        return themeId;
     }
 
-    public void setTheme(String theme) {
-        this.theme = theme;
+    public void setThemeId(Long themeId) {
+        this.themeId = themeId;
     }
 }

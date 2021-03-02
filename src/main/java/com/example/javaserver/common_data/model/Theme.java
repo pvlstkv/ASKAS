@@ -1,7 +1,10 @@
 package com.example.javaserver.common_data.model;
 
+import com.example.javaserver.testService.new_version.models.Question;
+
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -10,7 +13,7 @@ import java.time.OffsetDateTime;
 public class Theme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -18,6 +21,9 @@ public class Theme {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Subject subject;
+
+    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Question> questions;
 
     private OffsetDateTime createdAt;
 
@@ -30,20 +36,21 @@ public class Theme {
         this.name = name;
     }
 
-    public Theme(Integer id, String name, String decryption, Subject subject, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+    public Theme(Long id, String name, String decryption, Subject subject, Set<Question> questions, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.decryption = decryption;
         this.subject = subject;
+        this.questions = questions;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -69,6 +76,14 @@ public class Theme {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public Set<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(Set<Question> questions) {
+        this.questions = questions;
     }
 
     public OffsetDateTime getCreatedAt() {

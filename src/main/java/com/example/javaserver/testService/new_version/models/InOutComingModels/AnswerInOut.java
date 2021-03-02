@@ -3,10 +3,10 @@ package com.example.javaserver.testService.new_version.models.InOutComingModels;
 import java.util.List;
 // for checking answers
 public class AnswerInOut {
-    private Integer questionId;
+    private Long questionId;
     private List<String> answers;
 
-    public AnswerInOut(Integer questionId, List<String> answers) {
+    public AnswerInOut(Long questionId, List<String> answers) {
         this.questionId = questionId;
         this.answers = answers;
     }
@@ -14,11 +14,11 @@ public class AnswerInOut {
     public AnswerInOut() {
     }
 
-    public Integer getQuestionId() {
+    public Long getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(Integer questionId) {
+    public void setQuestionId(Long questionId) {
         this.questionId = questionId;
     }
 

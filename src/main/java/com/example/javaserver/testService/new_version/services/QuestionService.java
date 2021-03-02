@@ -1,6 +1,7 @@
 package com.example.javaserver.testService.new_version.services;
 
 import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.JwtService;
@@ -11,6 +12,7 @@ import com.example.javaserver.testService.new_version.models.Question;
 import com.example.javaserver.testService.new_version.models.UserAnswer;
 //import com.example.javaserver.testService.new_version.models.saving_results.PassedTest;
 import com.example.javaserver.testService.new_version.repo.QuestionRepo;
+import com.example.javaserver.testService.new_version.repo.ThemeRepo;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class QuestionService {
     private SubjectRepo subjectRepo;
 
     @Autowired
-    private JwtService jwtService;
+    private ThemeRepo themeRepo;
 
     @Autowired
     private RequestHandlerService requestHandlerService;
@@ -46,15 +48,21 @@ public class QuestionService {
 
     private ResponseEntity<?> addQuestions2TheDB(TestIn testIn) {
         Question newQuestion;
-        Subject tempSubject = (subjectRepo.findById(testIn.getSubjectId())
+        Long l = testIn.getSubjectId();
+        Subject tempSubject = (subjectRepo.findById(l)
                 .orElse(null));
         if (tempSubject == null) {
             String response = String.format("Предмета" + doesntExistById, testIn.getSubjectId());
             return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        for (QuestionIn oneRawQuestion : testIn.getRequestedQuestions()) {
+        Optional<Theme> theme = themeRepo.findById(testIn.getThemeId());
+        if (!theme.isPresent()){
+            String response = String.format("Темы" + doesntExistById, testIn.getThemeId());
+            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
-            newQuestion = new Question(oneRawQuestion, tempSubject);
+            newQuestion = new Question(oneRawQuestion, tempSubject, theme.get());
             Question finalNewQuestion = newQuestion;
             newQuestion.getAnswerChoiceList().stream().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
             questionRepo.save(newQuestion);
@@ -76,14 +84,21 @@ public class QuestionService {
             String response = String.format("Предмета" + doesntExistById, testIn.getSubjectId());
             return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        for (QuestionIn oneRawQuestion : testIn.getRequestedQuestions()) {
+        Optional<Theme> theme = themeRepo.findById(testIn.getThemeId());
+        if (!theme.isPresent()){
+            String response = String.format("Темы" + doesntExistById, testIn.getThemeId());
+            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             oldQuestion = questionRepo.findById(oneRawQuestion.getId());
             if (!oldQuestion.isPresent()) {
                 String response = String.format("Вопроса" + doesntExistById, testIn.getSubjectId());
                 return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
             }
-            newQuestion = new Question(oneRawQuestion, tempSubject);
-            questionRepo.saveAndFlush(newQuestion);
+            newQuestion = new Question(oneRawQuestion, tempSubject, theme.get());
+            Question finalNewQuestion = newQuestion;
+            newQuestion.getAnswerChoiceList().stream().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
+            questionRepo.save(newQuestion);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -95,7 +110,7 @@ public class QuestionService {
 
     private ResponseEntity<?> removeQuestionsInTheDB(List<Long> ids) {
         for (Long id : ids) {
-            questionRepo.deleteById(Math.toIntExact(id));
+            questionRepo.deleteById(id);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -120,13 +135,18 @@ public class QuestionService {
 
         if (countOfQuestions < 1)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        Subject tempSubject = (subjectRepo.findById(subjectId))
-                .orElse(null);
-        if (tempSubject == null) {
-            String response = String.format("Предмета" + doesntExistById, subjectId);
+//        Subject tempSubject = (subjectRepo.findById(subjectId))
+//                .orElse(null);
+//        if (tempSubject == null) {
+//            String response = String.format("Предмета" + doesntExistById, subjectId);
+//            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+//        }
+        Optional<Theme> theme = themeRepo.findById(themeId);
+        if (!theme.isPresent()){
+            String response = String.format("Темы" + doesntExistById, themeId);
             return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        List<Question> questions4Test = questionRepo.findAllByIdAndByThemeId(subjectId, themeId);
+        List<Question> questions4Test = questionRepo.findAllByTheme(theme.get());
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);

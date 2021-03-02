@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class QuestionOut {
     @ApiModelProperty(notes = "\"id\" field doesn't need, when an actor create a new questions. In other ways it is necessary.")
-    private Integer id;
+    private Long id;
     private String question;
     private List<String> answers;
     private QuestionType questionType;
@@ -20,8 +20,9 @@ public class QuestionOut {
     }
 
     public QuestionOut(Question question) {
-        this.id = Math.toIntExact(question.getId());
+        this.id = question.getId();
         this.question = question.getQuestion();
+        this.questionType = question.getQuestionType();
         this.answers = question.getAnswerChoiceList().stream().
                 map(AnswerChoice::getAnswer).collect(Collectors.toList());
     }
@@ -29,7 +30,7 @@ public class QuestionOut {
     // when actor updates a old question
     public QuestionOut(Long id, String question, List<String> answers, QuestionType questionType) {
         this.questionType = questionType;
-        this.id = Math.toIntExact(id);
+        this.id = id;
         this.question = question;
         this.answers = answers;
     }
@@ -41,11 +42,11 @@ public class QuestionOut {
         this.answers = answers;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -63,5 +64,13 @@ public class QuestionOut {
 
     public void setAnswers(List<String> answers) {
         this.answers = answers;
+    }
+
+    public QuestionType getQuestionType() {
+        return questionType;
+    }
+
+    public void setQuestionType(QuestionType questionType) {
+        this.questionType = questionType;
     }
 }
