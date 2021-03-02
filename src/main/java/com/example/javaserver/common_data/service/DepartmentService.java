@@ -70,7 +70,7 @@ public class DepartmentService {
         return new ResponseEntity<>(shortNames, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> searchByCriteria(Set<SearchCriteria> criteria) {
         try {
             Specification<Department> specification = CommonSpecification.of(criteria);
             List<Department> departments = departmentRepo.findAll(specification);

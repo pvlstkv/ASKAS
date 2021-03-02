@@ -34,18 +34,23 @@ public class CommonSpecification<T> implements Specification<T> {
     ) {
         String operation = criteria.getOperation();
         String key = criteria.getKey();
+        String subKey = null;
+        if (key.matches("^\\w+Id$")) {
+            key = key.substring(0, key.length() - 2);
+            subKey = "id";
+        }
         Object value = criteria.getValue();
 
         String valueString = value.toString();
 
         switch (operation) {
-            case "=": return builder.equal(root.get(key), valueString);
-            case "!=": return builder.notEqual(root.get(key), valueString);
-            case ">": return builder.greaterThan(root.get(key), valueString);
-            case "<": return builder.lessThan(root.get(key), valueString);
-            case ">=": return builder.greaterThanOrEqualTo(root.get(key), valueString);
-            case "<=": return builder.lessThanOrEqualTo(root.get(key), valueString);
-            case ":": return builder.like(root.get(key), valueString);
+            case "=": return builder.equal(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case "!=": return builder.notEqual(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case ">": return builder.greaterThan(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case "<": return builder.lessThan(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case ">=": return builder.greaterThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case "<=": return builder.lessThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
+            case ":": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), valueString);
             default: return null;
         }
     }
