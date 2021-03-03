@@ -1,7 +1,6 @@
 package com.example.javaserver.common_data.service;
 
 import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
-import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectControlType;
 import com.example.javaserver.common_data.model.SubjectSemester;
@@ -15,14 +14,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class SubjectSemesterService {
