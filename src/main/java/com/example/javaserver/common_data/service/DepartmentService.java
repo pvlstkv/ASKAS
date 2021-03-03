@@ -103,7 +103,7 @@ public class DepartmentService {
             department.setFaculty(faculty);
         }
 
-        return new ResponseEntity<>(new Message("Факультет был успешно изменён"), HttpStatus.OK);
+        return new ResponseEntity<>(new Message("Кафедра была успешно изменена"), HttpStatus.OK);
     }
 
     public ResponseEntity<?> getAll() {

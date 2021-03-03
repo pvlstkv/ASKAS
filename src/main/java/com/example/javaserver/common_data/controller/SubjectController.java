@@ -49,6 +49,21 @@ public class SubjectController {
         );
     }
 
+    @PatchMapping
+    public ResponseEntity<?> update(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Long id,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "decryption", required = false) String decryption,
+            @RequestParam(value = "departmentId", required = false) String departmentId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.update(id, name, decryption, departmentId),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token

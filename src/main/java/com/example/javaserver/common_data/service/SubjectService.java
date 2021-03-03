@@ -61,6 +61,56 @@ public class SubjectService {
         return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
     }
 
+    @SuppressWarnings("Duplicates")
+    @Transactional
+    public ResponseEntity<?> update(
+            Long id,
+            String name,
+            String decryption,
+            String departmentId
+    ) {
+        Optional<Subject> subjectOptional = subjectRepo.findById(id.intValue()); // todo сделать норм
+        if (!subjectOptional.isPresent()) {
+            return new ResponseEntity<>(new Message("Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+        }
+        Subject subject = subjectOptional.get();
+
+        if (name != null) {
+            try {
+                subject.setName(name.equals("null") ? null : name);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: name"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (decryption != null) {
+            try {
+                subject.setDecryption(decryption.equals("null") ? null : decryption);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: decryption"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (departmentId != null) {
+            Department department = null;
+            if (!departmentId.equals("null")) {
+                Optional<Department> departmentOptional;
+                try {
+                    departmentOptional = departmentRepo.findById(Long.parseLong(departmentId));
+                } catch (Exception e) {
+                    return new ResponseEntity<>(new Message("Ошибка изменения предмета. Недопустимый id кафедры"), HttpStatus.BAD_REQUEST);
+                }
+                if (!departmentOptional.isPresent()) {
+                    return new ResponseEntity<>(new Message("Ошибка изменения предмета. Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                }
+                department = departmentOptional.get();
+            }
+            subject.setDepartment(department);
+        }
+
+        return new ResponseEntity<>(new Message("Предмет был успешно изменён"), HttpStatus.OK);
+    }
+
     public ResponseEntity<?> getAll() {
         Collection<Subject> subjects = subjectRepo.findAllBy();
         return new ResponseEntity<>(subjects, HttpStatus.OK);
