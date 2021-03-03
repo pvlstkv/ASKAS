@@ -72,13 +72,25 @@ public class DepartmentController {
     }
 
     @GetMapping("/criteria-search")
-    public ResponseEntity<?> searchByCriteria(
+    public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> departmentService.searchByCriteria(criteria),
+                (c) -> departmentService.criteriaSearch(criteria),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @GetMapping("/search-by-ids")
+    public ResponseEntity<?> searchByIds(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> departmentService.searchByIds(ids),
                 EnumSet.allOf(UserRole.class)
         );
     }

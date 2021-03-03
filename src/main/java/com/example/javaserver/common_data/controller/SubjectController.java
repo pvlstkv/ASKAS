@@ -61,13 +61,25 @@ public class SubjectController {
     }
 
     @GetMapping("/criteria-search")
-    public ResponseEntity<?> search(
+    public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> subjectService.search(criteria),
+                (c) -> subjectService.criteriaSearch(criteria),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @GetMapping("/search-by-ids")
+    public ResponseEntity<?> searchByIds(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.searchByIds(ids),
                 EnumSet.allOf(UserRole.class)
         );
     }

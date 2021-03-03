@@ -14,5 +14,6 @@ public interface SubjectSemesterRepo extends
 {
     Set<SubjectSemester> findSubjectSemestersByIdIn(Set<Long> ids);
     void deleteAllByIdIn(Collection<Long> ids);
+    Collection<SubjectSemester> findAllByIdIn(Set<Long> ids);
     Collection<SubjectSemester> findAllBy();
 }

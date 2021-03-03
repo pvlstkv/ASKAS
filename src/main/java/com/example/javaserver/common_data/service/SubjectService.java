@@ -66,7 +66,7 @@ public class SubjectService {
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Subject> specification = CommonSpecification.of(criteria);
             List<Subject> subjects = subjectRepo.findAll(specification);
@@ -74,6 +74,11 @@ public class SubjectService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<Subject> subjects = subjectRepo.findAllByIdIn(ids.stream().map(Number::intValue).collect(Collectors.toSet())); // todo сделать по-человечески
+        return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
     public ResponseEntity<?> searchByUserId(Integer userId) {

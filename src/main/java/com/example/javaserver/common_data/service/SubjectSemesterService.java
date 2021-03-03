@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SubjectSemesterService {
@@ -78,7 +79,7 @@ public class SubjectSemesterService {
         return new ResponseEntity<>(subjectSemesters, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> search(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<SubjectSemester> specification = CommonSpecification.of(criteria);
             List<SubjectSemester> subjectSemesters = subjectSemesterRepo.findAll(specification);
@@ -86,5 +87,10 @@ public class SubjectSemesterService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<SubjectSemester> semesters = subjectSemesterRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(semesters, HttpStatus.OK);
     }
 }

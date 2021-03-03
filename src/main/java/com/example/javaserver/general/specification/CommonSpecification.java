@@ -42,6 +42,10 @@ public class CommonSpecification<T> implements Specification<T> {
         Object value = criteria.getValue();
 
         switch (operation) {
+            case "isNull": return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isNotNull": return builder.isNotNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isTrue": return builder.isTrue(subKey == null ? root.get(key) : root.get(key).get(subKey));
+            case "isFalse": return builder.isFalse(subKey == null ? root.get(key) : root.get(key).get(subKey));
             case "==": return builder.equal(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case "!=": return builder.notEqual(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case ">": return builder.greaterThan(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
@@ -50,10 +54,6 @@ public class CommonSpecification<T> implements Specification<T> {
             case "<=": return builder.lessThanOrEqualTo(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case "::": return builder.like(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
             case "!:": return builder.notLike(subKey == null ? root.get(key) : root.get(key).get(subKey), value.toString());
-            case "isNull": return builder.isNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
-            case "isNotNull": return builder.isNotNull(subKey == null ? root.get(key) : root.get(key).get(subKey));
-            case "isTrue": return builder.isTrue(subKey == null ? root.get(key) : root.get(key).get(subKey));
-            case "isFalse": return builder.isFalse(subKey == null ? root.get(key) : root.get(key).get(subKey));
             default: throw new IllegalStateException("Некорректный оператор сравнения");
         }
     }

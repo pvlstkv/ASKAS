@@ -50,11 +50,7 @@ public class FacultyService {
         return new ResponseEntity<>(faculties, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> searchByExamples(Set<FacultyIn> examples) {
-        return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
-    }
-
-    public ResponseEntity<?> searchByCriteria(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);
             List<Faculty> faculties = facultyRepo.findAll(specification);
@@ -62,5 +58,10 @@ public class FacultyService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<Faculty> faculties = facultyRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(faculties, HttpStatus.OK);
     }
 }

@@ -70,7 +70,7 @@ public class DepartmentService {
         return new ResponseEntity<>(shortNames, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> searchByCriteria(Set<SearchCriteria> criteria) {
+    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Department> specification = CommonSpecification.of(criteria);
             List<Department> departments = departmentRepo.findAll(specification);
@@ -78,5 +78,10 @@ public class DepartmentService {
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<Department> departments = departmentRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(departments, HttpStatus.OK);
     }
 }

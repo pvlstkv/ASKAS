@@ -14,5 +14,6 @@ public interface FacultyRepo extends
         JpaSpecificationExecutor<Faculty>
 {
     void deleteAllByIdIn(Collection<Long> ids);
+    Collection<Faculty> findAllByIdIn(Set<Long> ids);
     Collection<Faculty> findAllBy();
 }
