@@ -48,6 +48,23 @@ public class SubjectSemesterController {
         );
     }
 
+    @PatchMapping
+    public ResponseEntity<?> update(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Long id,
+            @RequestParam(value = "controlType", required = false) String controlType,
+            @RequestParam(value = "hasCourseProject", required = false) String hasCourseProject,
+            @RequestParam(value = "hasCourseWork", required = false) String hasCourseWork,
+            @RequestParam(value = "numberOfSemester", required = false) String numberOfSemester,
+            @RequestParam(value = "subjectId", required = false) String subjectId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, numberOfSemester, subjectId),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
     @PatchMapping("/assign")
     public ResponseEntity<?> setSubject(
             @RequestHeader("token") String token,

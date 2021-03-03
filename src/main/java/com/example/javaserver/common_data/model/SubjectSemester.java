@@ -18,15 +18,15 @@ import java.util.Set;
 public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
 
-    int numberOfSemester;
+    Integer numberOfSemester;
 
     SubjectControlType controlType;
 
-    boolean hasCourseWork;
+    Boolean hasCourseWork;
 
-    boolean hasCourseProject;
+    Boolean hasCourseProject;
 
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
@@ -50,19 +50,19 @@ public class SubjectSemester {
 
     public SubjectSemester() { }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getNumberOfSemester() {
+    public Integer getNumberOfSemester() {
         return numberOfSemester;
     }
 
-    public void setNumberOfSemester(int numberOfSemester) {
+    public void setNumberOfSemester(Integer numberOfSemester) {
         this.numberOfSemester = numberOfSemester;
     }
 
@@ -74,19 +74,19 @@ public class SubjectSemester {
         this.controlType = controlType;
     }
 
-    public boolean isHasCourseWork() {
+    public Boolean getHasCourseWork() {
         return hasCourseWork;
     }
 
-    public void setHasCourseWork(boolean hasCourseWork) {
+    public void setHasCourseWork(Boolean hasCourseWork) {
         this.hasCourseWork = hasCourseWork;
     }
 
-    public boolean isHasCourseProject() {
+    public Boolean getHasCourseProject() {
         return hasCourseProject;
     }
 
-    public void setHasCourseProject(boolean hasCourseProject) {
+    public void setHasCourseProject(Boolean hasCourseProject) {
         this.hasCourseProject = hasCourseProject;
     }
 
@@ -96,6 +96,14 @@ public class SubjectSemester {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public Set<StudyGroup> getStudyGroups() {
+        return studyGroups;
+    }
+
+    public void setStudyGroups(Set<StudyGroup> studyGroups) {
+        this.studyGroups = studyGroups;
     }
 
     public OffsetDateTime getCreatedAt() {
