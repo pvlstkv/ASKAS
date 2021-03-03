@@ -1,7 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.DepartmentIn;
-import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.service.DepartmentService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.service.RequestHandlerService;

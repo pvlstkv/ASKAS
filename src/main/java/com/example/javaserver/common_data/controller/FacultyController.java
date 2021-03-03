@@ -51,11 +51,13 @@ public class FacultyController {
     @PatchMapping
     public ResponseEntity<?> update(
             @RequestHeader("token") String token,
-            @RequestParam("id") Long id
+            @RequestParam("id") Long id,
+            @RequestParam(value = "shortName", required = false) String shortName,
+            @RequestParam(value = "fullName", required = false) String fullName
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.update(),
+                (c) -> facultyService.update(id, shortName, fullName),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
