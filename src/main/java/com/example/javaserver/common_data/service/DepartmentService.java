@@ -56,6 +56,56 @@ public class DepartmentService {
         return new ResponseEntity<>(new Message("Найденные кафедры были успешно удалены"), HttpStatus.OK);
     }
 
+    @SuppressWarnings("Duplicates")
+    @Transactional
+    public ResponseEntity<?> update(
+            Long id,
+            String shortName,
+            String fullName,
+            String facultyId
+    ) {
+        Optional<Department> departmentOptional = departmentRepo.findById(id);
+        if (!departmentOptional.isPresent()) {
+            return new ResponseEntity<>(new Message("Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+        }
+        Department department = departmentOptional.get();
+
+        if (shortName != null) {
+            try {
+                department.setShortName(shortName.equals("null") ? null : shortName);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: shortName"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (fullName != null) {
+            try {
+                department.setFullName(fullName.equals("null") ? null : fullName);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: fullName"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        if (facultyId != null) {
+            Faculty faculty = null;
+            if (!facultyId.equals("null")) {
+                Optional<Faculty> facultyOptional;
+                try {
+                    facultyOptional = facultyRepo.findById(Long.parseLong(facultyId));
+                } catch (Exception e) {
+                    return new ResponseEntity<>(new Message("Ошибка изменения кафедры. Недопустимый id факультета"), HttpStatus.BAD_REQUEST);
+                }
+                if (!facultyOptional.isPresent()) {
+                    return new ResponseEntity<>(new Message("Ошибка изменения кафедры. Факультет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                }
+                faculty = facultyOptional.get();
+            }
+            department.setFaculty(faculty);
+        }
+
+        return new ResponseEntity<>(new Message("Факультет был успешно изменён"), HttpStatus.OK);
+    }
+
     public ResponseEntity<?> getAll() {
         Collection<Department> departments = departmentRepo.findAllBy();
         return new ResponseEntity<>(departments, HttpStatus.OK);

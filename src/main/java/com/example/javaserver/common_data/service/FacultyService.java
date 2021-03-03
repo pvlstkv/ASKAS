@@ -41,6 +41,7 @@ public class FacultyService {
         return new ResponseEntity<>(new Message("Найденные факультеты были успешно удалены"), HttpStatus.OK);
     }
 
+    @SuppressWarnings("Duplicates")
     @Transactional
     public ResponseEntity<?> update(
             Long id,
@@ -53,20 +54,20 @@ public class FacultyService {
         }
         Faculty faculty = facultyOptional.get();
 
-        try {
-            if (shortName != null) {
+        if (shortName != null) {
+            try {
                 faculty.setShortName(shortName.equals("null") ? null : shortName);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: shortName"), HttpStatus.BAD_REQUEST);
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Недопустимое значение поля: shortName"), HttpStatus.BAD_REQUEST);
         }
 
-        try {
-            if (fullName != null) {
+        if (fullName != null) {
+            try {
                 faculty.setFullName(fullName.equals("null") ? null : fullName);
+            } catch (Exception e) {
+                return new ResponseEntity<>(new Message("Недопустимое значение поля: fullName"), HttpStatus.BAD_REQUEST);
             }
-        } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Недопустимое значение поля: fullName"), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new Message("Факультет был успешно изменён"), HttpStatus.OK);

@@ -48,6 +48,21 @@ public class DepartmentController {
         );
     }
 
+    @PatchMapping
+    public ResponseEntity<?> update(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Long id,
+            @RequestParam(value = "shortName", required = false) String shortName,
+            @RequestParam(value = "fullName", required = false) String fullName,
+            @RequestParam(value = "facultyId", required = false) String facultyId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> departmentService.update(id, shortName, fullName, facultyId),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
     @GetMapping("/all")
     public ResponseEntity<?> search(
             @RequestHeader("token") String token
