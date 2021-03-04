@@ -1,5 +1,6 @@
 package com.example.javaserver.common_data.model;
 
+import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
 import com.example.javaserver.user.model.User;
 
 import javax.persistence.*;
@@ -21,6 +22,8 @@ public class StudyGroup implements Serializable {
     private Integer code;
 
     private Integer groupNumber;
+
+    private Integer courseNumber;
 
     private String shortName;
 
@@ -46,6 +49,33 @@ public class StudyGroup implements Serializable {
     private Set<SubjectSemester> subjectSemesters;
 
     public StudyGroup() { }
+
+    public StudyGroup(StudyGroupIO studyGroupIO) {
+        this.code = studyGroupIO.getCode();
+        this.groupNumber = studyGroupIO.getGroupNumber();
+        this.courseNumber = studyGroupIO.getCourseNumber();
+        this.shortName = studyGroupIO.getShortName();
+        this.fullName = studyGroupIO.getFullName();
+        this.yearOfStudyStart = studyGroupIO.getYearOfStudyStart();
+    }
+
+
+    public StudyGroup(Integer code, Integer groupNumber, Integer courseNumber, String shortName, String fullName, Integer yearOfStudyStart) {
+        this.code = code;
+        this.groupNumber = groupNumber;
+        this.courseNumber = courseNumber;
+        this.shortName = shortName;
+        this.fullName = fullName;
+        this.yearOfStudyStart = yearOfStudyStart;
+    }
+
+    public Integer getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(Integer courseNumber) {
+        this.courseNumber = courseNumber;
+    }
 
     public Integer getId() {
         return id;
