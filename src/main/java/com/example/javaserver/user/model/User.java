@@ -35,9 +35,15 @@ public class User implements Serializable {
 
     private String phone;
 
+    @JsonProperty("studyGroupId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private StudyGroup studyGroup;
 
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private Department department;
 

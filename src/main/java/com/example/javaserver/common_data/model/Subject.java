@@ -30,6 +30,9 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
+    @JsonProperty("themeIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Theme> themes;
 
