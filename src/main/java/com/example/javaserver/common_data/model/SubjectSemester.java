@@ -22,7 +22,7 @@ public class SubjectSemester {
 
     Integer numberOfSemester;
 
-    SubjectControlType controlType;
+    private SubjectControlType controlType;
 
     Boolean hasCourseWork;
 
@@ -32,7 +32,7 @@ public class SubjectSemester {
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
-    Subject subject;
+    private Subject subject;
 
     @JsonProperty("studentGroupIds")
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
@@ -42,13 +42,14 @@ public class SubjectSemester {
 
     OffsetDateTime createdAt;
 
-    OffsetDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     // in the nearest future something like this
     // int countOfLecture;
     // int countOfLabWork;
 
-    public SubjectSemester() { }
+    public SubjectSemester() {
+    }
 
     public Long getId() {
         return id;

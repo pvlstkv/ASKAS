@@ -36,15 +36,16 @@ public class Department implements Serializable {
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<StudyGroup> studyGroups;
+    private Set<StudyGroup> studyGroups;
 
     @JsonProperty("subjectIds")
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Subject> subjects;
+    private Set<Subject> subjects;
 
-    public Department() { }
+    public Department() {
+    }
 
     public Long getId() {
         return id;

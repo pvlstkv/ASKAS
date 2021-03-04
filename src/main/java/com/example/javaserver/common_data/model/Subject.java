@@ -1,11 +1,10 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testService.models.Question;
+import com.example.javaserver.testService.new_version.models.Question;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -20,7 +19,7 @@ import java.util.Set;
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String name;
 
@@ -30,6 +29,8 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Theme> themes;
 
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
@@ -52,18 +53,11 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 
-    public Subject() { }
+    public Subject() {
+    }
 
     public Subject(String name) {
         this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -72,6 +66,22 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(Set<Theme> themes) {
+        this.themes = themes;
     }
 
     public String getDecryption() {

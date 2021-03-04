@@ -1,4 +1,7 @@
-package com.example.javaserver.testService.models;
+package com.example.javaserver.testService.new_version.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 
@@ -10,7 +13,8 @@ public class AnswerChoice {
     private String answer;
     private Boolean isRight;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
+    @JsonIgnore
 //    @JoinColumn(name = "question_id")
     private Question question;
 
@@ -40,8 +44,8 @@ public class AnswerChoice {
         return isRight;
     }
 
-    public void setRight(Boolean right) {
-        isRight = right;
+    public void setRight(Boolean isRight) {
+        this.isRight = isRight;
     }
 
     public Question getQuestion() {

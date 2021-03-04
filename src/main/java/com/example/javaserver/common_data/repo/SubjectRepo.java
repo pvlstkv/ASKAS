@@ -14,6 +14,7 @@ public interface SubjectRepo extends
 {
     Optional<Subject> findById(Integer id); // todo удалить
     Optional<Subject> findByName(String name);
+
     boolean existsByName(String name);
     void deleteAllByIdIn(Collection<Integer> ids);
     Collection<Subject> findAllByIdIn(Set<Integer> ids);
