@@ -2,10 +2,16 @@ package com.example.javaserver.user.model;
 
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.user.client_model.UserIO;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -34,6 +40,12 @@ public class User implements Serializable {
 
     @ManyToOne
     private Department department;
+
+    @JsonProperty("teachingSubjectsIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToMany
+    private Set<Subject> teachingSubjects;
 
     private UserRole role;
 

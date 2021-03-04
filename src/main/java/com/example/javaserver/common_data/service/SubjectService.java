@@ -8,12 +8,16 @@ import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -55,9 +59,7 @@ public class SubjectService {
 
     @Transactional
     public ResponseEntity<?> delete(Set<Long> ids) {
-        subjectRepo.deleteAllByIdIn(
-                ids.stream().map(Number::intValue).collect(Collectors.toSet()) // todo эту херню убрать
-        );
+        subjectRepo.deleteAllByIdIn(ids);
         return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
     }
 
@@ -69,7 +71,7 @@ public class SubjectService {
             String decryption,
             String departmentId
     ) {
-        Optional<Subject> subjectOptional = subjectRepo.findById(id.intValue()); // todo сделать норм
+        Optional<Subject> subjectOptional = subjectRepo.findById(id);
         if (!subjectOptional.isPresent()) {
             return new ResponseEntity<>(new Message("Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
         }
@@ -127,7 +129,7 @@ public class SubjectService {
     }
 
     public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<Subject> subjects = subjectRepo.findAllByIdIn(ids.stream().map(Number::intValue).collect(Collectors.toSet())); // todo сделать по-человечески
+        Collection<Subject> subjects = subjectRepo.findAllByIdIn(ids);
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
@@ -150,4 +152,19 @@ public class SubjectService {
         return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
+    public ResponseEntity<?> addTeachers(
+           Long subjectId,
+           Set<Integer> userIds
+    ){
+        Optional<Subject> subject = subjectRepo.findById(subjectId);
+        if(!subject.isPresent()){
+            return new ResponseEntity<>(new Message("нет такого предмета"), HttpStatus.BAD_REQUEST);
+        }
+        Set<User> userSet = userRepo.getUsersByIdInAndRoleEquals(userIds,UserRole.TEACHER);
+        subject.get().getTeachers().addAll(userSet);
+
+        subjectRepo.save(subject.get());
+        return new ResponseEntity<>(new Message("преподаватели добавлены"), HttpStatus.OK);
+
+    }
 }

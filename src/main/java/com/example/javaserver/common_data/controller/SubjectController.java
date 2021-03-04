@@ -109,4 +109,18 @@ public class SubjectController {
                 EnumSet.allOf(UserRole.class)
         );
     }
+
+    @PostMapping
+    public ResponseEntity<?> addTeachers(
+            @RequestHeader("token") String token,
+            @RequestParam("subjectId") Long subjectId,
+            @RequestBody Set<Integer> userIds
+    ){
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectService.addTeachers(subjectId,userIds),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
 }

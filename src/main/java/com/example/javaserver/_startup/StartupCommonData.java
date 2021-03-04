@@ -1,4 +1,4 @@
-package com.example.javaserver;
+package com.example.javaserver._startup;
 
 
 import com.example.javaserver.common_data.model.*;

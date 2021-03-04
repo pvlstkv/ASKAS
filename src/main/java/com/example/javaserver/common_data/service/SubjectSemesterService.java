@@ -41,7 +41,7 @@ public class SubjectSemesterService {
         subjectSemester.setNumberOfSemester(subjectSemesterIn.numberOfSemester);
 
         if (subjectSemesterIn.subjectId != null) {
-            Optional<Subject> subject = subjectRepo.findById(subjectSemesterIn.subjectId.intValue()); // todo порешать это
+            Optional<Subject> subject = subjectRepo.findById(subjectSemesterIn.subjectId);
             if (!subject.isPresent()) {
                 return new ResponseEntity<>(new Message("Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
             }
@@ -111,7 +111,7 @@ public class SubjectSemesterService {
             if (!subjectId.equals("null")) {
                 Optional<Subject> subjectOptional;
                 try {
-                    subjectOptional = subjectRepo.findById(Integer.parseInt(subjectId));
+                    subjectOptional = subjectRepo.findById(Long.parseLong(subjectId));
                 } catch (Exception e) {
                     return new ResponseEntity<>(new Message("Ошибка изменения семестра. Недопустимый id предмета"), HttpStatus.BAD_REQUEST);
                 }
@@ -133,7 +133,7 @@ public class SubjectSemesterService {
             return new ResponseEntity<>(new Message("Семестр с указанным id не был существует"), HttpStatus.BAD_REQUEST);
         }
 
-        Optional<Subject> subject = subjectRepo.findById(subjectId.intValue()); // todo здесь тоже
+        Optional<Subject> subject = subjectRepo.findById(subjectId);
         if (!subject.isPresent()) {
             return new ResponseEntity<>(new Message("Предмет с указанным id не был существует"), HttpStatus.BAD_REQUEST);
         }

@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.testService.new_version.models.Question;
+import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,6 +32,12 @@ public class Subject {
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Theme> themes;
+
+    @JsonProperty("teacherIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToMany
+    private Set<User> teachers;
 
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
@@ -130,5 +137,13 @@ public class Subject {
 
     public void setQuestion(List<Question> question) {
         this.question = question;
+    }
+
+    public Set<User> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<User> teachers) {
+        this.teachers = teachers;
     }
 }
