@@ -1,37 +1,61 @@
 package com.example.javaserver.common_data.controller;
 
+import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
 import com.example.javaserver.common_data.model.StudyGroup;
-import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.service.StudyGroupService;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/study-group")
 public class StudyGroupController {
     private final RequestHandlerService requestHandlerService;
     private final StudyGroupService studyGroupService;
+    private final StudyGroupRepo studyGroupRepo;
 
     @Autowired
-    public StudyGroupController(RequestHandlerService requestHandlerService, StudyGroupService studyGroupService) {
+    public StudyGroupController(RequestHandlerService requestHandlerService, StudyGroupService studyGroupService, StudyGroupRepo studyGroupRepo) {
         this.requestHandlerService = requestHandlerService;
         this.studyGroupService = studyGroupService;
+        this.studyGroupRepo = studyGroupRepo;
     }
 
-    @PostMapping("/creation")
+    @GetMapping
+    public ResponseEntity<?> getGroup(
+            @RequestHeader("token") String token,
+            @RequestParam("nameGroup") String nameGroup
+    ){
+        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(nameGroup),EnumSet.allOf(UserRole.class));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<?> getListGroupStudy(){
+        List<StudyGroup> studyGroups = (List<StudyGroup>) studyGroupRepo.findAll();
+        List<String> listNameStudyGroup = studyGroups.stream().map(studyGroup -> studyGroup.getShortName()).collect(Collectors.toList());
+        return new ResponseEntity<>(listNameStudyGroup, HttpStatus.OK);
+    }
+
+
+
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody StudyGroup studyGroup
+            @RequestBody StudyGroupIO studyGroupIO
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> studyGroupService.create(studyGroup),
+                (c) -> studyGroupService.create(studyGroupIO),
                 EnumSet.of(UserRole.ADMIN)
         );
     }

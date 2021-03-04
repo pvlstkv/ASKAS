@@ -21,19 +21,19 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @GetMapping("/group")
+    @GetMapping("/schedule")
     public ResponseEntity<?> getScheduleGroup(
             @RequestParam("nameGroup") String nameGroup
             ){
         return scheduleService.getScheduleGroup(nameGroup);
     }
 
-    @GetMapping("/group-list")
+    @GetMapping("/schedule-list")
     public ResponseEntity<?> getListScheduleGroups(){
         return scheduleService.getListScheduleGroups();
     }
 
-    @PostMapping("/group-update")
+    @PostMapping("/schedule-update")
     public ResponseEntity<?> updateAllGroup(@RequestHeader("token") String token){
         return requestHandlerService.proceed(token,(с) -> scheduleService.iteratingThroughGroups(), EnumSet.of(UserRole.ADMIN));
     }
