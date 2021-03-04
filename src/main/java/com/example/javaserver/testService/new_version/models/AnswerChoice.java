@@ -45,7 +45,7 @@ public class AnswerChoice {
     }
 
     public void setRight(Boolean isRight) {
-        isRight = isRight;
+        this.isRight = isRight;
     }
 
     public Question getQuestion() {

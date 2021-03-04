@@ -23,9 +23,10 @@ public class QuestionOut {
         this.id = question.getId();
         this.question = question.getQuestion();
         this.questionType = question.getQuestionType();
-        if (questionType != QuestionType.WRITE)
+        if (questionType != QuestionType.WRITE) {
             this.answers = question.getAnswerChoiceList().stream().
                     map(AnswerChoice::getAnswer).collect(Collectors.toList());
+        }
     }
 
     // when actor updates a old question

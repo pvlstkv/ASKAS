@@ -118,6 +118,13 @@ public class Question {
             this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
             return;
         }
+//        for (AnswerChoice item : this.answerChoiceList) {
+//            for (String right : questionIn.getRightAnswers()) {
+//                if (item.getAnswer().equals(right)){
+//                    item.setRight(true);
+//                }
+//            }
+//        }
         this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))
                 .forEach(answerChoice -> answerChoice.setRight(true));
     }
