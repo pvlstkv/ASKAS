@@ -44,11 +44,11 @@ public class StudyGroupService {
         if(department.isPresent()){
             studyGroup.setDepartment(department.get());
         }else {
-            //return new ResponseEntity<>(new Message("Ошибка, данного департамента не существует"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new Message("Ошибка, данного департамента не существует"), HttpStatus.BAD_REQUEST);
         }
         try {
             studyGroupRepo.save(studyGroup);
-            return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.OK);
+            return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
         }catch (Exception e){
             e.printStackTrace();
             return new ResponseEntity<>(new Message("Ошибка сервера"), HttpStatus.INTERNAL_SERVER_ERROR);
