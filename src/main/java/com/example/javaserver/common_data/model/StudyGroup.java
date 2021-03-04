@@ -1,5 +1,6 @@
 package com.example.javaserver.common_data.model;
 
+import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
 import com.example.javaserver.user.model.User;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -21,6 +23,8 @@ public class StudyGroup implements Serializable {
 
     private Integer groupNumber;
 
+    private Integer courseNumber;
+
     private String shortName;
 
     private String fullName;
@@ -32,12 +36,46 @@ public class StudyGroup implements Serializable {
     private Integer yearOfStudyStart;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    Department department;
+    private Department department;
 
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<User> students = new ArrayList<>();
+    private List<User> students;
+
+    @ManyToMany
+    @JoinTable(
+            name = "study_groups_subject_semesters",
+            joinColumns = {@JoinColumn(name = "study_group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subject_semester_id")})
+    private Set<SubjectSemester> subjectSemesters;
 
     public StudyGroup() { }
+
+    public StudyGroup(StudyGroupIO studyGroupIO) {
+        this.code = studyGroupIO.getCode();
+        this.groupNumber = studyGroupIO.getGroupNumber();
+        this.courseNumber = studyGroupIO.getCourseNumber();
+        this.shortName = studyGroupIO.getShortName();
+        this.fullName = studyGroupIO.getFullName();
+        this.yearOfStudyStart = studyGroupIO.getYearOfStudyStart();
+    }
+
+
+    public StudyGroup(Integer code, Integer groupNumber, Integer courseNumber, String shortName, String fullName, Integer yearOfStudyStart) {
+        this.code = code;
+        this.groupNumber = groupNumber;
+        this.courseNumber = courseNumber;
+        this.shortName = shortName;
+        this.fullName = fullName;
+        this.yearOfStudyStart = yearOfStudyStart;
+    }
+
+    public Integer getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(Integer courseNumber) {
+        this.courseNumber = courseNumber;
+    }
 
     public Integer getId() {
         return id;
@@ -117,5 +155,13 @@ public class StudyGroup implements Serializable {
 
     public void setStudents(List<User> students) {
         this.students = students;
+    }
+
+    public Set<SubjectSemester> getSubjectSemesters() {
+        return subjectSemesters;
+    }
+
+    public void setSubjectSemesters(Set<SubjectSemester> subjectSemesters) {
+        this.subjectSemesters = subjectSemesters;
     }
 }

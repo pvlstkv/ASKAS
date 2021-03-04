@@ -1,10 +1,80 @@
 package com.example.javaserver.common_data.model;
 
-public enum Mark {
-    FIVE,
-    FOUR,
-    THREE,
-    UNSATISFACTORILY,
-    PASSED,
-    NOT_PASSED
+import com.example.javaserver.user.model.User;
+
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
+
+@SuppressWarnings("unused")
+@Entity
+
+@Table(name = "marks")
+public class Mark implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @OneToOne
+    private User user;
+
+    @OneToOne
+    private SubjectSemester subjectSemester;
+
+    private Grade grade;
+
+    private OffsetDateTime createdAt;
+
+    private OffsetDateTime updatedAt;
+
+    public Mark() { }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public SubjectSemester getSubjectSemester() {
+        return subjectSemester;
+    }
+
+    public void setSubjectSemester(SubjectSemester subjectSemester) {
+        this.subjectSemester = subjectSemester;
+    }
+
+    public Grade getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Grade grade) {
+        this.grade = grade;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

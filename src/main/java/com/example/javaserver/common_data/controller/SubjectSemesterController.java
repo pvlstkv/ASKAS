@@ -1,8 +1,8 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.FacultyIn;
+import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;
-import com.example.javaserver.common_data.service.FacultyService;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,25 +13,25 @@ import java.util.EnumSet;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/faculty")
-public class FacultyController {
+@RequestMapping("/subject-semester")
+public class SubjectSemesterController {
     private final RequestHandlerService requestHandlerService;
-    private final FacultyService facultyService;
+    private final SubjectSemesterService subjectSemesterService;
 
     @Autowired
-    public FacultyController(RequestHandlerService requestHandlerService, FacultyService facultyService) {
+    public SubjectSemesterController(RequestHandlerService requestHandlerService, SubjectSemesterService subjectSemesterService) {
         this.requestHandlerService = requestHandlerService;
-        this.facultyService = facultyService;
+        this.subjectSemesterService = subjectSemesterService;
     }
 
     @PutMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody FacultyIn facultyIn
+            @RequestBody SubjectSemesterIn subjectSemesterIn
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.create(facultyIn),
+                (c) -> subjectSemesterService.create(subjectSemesterIn),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
@@ -43,7 +43,7 @@ public class FacultyController {
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.delete(ids),
+                (c) -> subjectSemesterService.delete(ids),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
@@ -52,23 +52,39 @@ public class FacultyController {
     public ResponseEntity<?> update(
             @RequestHeader("token") String token,
             @RequestParam("id") Long id,
-            @RequestParam(value = "shortName", required = false) String shortName,
-            @RequestParam(value = "fullName", required = false) String fullName
+            @RequestParam(value = "controlType", required = false) String controlType,
+            @RequestParam(value = "hasCourseProject", required = false) String hasCourseProject,
+            @RequestParam(value = "hasCourseWork", required = false) String hasCourseWork,
+            @RequestParam(value = "numberOfSemester", required = false) String numberOfSemester,
+            @RequestParam(value = "subjectId", required = false) String subjectId
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.update(id, shortName, fullName),
+                (c) -> subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, numberOfSemester, subjectId),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @PatchMapping("/assign")
+    public ResponseEntity<?> setSubject(
+            @RequestHeader("token") String token,
+            @RequestParam("subjectSemesterId") Long subjectSemesterId,
+            @RequestParam("subjectId") Long subjectId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> subjectSemesterService.setSubject(subjectSemesterId, subjectId),
                 EnumSet.of(UserRole.ADMIN)
         );
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(
+    public ResponseEntity<?> search(
             @RequestHeader("token") String token
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.getAll(),
+                (c) -> subjectSemesterService.getAll(),
                 EnumSet.allOf(UserRole.class)
         );
     }
@@ -80,7 +96,7 @@ public class FacultyController {
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.criteriaSearch(criteria),
+                (c) -> subjectSemesterService.criteriaSearch(criteria),
                 EnumSet.allOf(UserRole.class)
         );
     }
@@ -92,7 +108,7 @@ public class FacultyController {
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> facultyService.searchByIds(ids),
+                (c) -> subjectSemesterService.searchByIds(ids),
                 EnumSet.allOf(UserRole.class)
         );
     }

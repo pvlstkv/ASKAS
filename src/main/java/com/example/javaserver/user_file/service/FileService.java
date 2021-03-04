@@ -1,5 +1,7 @@
 package com.example.javaserver.user_file.service;
 
+import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.user.model.User;
@@ -23,13 +25,13 @@ public class FileService {
             EnumSet.of(UserRole.TEACHER, UserRole.ADMIN);
 
     private final UserRepo userRepo;
-    //private final SubjectRepo subjectRepo;
+    private final SubjectSemesterRepo subjectSemesterRepo;
     private final UserFileRepo userFileRepo;
 
     @Autowired
-    public FileService(UserRepo userRepo, /*SubjectRepo subjectRepo,*/ UserFileRepo userFileRepo) {
-        //this.subjectRepo = subjectRepo;
+    public FileService(UserRepo userRepo, SubjectSemesterRepo subjectSemesterRepo, UserFileRepo userFileRepo) {
         this.userRepo = userRepo;
+        this.subjectSemesterRepo = subjectSemesterRepo;
         this.userFileRepo = userFileRepo;
     }
 
@@ -37,28 +39,28 @@ public class FileService {
     public ResponseEntity<?> uploadFile(
             UserContext userContext,
             String name,
-            String subjectName,
+            Long subjectSemesterId,
             MultipartFile file
     ) {
-        /*Optional<Subject> subjectOpt = subjectRepo.findByNameEquals(subjectName);
-        if (!subjectOpt.isPresent()) {
-            return new ResponseEntity<>(new Message("Предмет с таким именем не найден"), HttpStatus.BAD_REQUEST);
-        }*/
+        Optional<SubjectSemester> semester = subjectSemesterRepo.findById(subjectSemesterId);
+        if (!semester.isPresent()) {
+            return new ResponseEntity<>(new Message("Семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
+        }
 
         byte[] data;
         try {
             data = file.getBytes();
         } catch (IOException e) {
-            return new ResponseEntity<>(new Message("Ошибка чтения файла"), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(new Message("Ошибка чтения файла"), HttpStatus.BAD_REQUEST);
         }
 
         Integer userId = userContext.getUserId();
         User user = userRepo.getOne(userId);
-        UserFile userFile = new UserFile(name, user, /*subjectOpt.get()*/null, data);
+        UserFile userFile = new UserFile(name, user, semester.get(), data);
         try {
             userFileRepo.save(userFile);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Ошибка записи файла"), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(new Message("Ошибка записи файла"), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(new Message("Файл успешно загружен"), HttpStatus.OK);
@@ -71,7 +73,7 @@ public class FileService {
     ) {
         Optional<UserFile> fileOpt = userFileRepo.findUserFileByNameEquals(name);
         if (!fileOpt.isPresent()) {
-            return new ResponseEntity<>(new Message("Файл с таким именем не найден"), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(new Message("Файл с таким именем не найден"), HttpStatus.BAD_REQUEST);
         }
 
         Integer userId = userContext.getUserId();

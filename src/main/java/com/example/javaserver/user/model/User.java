@@ -1,6 +1,8 @@
 package com.example.javaserver.user.model;
 
+import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.user.client_model.UserIO;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,6 +32,9 @@ public class User implements Serializable {
     @ManyToOne
     private StudyGroup studyGroup;
 
+    @ManyToOne
+    private Department department;
+
     private UserRole role;
 
 
@@ -37,13 +42,37 @@ public class User implements Serializable {
 
     public User() { }
 
+    public User(UserIO userIO){
+        this.login = userIO.getLogin();
+        this.password = userIO.getPassword();
+        this.email = userIO.getEmail();
+        this.firstName = userIO.getFirstName();
+        this.lastName = userIO.getLastName();
+        this.patronymic = userIO.getPatronymic();
+        this.phone = userIO.getPhone();
+        this.role = userIO.getRole();
+    }
     public User(String login, String password, UserRole role) {
         this.login = login;
         this.password = password;
         this.role = role;
     }
 
-    public User(Integer id, String login, String password, String email, String firstName, String lastName, String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
+    public User(String login, String password, String email, String firstName,
+                String lastName, String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.patronymic = patronymic;
+        this.phone = phone;
+        this.studyGroup = studyGroup;
+        this.role = role;
+    }
+
+    public User(Integer id, String login, String password, String email, String firstName, String lastName,
+                String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -54,6 +83,14 @@ public class User implements Serializable {
         this.phone = phone;
         this.studyGroup = studyGroup;
         this.role = role;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public String getEmail() {

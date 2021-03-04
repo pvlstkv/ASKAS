@@ -1,6 +1,10 @@
 package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.testService.models.Question;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 import javax.persistence.*;
@@ -30,32 +34,25 @@ public class Subject {
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
 
+    @JsonProperty("subjectSemesterIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
+    @JsonProperty("questionIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 
     public Subject() { }
-
-    public String getDecryption() {
-        return decryption;
-    }
-
-    public void setDecryption(String description) {
-        this.decryption = description;
-    }
-
-    public List<Question> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(List<Question> question) {
-        this.question = question;
-    }
 
     public Subject(String name) {
         this.name = name;
@@ -75,6 +72,14 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDecryption() {
+        return decryption;
+    }
+
+    public void setDecryption(String decryption) {
+        this.decryption = decryption;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -107,5 +112,13 @@ public class Subject {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public List<Question> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(List<Question> question) {
+        this.question = question;
     }
 }
