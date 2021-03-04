@@ -1,6 +1,8 @@
 package com.example.javaserver.testService.new_version.models.saving_results;
 
 import com.example.javaserver.testService.new_version.models.AnswerChoice;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -11,41 +13,45 @@ public class UserAnswer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    private AnswerChoice userAnswers;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    private String answer;
+    private Boolean isRight;
+    @ManyToOne()
     @JoinColumn(name = "passed_question_id")
+    @JsonIgnore
     private PassedQuestion passedQuestion;
 
     public UserAnswer() {
     }
 
-    public UserAnswer(Long id, AnswerChoice userAnswers, PassedQuestion passedQuestion) {
-        this.id = id;
-        this.userAnswers = userAnswers;
+    public UserAnswer(String answer, Boolean isRight, PassedQuestion passedQuestion) {
+        this.answer = answer;
+        this.isRight = isRight;
         this.passedQuestion = passedQuestion;
     }
 
-    public UserAnswer(AnswerChoice userAnswers, PassedQuestion passedQuestion) {
-        this.userAnswers = userAnswers;
-        this.passedQuestion = passedQuestion;
+    public Boolean isRight() {
+        return isRight;
+    }
+
+    public void setRight(Boolean right) {
+        isRight = right;
     }
 
     public Long getId() {
         return id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public AnswerChoice getUserAnswers() {
-        return userAnswers;
+    public String getAnswer() {
+        return answer;
     }
 
-    public void setUserAnswers(AnswerChoice userAnswers) {
-        this.userAnswers = userAnswers;
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public PassedQuestion getPassedQuestion() {

@@ -6,6 +6,7 @@ import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.testService.new_version.configs.QuestionType;
 import com.example.javaserver.testService.new_version.models.InOutComingModels.QuestionIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,20 +19,22 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Subject subject;
     //    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
     private String question;
     // todo like the required annotation like the question field
     private QuestionType questionType;
-//    @JsonIgnore
+    //    @JsonIgnore
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
     private Double complexity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
+    @JsonIgnore
     private Theme theme;
 
+    @ManyToOne()
+    @JsonIgnore
+    private Subject subject;
 
     public List<AnswerChoice> getAnswerChoiceList() {
         return answerChoiceList;
@@ -108,7 +111,7 @@ public class Question {
         this.question = questionIn.getQuestion();
         this.complexity = questionIn.getComplexity();
         this.theme = theme;
-        this.questionType=questionIn.getQuestionType();
+        this.questionType = questionIn.getQuestionType();
         this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
                 new AnswerChoice(strAns, false)).collect(Collectors.toList());
         if (this.answerChoiceList.size() == 0) {

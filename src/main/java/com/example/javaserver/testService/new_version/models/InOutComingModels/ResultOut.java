@@ -5,11 +5,11 @@ import java.util.List;
 
 public class ResultOut {
     private List<AnswerInOut> answerInOuts;
-    private Long rating;
+    private Integer ratingInPercent;
 
-    public ResultOut(List<AnswerInOut> answerInOuts, Long rating) {
+    public ResultOut(List<AnswerInOut> answerInOuts, Integer ratingInPercent) {
         this.answerInOuts = answerInOuts;
-        this.rating = rating;
+        this.ratingInPercent = ratingInPercent;
     }
 
     public List<AnswerInOut> getQuestions() {
@@ -20,11 +20,11 @@ public class ResultOut {
         this.answerInOuts = answerInOuts;
     }
 
-    public Long getRating() {
-        return rating;
+    public Integer getRating() {
+        return ratingInPercent;
     }
 
-    public void setRating(Long rating) {
-        this.rating = rating;
+    public void setRating(Integer ratingInPercent) {
+        this.ratingInPercent = ratingInPercent;
     }
 }

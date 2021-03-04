@@ -2,6 +2,7 @@ package com.example.javaserver.testService.new_version.models.saving_results;
 
 import com.example.javaserver.testService.new_version.models.saving_results.PassedQuestion;
 import com.example.javaserver.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,12 +16,13 @@ public class PassedTest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
+    @JsonIgnore
     private User user;
     @OneToMany(mappedBy = "passedTest", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PassedQuestion> passedQuestions;
 
     private OffsetDateTime passedAt;
-    private double rating;
+    private Integer ratingInPercent;
 
     public PassedTest() {
     }
@@ -57,11 +59,11 @@ public class PassedTest implements Serializable {
         this.passedAt = passedAt;
     }
 
-    public double getRating() {
-        return rating;
+    public Integer getRating() {
+        return ratingInPercent;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setRating(Integer ratingInPercent) {
+        this.ratingInPercent = ratingInPercent;
     }
 }

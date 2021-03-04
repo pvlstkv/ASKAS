@@ -56,6 +56,10 @@ public class Subject {
         return themes;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setThemes(Set<Theme> themes) {
         this.themes = themes;
     }

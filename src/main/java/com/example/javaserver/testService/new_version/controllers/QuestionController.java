@@ -74,6 +74,12 @@ public class QuestionController {
         return questionService.checkTest(requestedAnswers, token);
     }
 
+    @GetMapping("/test/result")
+    public ResponseEntity<?> fetchPassedTests(@RequestHeader(name = "Authorization") String token) {
+        return questionService.fetchUserPassedTest(token);
+    }
+
+
     @GetMapping("/all-questions")
     public ResponseEntity<?> findAll(@RequestHeader(name = "Authorization") String token) {
         List<Question> question = questionRepo.findAll();

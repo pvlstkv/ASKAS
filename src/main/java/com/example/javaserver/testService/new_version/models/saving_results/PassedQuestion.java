@@ -2,6 +2,9 @@ package com.example.javaserver.testService.new_version.models.saving_results;
 
 
 import com.example.javaserver.testService.new_version.models.Question;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,13 +15,17 @@ import java.util.Set;
 public class PassedQuestion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     @OneToOne
     private Question question;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private PassedTest passedTest;
-    @OneToMany(mappedBy = "passedQuestion",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "passedQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserAnswer> userAnswers;
+
+
+    @ManyToOne()
+    @JsonIgnore
+    private PassedTest passedTest;
 
     public PassedQuestion(Long id, Question question, PassedTest passedTest, Set<UserAnswer> userAnswers) {
         this.id = id;

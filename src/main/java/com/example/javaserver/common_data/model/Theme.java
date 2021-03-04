@@ -1,6 +1,8 @@
 package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.testService.new_version.models.Question;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -19,11 +21,12 @@ public class Theme {
 
     private String decryption;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     private Subject subject;
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Question> questions;
+
 
     private OffsetDateTime createdAt;
 

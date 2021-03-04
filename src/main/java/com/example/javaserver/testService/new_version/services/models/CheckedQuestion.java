@@ -1,4 +1,4 @@
-package com.example.javaserver.testService.new_version.services;
+package com.example.javaserver.testService.new_version.services.models;
 
 import com.example.javaserver.testService.new_version.models.InOutComingModels.AnswerInOut;
 
