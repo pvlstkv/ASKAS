@@ -139,7 +139,7 @@ public class QuestionService {
 
     public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions, String token) {
         return requestHandlerService.proceed(token, userContext -> makeTestFromDBQuestions(subjectId, themeId, countOfQuestions),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
     private ResponseEntity<?> makeTestFromDBQuestions(Long subjectId, Long themeId, int countOfQuestions) {
@@ -171,7 +171,7 @@ public class QuestionService {
 
     public ResponseEntity<?> checkTest(List<AnswerInOut> userTest, String token) {
         return requestHandlerService.proceed(token, userContext -> checkingAnswers(userTest, userContext),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
     private ResponseEntity<ResultOut> checkingAnswers(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
@@ -287,13 +287,13 @@ public class QuestionService {
 
     public ResponseEntity<?> fetchUserPassedTest(String token) {
         return requestHandlerService.proceed(token, userContext -> formUserPassedTest(userContext),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
 
     }
 
     private ResponseEntity<?> formUserPassedTest(UserContext userContext) {
         User user = fetchUser(userContext);
-        if (user == null){
+        if (user == null) {
             String response = String.format("Пользователя" + doesntExistById, userContext.getUserId());
             return new ResponseEntity<>(new Message(response), HttpStatus.BAD_REQUEST);
         }
