@@ -38,8 +38,7 @@ public class UserService {
         if(!user.isPresent()){
             return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
         }
-        UserI userI = new UserI(user.get());
-        return new ResponseEntity<>(userI, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     public ResponseEntity<?> getListUser( ){
@@ -105,18 +104,11 @@ public class UserService {
 
     }
 
-    @Transactional
     public ResponseEntity<?> deleteUser(Integer id){
         Optional<User> user =  userRepo.findById(id);
         if(user.isPresent()){
-            try {
-                userRepo.deleteById(id);
-                return new ResponseEntity<>(new Message("Пользователь удален"), HttpStatus.OK);
-            }catch (Exception e){
-                e.printStackTrace();
-                return new ResponseEntity<>(new Message("ошибка сервера"),HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
+            userRepo.delete(user.get());
+            return new ResponseEntity<>(new Message("Пользователь удален"), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(new Message("ошибка такой пользователь не найден"), HttpStatus.BAD_REQUEST);
         }
