@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StudyGroupI {
+
     private Integer code;
 
     private Integer groupNumber;

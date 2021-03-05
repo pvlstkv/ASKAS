@@ -42,8 +42,7 @@ public class StudyGroupController {
     @GetMapping("/list")
     public ResponseEntity<?> getListGroupStudy(){
         List<StudyGroup> studyGroups = (List<StudyGroup>) studyGroupRepo.findAll();
-        List<String> listNameStudyGroup = studyGroups.stream().map(studyGroup -> studyGroup.getShortName()).collect(Collectors.toList());
-        return new ResponseEntity<>(listNameStudyGroup, HttpStatus.OK);
+        return new ResponseEntity<>(studyGroups, HttpStatus.OK);
     }
 
 

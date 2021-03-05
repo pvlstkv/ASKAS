@@ -100,7 +100,7 @@ public class AuthService {
             return new ResponseEntity<>(new Message("Пользователь с ролью: преподаватель успешно создан"),HttpStatus.CREATED);
         }else if(userI.getRole().equals(UserRole.USER)){
             User user = new User(userI);
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(userI.getStudyGroupName());
+            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(userI.getStudyGroupId());
             if(studyGroup.isPresent()){
                 user.setStudyGroup(studyGroup.get());
             }else {
