@@ -37,7 +37,7 @@ public class RequestHandlerService {
         } catch (ExpiredJwtException e){
             return new ResponseEntity<>(HttpStatus.UPGRADE_REQUIRED);
         } catch (MalformedJwtException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
