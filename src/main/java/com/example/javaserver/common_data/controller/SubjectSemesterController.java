@@ -24,7 +24,7 @@ public class SubjectSemesterController {
         this.subjectSemesterService = subjectSemesterService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
             @RequestBody SubjectSemesterIn subjectSemesterIn
@@ -89,7 +89,7 @@ public class SubjectSemesterController {
         );
     }
 
-    @GetMapping("/criteria-search")
+    @PostMapping("/criteria-search")
     public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
@@ -101,7 +101,7 @@ public class SubjectSemesterController {
         );
     }
 
-    @GetMapping("/search-by-ids")
+    @PostMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids

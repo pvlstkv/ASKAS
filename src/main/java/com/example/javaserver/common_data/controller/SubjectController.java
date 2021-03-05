@@ -24,7 +24,7 @@ public class SubjectController {
         this.subjectService = subjectService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
             @RequestBody SubjectIn subjectIn
@@ -74,7 +74,7 @@ public class SubjectController {
         );
     }
 
-    @GetMapping("/criteria-search")
+    @PostMapping("/criteria-search")
     public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
@@ -86,7 +86,7 @@ public class SubjectController {
         );
     }
 
-    @GetMapping("/search-by-ids")
+    @PostMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids
