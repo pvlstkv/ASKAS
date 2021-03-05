@@ -303,6 +303,21 @@ public class QuestionService {
         return new ResponseEntity<>(passedTests, HttpStatus.OK);
     }
 
+    public ResponseEntity<?> fetchSubjectThemes(Long subjectId, String token) {
+        return requestHandlerService.proceed(token, userContext -> {
+                    Subject tempSubject = (subjectRepo.findById(subjectId)
+                            .orElse(null));
+                    if (tempSubject == null) {
+                        String response = String.format("Предмета" + doesntExistById, subjectId);
+                        return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+                    }
+                    List<Theme> themes = themeRepo.findAllBySubjectId(subjectId);
+                    return new ResponseEntity<>(themes, HttpStatus.OK);
+                },
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
+
+    }
+
 
 //    public ResponseEntity<?> findAllBySubjectAndTheme(String subject, String theme, String token) {
 //        return requestHandlerService.proceed(token, userContext -> fetchAllQuestionsFromDB(subject, theme),

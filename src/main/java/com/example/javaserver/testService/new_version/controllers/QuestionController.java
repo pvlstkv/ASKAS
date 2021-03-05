@@ -49,6 +49,12 @@ public class QuestionController {
         return questionService.deleteManyQuestions(ids, token);
     }
 
+
+    @GetMapping("/questions")
+    public ResponseEntity<?> fetchThemesBySubjectId(@RequestParam(value = "subj_id") Long id, @RequestHeader(name = "Authorization") String token) {
+        return questionService.fetchSubjectThemes(id, token);
+    }
+
     @DeleteMapping("/question")
     public ResponseEntity<?> deleteOneQuestion(@RequestParam(value = "limit") Long id, @RequestHeader(name = "Authorization") String token) {
         return questionService.deleteManyQuestions(new ArrayList<>(Collections.singletonList(id)), token);
