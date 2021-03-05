@@ -10,7 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.EnumSet;
 
+
 @RestController
+@RequestMapping("/file")
 public class FilesController {
     private final RequestHandlerService requestHandlerService;
     private final FileService fileService;
@@ -21,21 +23,21 @@ public class FilesController {
         this.fileService = fileService;
     }
 
-    @PostMapping("/file/uploading")
+    @PutMapping
     public ResponseEntity<?> uploadFile(
             @RequestHeader("token") String token,
             @RequestParam("fileName") String name,
-            @RequestParam("subjectName") String subjectName,
+            @RequestParam("subjectSemesterId") Long subjectSemesterId,
             @RequestParam("file") MultipartFile file
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> fileService.uploadFile(c, name, subjectName, file),
+                (c) -> fileService.uploadFile(c, name, subjectSemesterId, file),
                 EnumSet.allOf(UserRole.class)
         );
     }
 
-    @GetMapping("/file")
+    @GetMapping
     public ResponseEntity<?> uploadFile(
             @RequestHeader("token") String token,
             @RequestParam("fileName") String name

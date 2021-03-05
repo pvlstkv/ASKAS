@@ -1,12 +1,17 @@
 package com.example.javaserver.common_data.model;
 
+import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
 import com.example.javaserver.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -15,11 +20,13 @@ import java.util.List;
 public class StudyGroup implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private Integer code;
 
     private Integer groupNumber;
+
+    private Integer courseNumber;
 
     private String shortName;
 
@@ -31,20 +38,56 @@ public class StudyGroup implements Serializable {
 
     private Integer yearOfStudyStart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> students = new ArrayList<>();
+    private List<User> students;
 
-    public StudyGroup() {
+    @ManyToMany
+    @JoinTable(
+            name = "study_groups_subject_semesters",
+            joinColumns = {@JoinColumn(name = "study_group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subject_semester_id")})
+    private Set<SubjectSemester> subjectSemesters;
+
+    public StudyGroup() { }
+
+    public StudyGroup(StudyGroupI studyGroupI) {
+        this.code = studyGroupI.getCode();
+        this.groupNumber = studyGroupI.getGroupNumber();
+        this.courseNumber = studyGroupI.getCourseNumber();
+        this.shortName = studyGroupI.getShortName();
+        this.fullName = studyGroupI.getFullName();
+        this.yearOfStudyStart = studyGroupI.getYearOfStudyStart();
     }
 
-    public Integer getId() {
+
+    public StudyGroup(Integer code, Integer groupNumber, Integer courseNumber, String shortName, String fullName, Integer yearOfStudyStart) {
+        this.code = code;
+        this.groupNumber = groupNumber;
+        this.courseNumber = courseNumber;
+        this.shortName = shortName;
+        this.fullName = fullName;
+        this.yearOfStudyStart = yearOfStudyStart;
+    }
+
+    public Integer getCourseNumber() {
+        return courseNumber;
+    }
+
+    public void setCourseNumber(Integer courseNumber) {
+        this.courseNumber = courseNumber;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -118,5 +161,13 @@ public class StudyGroup implements Serializable {
 
     public void setStudents(List<User> students) {
         this.students = students;
+    }
+
+    public Set<SubjectSemester> getSubjectSemesters() {
+        return subjectSemesters;
+    }
+
+    public void setSubjectSemesters(Set<SubjectSemester> subjectSemesters) {
+        this.subjectSemesters = subjectSemesters;
     }
 }

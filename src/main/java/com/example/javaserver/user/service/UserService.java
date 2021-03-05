@@ -1,80 +1,124 @@
 package com.example.javaserver.user.service;
 
+import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.config.JwtUtil;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.user.controller.model.Token;
+import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
     private final UserRepo userRepo;
-    private final RequestHandlerService requestHandlerService;
-    private final JwtUtil jwtUtil;
+    private final StudyGroupRepo studyGroupRepo;
 
-    public UserService(UserRepo userRepo, RequestHandlerService requestHandlerService, JwtUtil jwtUtil) {
+    @Autowired
+    public UserService(UserRepo userRepo, StudyGroupRepo studyGroupRepo) {
         this.userRepo = userRepo;
-        this.requestHandlerService = requestHandlerService;
-        this.jwtUtil = jwtUtil;
+        this.studyGroupRepo = studyGroupRepo;
     }
 
-    public ResponseEntity<?> logUser(User user){
-        if(user.getLogin() == null){
-            return new ResponseEntity<>(new Message("Введите логин"),HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> getUser(UserContext userContext, Integer id){
+        Optional<User> user;
+        if(id != null){
+           user = userRepo.findById(id);
+        }else {
+            user = userRepo.findById(userContext.getUserId());
         }
-        if(user.getPassword() == null){
-            return new ResponseEntity<>(new Message("Введите пароль"),HttpStatus.BAD_REQUEST);
+        if(!user.isPresent()){
+            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
         }
-        if(!userRepo.existsByLogin(user.getLogin())){
-            return new ResponseEntity<>(new Message("Пользователя с таким логином не существует"),HttpStatus.BAD_REQUEST);
-        }
-        User authUser = userRepo.getUserByLogin(user.getLogin());
-        if(authUser.getPassword().equals(user.getPassword())){
-            String token = jwtUtil.generateToken(authUser);
-            return new ResponseEntity<>(new Token(token),HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(new Message("Неверный пароль"),HttpStatus.BAD_REQUEST);
-        }
+        UserI userI = new UserI(user.get());
+        return new ResponseEntity<>(userI, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> regUser(User user){
-        if(user.getLogin() == null){
-            return new ResponseEntity<>(new Message("Введите логин"), HttpStatus.BAD_REQUEST);
-        }
-        if(user.getPassword() == null){
-            return new ResponseEntity<>(new Message("Введите пароль"),HttpStatus.BAD_REQUEST);
-        }
-        if(user.getEmail() == null){
-            return new ResponseEntity<>(new Message("Введите вашу почту"),HttpStatus.BAD_REQUEST);
-        }
-        if (user.getFirstName() == null){
+    public ResponseEntity<?> getListUser( ){
+        List<User> userList = userRepo.findAll();
+        return new ResponseEntity<>(userList,HttpStatus.OK);
+    }
 
-        }
-        if(user.getLastName() == null){
+    public ResponseEntity<?> updateUser(Integer id,
+                                        String login,
+                                        String password,
+                                        String firstName,
+                                        String lastName,
+                                        String patronymic,
+                                        String phone,
+                                        String studyGroupName,
+                                        String role)
+    {
+        Optional<User> user = userRepo.findById(id);
+        if(user.isPresent()){
+            if(login != null){
+                user.get().setLogin(login);
+            }
+            if(password != null){
+                user.get().setPassword(password);
+            }
+            if(firstName != null){
+                user.get().setFirstName(firstName);
+            }
+            if(lastName != null){
+                user.get().setLastName(lastName);
+            }
+            if(password != null){
+                user.get().setPatronymic(patronymic);
+            }
+            if(phone != null){
+                user.get().setPhone(phone);
+            }
+            if(studyGroupName != null){
+                if(studyGroupName.equals("null")){
+                    user.get().setStudyGroup(null);
+                }else {
+                    if(studyGroupRepo.existsByShortName(studyGroupName)){
+                        Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(studyGroupName);
+                        user.get().setStudyGroup(studyGroup.get());
+                    }else {
+                        return new ResponseEntity<>(new Message("Такой группы не существует"),HttpStatus.BAD_REQUEST);
+                    }
+                }
+            }
+            try {
+                userRepo.save(user.get());
+                return new ResponseEntity<>(new Message("информация о пользователи измнена"),HttpStatus.OK);
+            }catch (Exception e){
+                e.printStackTrace();
+                return new ResponseEntity<>(new Message("ошибка сервера"),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
 
-        }
-        if(user.getPatronymic() == null){
 
-        }
-        if(user.getPhone() == null){
 
+        }else {
+            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
         }
-        if(user.getStudyGroup() == null){
 
-        }
-        if(userRepo.existsByLogin(user.getLogin())){
-            return new ResponseEntity<>(new Message("Имя пользователя занято"),HttpStatus.BAD_REQUEST);
-        }
-        try {
-            userRepo.save(user);
-            return new ResponseEntity<>(new Message("Пользователь успешно создан"),HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(new Message("Ошибка попробуйте позже"),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteUser(Integer id){
+        Optional<User> user =  userRepo.findById(id);
+        if(user.isPresent()){
+            try {
+                userRepo.deleteById(id);
+                return new ResponseEntity<>(new Message("Пользователь удален"), HttpStatus.OK);
+            }catch (Exception e){
+                e.printStackTrace();
+                return new ResponseEntity<>(new Message("ошибка сервера"),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+        }else {
+            return new ResponseEntity<>(new Message("ошибка такой пользователь не найден"), HttpStatus.BAD_REQUEST);
         }
     }
 

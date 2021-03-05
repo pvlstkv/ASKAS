@@ -1,9 +1,11 @@
 package com.example.javaserver.common_data.model;
 
-//import com.example.javaserver.testService.old_version.models.Question;
-
 import com.example.javaserver.testService.new_version.models.Question;
-
+import com.example.javaserver.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -28,56 +30,40 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
+    @JsonProperty("themeIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Theme> themes;
 
+    @JsonProperty("teacherIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToMany
+    private Set<User> teachers;
+
+//    @OneToMany(mappedBy = "subject")
+//    private List<Question> question;
+
+    @JsonProperty("subjectSemesterIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
     private Department department;
 
+    @JsonProperty("questionIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 
     public Subject() {
-    }
-
-    public Subject(String name, Set<Theme> themes) {
-        this.name = name;
-        this.themes = themes;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Set<Theme> getThemes() {
-        return themes;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setThemes(Set<Theme> themes) {
-        this.themes = themes;
-    }
-
-    public String getDecryption() {
-        return decryption;
-    }
-
-    public void setDecryption(String description) {
-        this.decryption = description;
-    }
-
-    public List<Question> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(List<Question> question) {
-        this.question = question;
     }
 
     public Subject(String name) {
@@ -90,6 +76,30 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Set<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(Set<Theme> themes) {
+        this.themes = themes;
+    }
+
+    public String getDecryption() {
+        return decryption;
+    }
+
+    public void setDecryption(String decryption) {
+        this.decryption = decryption;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -122,5 +132,21 @@ public class Subject {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public List<Question> getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(List<Question> question) {
+        this.question = question;
+    }
+
+    public Set<User> getTeachers() {
+        return teachers;
+    }
+
+    public void setTeachers(Set<User> teachers) {
+        this.teachers = teachers;
     }
 }

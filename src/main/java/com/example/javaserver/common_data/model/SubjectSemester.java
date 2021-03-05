@@ -1,8 +1,15 @@
 package com.example.javaserver.common_data.model;
 
 
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -11,20 +18,29 @@ import java.time.OffsetDateTime;
 public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
 
-    int numberOfSemester;
+    Integer numberOfSemester;
 
     private SubjectControlType controlType;
 
-    boolean hasCourseWork;
+    Boolean hasCourseWork;
 
-    boolean hasCourseProject;
+    Boolean hasCourseProject;
 
+    @JsonProperty("subjectId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne(fetch = FetchType.LAZY)
     private Subject subject;
 
-    private OffsetDateTime createdAt;
+    @JsonProperty("studentGroupIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToMany(mappedBy = "subjectSemesters")
+    private Set<StudyGroup> studyGroups;
+
+    OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
 
@@ -35,19 +51,19 @@ public class SubjectSemester {
     public SubjectSemester() {
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public int getNumberOfSemester() {
+    public Integer getNumberOfSemester() {
         return numberOfSemester;
     }
 
-    public void setNumberOfSemester(int numberOfSemester) {
+    public void setNumberOfSemester(Integer numberOfSemester) {
         this.numberOfSemester = numberOfSemester;
     }
 
@@ -59,19 +75,19 @@ public class SubjectSemester {
         this.controlType = controlType;
     }
 
-    public boolean isHasCourseWork() {
+    public Boolean getHasCourseWork() {
         return hasCourseWork;
     }
 
-    public void setHasCourseWork(boolean hasCourseWork) {
+    public void setHasCourseWork(Boolean hasCourseWork) {
         this.hasCourseWork = hasCourseWork;
     }
 
-    public boolean isHasCourseProject() {
+    public Boolean getHasCourseProject() {
         return hasCourseProject;
     }
 
-    public void setHasCourseProject(boolean hasCourseProject) {
+    public void setHasCourseProject(Boolean hasCourseProject) {
         this.hasCourseProject = hasCourseProject;
     }
 
@@ -81,6 +97,14 @@ public class SubjectSemester {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
+    }
+
+    public Set<StudyGroup> getStudyGroups() {
+        return studyGroups;
+    }
+
+    public void setStudyGroups(Set<StudyGroup> studyGroups) {
+        this.studyGroups = studyGroups;
     }
 
     public OffsetDateTime getCreatedAt() {

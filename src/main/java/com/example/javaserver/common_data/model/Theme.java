@@ -1,8 +1,7 @@
 package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.testService.new_version.models.Question;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -21,8 +20,12 @@ public class Theme {
 
     private String decryption;
 
+    @JsonProperty("subjectId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne()
     private Subject subject;
+
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Question> questions;

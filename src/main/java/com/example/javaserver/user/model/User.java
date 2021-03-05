@@ -1,9 +1,17 @@
 package com.example.javaserver.user.model;
 
+import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.user.client_model.UserI;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
@@ -27,8 +35,23 @@ public class User implements Serializable {
 
     private String phone;
 
+    @JsonProperty("studyGroupId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private StudyGroup studyGroup;
+
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToOne
+    private Department department;
+
+    @JsonProperty("teachingSubjectsIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToMany
+    private Set<Subject> teachingSubjects;
 
     private UserRole role;
 
@@ -37,13 +60,37 @@ public class User implements Serializable {
 
     public User() { }
 
+    public User(UserI userI){
+        this.login = userI.getLogin();
+        this.password = userI.getPassword();
+        this.email = userI.getEmail();
+        this.firstName = userI.getFirstName();
+        this.lastName = userI.getLastName();
+        this.patronymic = userI.getPatronymic();
+        this.phone = userI.getPhone();
+        this.role = userI.getRole();
+    }
     public User(String login, String password, UserRole role) {
         this.login = login;
         this.password = password;
         this.role = role;
     }
 
-    public User(Integer id, String login, String password, String email, String firstName, String lastName, String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
+    public User(String login, String password, String email, String firstName,
+                String lastName, String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.patronymic = patronymic;
+        this.phone = phone;
+        this.studyGroup = studyGroup;
+        this.role = role;
+    }
+
+    public User(Integer id, String login, String password, String email, String firstName, String lastName,
+                String patronymic, String phone, StudyGroup studyGroup, UserRole role) {
         this.id = id;
         this.login = login;
         this.password = password;
@@ -54,6 +101,14 @@ public class User implements Serializable {
         this.phone = phone;
         this.studyGroup = studyGroup;
         this.role = role;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public String getEmail() {

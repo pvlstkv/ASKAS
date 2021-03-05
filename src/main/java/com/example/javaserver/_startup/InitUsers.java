@@ -1,4 +1,4 @@
-package com.example.javaserver;
+package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.user.model.User;
@@ -15,14 +15,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-public class Startup implements ApplicationListener<ContextRefreshedEvent> {
+public class InitUsers implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepo userRepo;
 
     private final SubjectRepo subjectRepo;
 
     @Autowired
-    public Startup(UserRepo userRepo, SubjectRepo subjectRepo) {
+    public InitUsers(UserRepo userRepo, SubjectRepo subjectRepo) {
         this.userRepo = userRepo;
         this.subjectRepo = subjectRepo;
     }

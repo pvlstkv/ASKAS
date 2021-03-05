@@ -1,10 +1,10 @@
 package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.config.JwtUtil;
-import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.user.service.UserService;
+import com.example.javaserver.user.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,21 +18,21 @@ import java.util.EnumSet;
 public class RegistrationController {
     private final RequestHandlerService requestHandlerService;
     private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final AuthService authService;
 
     @Autowired
-    public RegistrationController(RequestHandlerService requestHandlerService, JwtUtil jwtUtil, UserService userService) {
+    public RegistrationController(RequestHandlerService requestHandlerService, JwtUtil jwtUtil, AuthService authService) {
         this.requestHandlerService = requestHandlerService;
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
+        this.authService = authService;
     }
 
     @PostMapping("/registration")
     public ResponseEntity<?> regUser(
             @RequestHeader("token") String token,
-            @RequestBody User user
+            @RequestBody UserI userI
     ){
-        return requestHandlerService.proceed(token,(c) -> userService.regUser(user), EnumSet.of(UserRole.ADMIN));
+        return requestHandlerService.proceed(token,(c) -> authService.regUser(userI), EnumSet.of(UserRole.ADMIN));
     }
 
 }
