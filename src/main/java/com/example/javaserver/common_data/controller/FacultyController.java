@@ -24,7 +24,7 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
             @RequestBody FacultyIn facultyIn
@@ -73,7 +73,7 @@ public class FacultyController {
         );
     }
 
-    @GetMapping("/criteria-search")
+    @PostMapping("/criteria-search")
     public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
@@ -85,7 +85,7 @@ public class FacultyController {
         );
     }
 
-    @GetMapping("/search-by-ids")
+    @PostMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids

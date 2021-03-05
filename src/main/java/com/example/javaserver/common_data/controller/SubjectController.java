@@ -24,7 +24,7 @@ public class SubjectController {
         this.subjectService = subjectService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
             @RequestBody SubjectIn subjectIn
@@ -86,7 +86,7 @@ public class SubjectController {
         );
     }
 
-    @GetMapping("/search-by-ids")
+    @PostMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids
@@ -98,7 +98,7 @@ public class SubjectController {
         );
     }
 
-    @GetMapping
+    @PostMapping("/search-by-user-id")
     public ResponseEntity<?> searchByUserId(
             @RequestHeader("token") String token,
             @RequestParam("userId") Integer userId
@@ -110,7 +110,7 @@ public class SubjectController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/teacher-adding")
     public ResponseEntity<?> addTeachers(
             @RequestHeader("token") String token,
             @RequestParam("subjectId") Long subjectId,
