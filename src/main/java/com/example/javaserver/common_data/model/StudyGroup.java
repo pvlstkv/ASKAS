@@ -1,12 +1,15 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
+import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
 import com.example.javaserver.user.model.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +20,7 @@ import java.util.Set;
 public class StudyGroup implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private Integer code;
 
@@ -35,7 +38,10 @@ public class StudyGroup implements Serializable {
 
     private Integer yearOfStudyStart;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonProperty("departmentId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -50,13 +56,13 @@ public class StudyGroup implements Serializable {
 
     public StudyGroup() { }
 
-    public StudyGroup(StudyGroupIO studyGroupIO) {
-        this.code = studyGroupIO.getCode();
-        this.groupNumber = studyGroupIO.getGroupNumber();
-        this.courseNumber = studyGroupIO.getCourseNumber();
-        this.shortName = studyGroupIO.getShortName();
-        this.fullName = studyGroupIO.getFullName();
-        this.yearOfStudyStart = studyGroupIO.getYearOfStudyStart();
+    public StudyGroup(StudyGroupI studyGroupI) {
+        this.code = studyGroupI.getCode();
+        this.groupNumber = studyGroupI.getGroupNumber();
+        this.courseNumber = studyGroupI.getCourseNumber();
+        this.shortName = studyGroupI.getShortName();
+        this.fullName = studyGroupI.getFullName();
+        this.yearOfStudyStart = studyGroupI.getYearOfStudyStart();
     }
 
 
@@ -77,11 +83,11 @@ public class StudyGroup implements Serializable {
         this.courseNumber = courseNumber;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

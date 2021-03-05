@@ -4,7 +4,7 @@ import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.user.client_model.UserIO;
+import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +38,13 @@ public class UserService {
         if(!user.isPresent()){
             return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
         }
-        UserIO userIO = new UserIO(user.get());
-        return new ResponseEntity<>(userIO, HttpStatus.OK);
+        UserI userI = new UserI(user.get());
+        return new ResponseEntity<>(userI, HttpStatus.OK);
     }
 
     public ResponseEntity<?> getListUser( ){
         List<User> userList = userRepo.findAll();
-        List<UserIO> userOList = userList.stream().map(user -> {
-            UserIO userIO =  new UserIO(user);
-            return userIO;
-        }).collect(Collectors.toList());
-        return new ResponseEntity<>(userOList,HttpStatus.OK);
+        return new ResponseEntity<>(userList,HttpStatus.OK);
     }
 
     public ResponseEntity<?> updateUser(Integer id,

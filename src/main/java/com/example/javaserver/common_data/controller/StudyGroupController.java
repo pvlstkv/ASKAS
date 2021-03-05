@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
+import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.service.StudyGroupService;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,9 +33,10 @@ public class StudyGroupController {
     @GetMapping
     public ResponseEntity<?> getGroup(
             @RequestHeader("token") String token,
-            @RequestParam("nameGroup") String nameGroup
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String nameGroup
     ){
-        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(nameGroup),EnumSet.allOf(UserRole.class));
+        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(id,nameGroup),EnumSet.allOf(UserRole.class));
     }
 
     @GetMapping("/list")
@@ -51,11 +51,11 @@ public class StudyGroupController {
     @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestBody StudyGroupIO studyGroupIO
+            @RequestBody StudyGroupI studyGroupI
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> studyGroupService.create(studyGroupIO),
+                (c) -> studyGroupService.create(studyGroupI),
                 EnumSet.of(UserRole.ADMIN)
         );
     }

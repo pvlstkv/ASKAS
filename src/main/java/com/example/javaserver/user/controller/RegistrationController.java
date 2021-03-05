@@ -1,7 +1,7 @@
 package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.config.JwtUtil;
-import com.example.javaserver.user.client_model.UserIO;
+import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.service.AuthService;
@@ -30,9 +30,9 @@ public class RegistrationController {
     @PostMapping("/registration")
     public ResponseEntity<?> regUser(
             @RequestHeader("token") String token,
-            @RequestBody UserIO userIO
+            @RequestBody UserI userI
     ){
-        return requestHandlerService.proceed(token,(c) -> authService.regUser(userIO), EnumSet.of(UserRole.ADMIN));
+        return requestHandlerService.proceed(token,(c) -> authService.regUser(userI), EnumSet.of(UserRole.ADMIN));
     }
 
 }
