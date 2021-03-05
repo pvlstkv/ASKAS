@@ -32,7 +32,7 @@ public class RequestHandlerService {
             if(setRole.contains(UserRole.valueOf(user.getUserRole()))){
                 return supplier.apply(user);
             } else {
-                return new ResponseEntity<>(new Message("У вас нет прав к данному ресурсу"),HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new Message("У вас нет прав к данному ресурсу"),HttpStatus.FORBIDDEN);
             }
         } catch (ExpiredJwtException e){
             return new ResponseEntity<>(HttpStatus.UPGRADE_REQUIRED);
