@@ -74,7 +74,7 @@ public class SubjectController {
         );
     }
 
-    @PostMapping("/criteria-search")
+    @GetMapping("/criteria-search")
     public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
@@ -98,7 +98,7 @@ public class SubjectController {
         );
     }
 
-    @GetMapping
+    @PostMapping("/search-by-user-id")
     public ResponseEntity<?> searchByUserId(
             @RequestHeader("token") String token,
             @RequestParam("userId") Integer userId
@@ -110,7 +110,7 @@ public class SubjectController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/teacher-adding")
     public ResponseEntity<?> addTeachers(
             @RequestHeader("token") String token,
             @RequestParam("subjectId") Long subjectId,
