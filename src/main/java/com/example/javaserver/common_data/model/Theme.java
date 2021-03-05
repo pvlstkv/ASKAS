@@ -28,6 +28,7 @@ public class Theme {
 
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Question> questions;
 
 

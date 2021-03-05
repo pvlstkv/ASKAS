@@ -19,27 +19,17 @@ public class InitUsers implements ApplicationListener<ContextRefreshedEvent> {
 
     private final UserRepo userRepo;
 
-    private final SubjectRepo subjectRepo;
+
 
     @Autowired
-    public InitUsers(UserRepo userRepo, SubjectRepo subjectRepo) {
+    public InitUsers(UserRepo userRepo) {
         this.userRepo = userRepo;
-        this.subjectRepo = subjectRepo;
     }
 
     @Override
     public void onApplicationEvent(final ContextRefreshedEvent event) {
 
-        if (!subjectRepo.existsByName("АЛМ")) {
-            Subject subject = new Subject("АЛМ");
-            Theme theme = new Theme("Автоматы");
-            theme.setSubject(subject);
-            Set<Theme> set = new HashSet<>();
-            set.add(theme);
-            subject.setThemes(set);
-            subject.setName("АЛМ");
-            subjectRepo.save(subject);
-        }
+
 //        if (!subjectRepo.existsByName("АЛМ")) {
 //            Subject subject = new Subject();
 //            subject.setName("АЛМ");

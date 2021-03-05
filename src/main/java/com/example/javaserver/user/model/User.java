@@ -3,7 +3,7 @@ package com.example.javaserver.user.model;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.user.client_model.UserIO;
+import com.example.javaserver.user.client_model.UserI;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -60,15 +60,15 @@ public class User implements Serializable {
 
     public User() { }
 
-    public User(UserIO userIO){
-        this.login = userIO.getLogin();
-        this.password = userIO.getPassword();
-        this.email = userIO.getEmail();
-        this.firstName = userIO.getFirstName();
-        this.lastName = userIO.getLastName();
-        this.patronymic = userIO.getPatronymic();
-        this.phone = userIO.getPhone();
-        this.role = userIO.getRole();
+    public User(UserI userI){
+        this.login = userI.getLogin();
+        this.password = userI.getPassword();
+        this.email = userI.getEmail();
+        this.firstName = userI.getFirstName();
+        this.lastName = userI.getLastName();
+        this.patronymic = userI.getPatronymic();
+        this.phone = userI.getPhone();
+        this.role = userI.getRole();
     }
     public User(String login, String password, UserRole role) {
         this.login = login;

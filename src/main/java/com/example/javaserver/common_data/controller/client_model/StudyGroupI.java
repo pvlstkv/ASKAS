@@ -1,12 +1,12 @@
 package com.example.javaserver.common_data.controller.client_model;
 
 import com.example.javaserver.common_data.model.StudyGroup;
-import com.example.javaserver.user.client_model.UserIO;
+import com.example.javaserver.user.client_model.UserI;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class StudyGroupIO {
+public class StudyGroupI {
     private Integer code;
 
     private Integer groupNumber;
@@ -21,11 +21,12 @@ public class StudyGroupIO {
 
     private String nameDepartment;
     
-    private Set<UserIO> Students;
+    private Set<UserI> Students;
 
-    public StudyGroupIO() {
+    public StudyGroupI() {
     }
-    public StudyGroupIO(StudyGroup studyGroup) {
+
+    public StudyGroupI(StudyGroup studyGroup) {
         this.code = studyGroup.getCode();
         this.groupNumber = studyGroup.getGroupNumber();
         this.courseNumber = studyGroup.getCourseNumber();
@@ -35,7 +36,7 @@ public class StudyGroupIO {
         if(studyGroup.getDepartment() != null){
             this.nameDepartment = studyGroup.getDepartment().getShortName();
         }
-        this.Students = studyGroup.getStudents().stream().map(user -> new UserIO(user)).collect(Collectors.toSet());
+        this.Students = studyGroup.getStudents().stream().map(user -> new UserI(user)).collect(Collectors.toSet());
     }
     
 
@@ -96,11 +97,11 @@ public class StudyGroupIO {
         this.nameDepartment = nameDepartment;
     }
 
-    public Set<UserIO> getStudents() {
+    public Set<UserI> getStudents() {
         return Students;
     }
 
-    public void setStudents(Set<UserIO> students) {
+    public void setStudents(Set<UserI> students) {
         this.Students = students;
     }
 }
