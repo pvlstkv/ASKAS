@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupIO;
+import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.SubjectSemester;
@@ -35,10 +35,10 @@ public class StudyGroupService {
     }
 
 
-    public ResponseEntity<?> create(StudyGroupIO studyGroupIO) {
-        StudyGroup studyGroup = new StudyGroup(studyGroupIO);
-        Optional<Department> department = departmentRepo.findByShortName(studyGroupIO.getShortName());
-        if(studyGroupRepo.existsByShortName(studyGroupIO.getShortName())){
+    public ResponseEntity<?> create(StudyGroupI studyGroupI) {
+        StudyGroup studyGroup = new StudyGroup(studyGroupI);
+        Optional<Department> department = departmentRepo.findByShortName(studyGroupI.getNameDepartment());
+        if(studyGroupRepo.existsByShortName(studyGroupI.getShortName())){
             return new ResponseEntity<>(new Message("Ошибка, данная группа уже существует"), HttpStatus.BAD_REQUEST);
         }
         if(department.isPresent()){
@@ -46,20 +46,24 @@ public class StudyGroupService {
         }else {
             return new ResponseEntity<>(new Message("Ошибка, данного департамента не существует"), HttpStatus.BAD_REQUEST);
         }
-        try {
-            studyGroupRepo.save(studyGroup);
-            return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
-        }catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(new Message("Ошибка сервера"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        studyGroupRepo.save(studyGroup);
+        return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> get(String nameGroup){
-        Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(nameGroup);
-        if(studyGroup.isPresent()){
-            StudyGroupIO studyGroupIO = new StudyGroupIO(studyGroup.get());
-            return new ResponseEntity<>(studyGroupIO, HttpStatus.OK);
+    public ResponseEntity<?> get(Long id,String nameGroup){
+        if(id != null){
+            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
+            if(!studyGroup.isPresent()){
+                return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(studyGroup.get(), HttpStatus.OK);
+        }else if(nameGroup != null){
+            Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(nameGroup);
+            if(!studyGroup.isPresent()){
+                return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
+            }
+            StudyGroup res = studyGroup.get();
+            return new ResponseEntity<>(studyGroup.get(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
         }

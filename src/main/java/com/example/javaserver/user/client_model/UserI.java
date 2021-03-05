@@ -5,7 +5,7 @@ import com.example.javaserver.user.model.UserRole;
 
 import javax.persistence.ManyToOne;
 
-public class UserIO {
+public class UserI {
     private Integer id;
     private String login;
 
@@ -27,10 +27,10 @@ public class UserIO {
 
     private UserRole role;
 
-    public UserIO() {
+    public UserI() {
     }
 
-    public UserIO(User user) {
+    public UserI(User user) {
         this.id = user.getId();
         this.login = user.getLogin();
         this.email = user.getEmail();
@@ -43,8 +43,8 @@ public class UserIO {
 
     }
 
-    public UserIO(String login, String password, String email, String firstName, String lastName, String patronymic,
-                  String phone, String studyGroupName, String departmentName, UserRole role) {
+    public UserI(String login, String password, String email, String firstName, String lastName, String patronymic,
+                 String phone, String studyGroupName, String departmentName, UserRole role) {
 
         this.login = login;
         this.password = password;
