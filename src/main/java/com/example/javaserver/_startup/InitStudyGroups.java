@@ -24,6 +24,5 @@ public class InitStudyGroups implements ApplicationListener<ContextRefreshedEven
         studyGroupRepo.save(group1);
         studyGroupRepo.save(group2);
         studyGroupRepo.save(group3);
-
     }
 }
