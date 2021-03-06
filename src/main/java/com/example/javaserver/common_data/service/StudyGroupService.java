@@ -90,6 +90,6 @@ public class StudyGroupService {
 
         Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
         group.get().getSubjectSemesters().addAll(subjectSemesters);
-        return new ResponseEntity<>(new Message("Пользователи были добавлены в группу"), HttpStatus.OK);
+        return new ResponseEntity<>(new Message("Семестры были успешно добавлены для группы"), HttpStatus.OK);
     }
 }

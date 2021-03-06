@@ -72,10 +72,10 @@ public class StudyGroupController {
         );
     }
 
-    @PostMapping("/subject_semester_addition")
+    @PatchMapping("/subject_semester_addition")
     public ResponseEntity<?> addSubjectSemesters(
             @RequestHeader("token") String token,
-            @RequestParam("study_group_id") Long studyGroupId,
+            @RequestParam("id") Long studyGroupId,
             @RequestBody Set<Long> subjectSemesterIds
     ) {
         return requestHandlerService.proceed(
