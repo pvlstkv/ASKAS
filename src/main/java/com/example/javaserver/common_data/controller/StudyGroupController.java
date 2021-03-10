@@ -33,10 +33,9 @@ public class StudyGroupController {
     @GetMapping
     public ResponseEntity<?> getGroup(
             @RequestHeader("token") String token,
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) String nameGroup
+            @RequestParam(required = false) Long id
     ){
-        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(id,nameGroup),EnumSet.allOf(UserRole.class));
+        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(id),EnumSet.allOf(UserRole.class));
     }
 
     @GetMapping("/list")
