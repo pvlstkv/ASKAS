@@ -60,6 +60,13 @@ public class User implements Serializable {
 
     public User() { }
 
+    public User(String login, String password, StudyGroup studyGroup, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.studyGroup = studyGroup;
+        this.role = role;
+    }
+
     public User(UserI userI){
         this.login = userI.getLogin();
         this.password = userI.getPassword();

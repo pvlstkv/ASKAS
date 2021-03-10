@@ -1,7 +1,6 @@
-package com.example.javaserver.testService.new_version.models;
+package com.example.javaserver.testing.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 

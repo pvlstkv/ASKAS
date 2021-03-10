@@ -1,9 +1,7 @@
-package com.example.javaserver.testService.new_version.models.InOutComingModels.passed_test;
+package com.example.javaserver.testing.models.InOutComingModels.passed_test;
 
-import com.example.javaserver.testService.new_version.models.saving_results.PassedTest;
-import com.example.javaserver.user.model.User;
+import com.example.javaserver.testing.models.saving_results.PassedTest;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public class TestOut {

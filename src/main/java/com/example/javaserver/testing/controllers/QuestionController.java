@@ -1,12 +1,12 @@
-package com.example.javaserver.testService.new_version.controllers;
+package com.example.javaserver.testing.controllers;
 
 
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.testService.new_version.models.InOutComingModels.AnswerInOut;
-import com.example.javaserver.testService.new_version.models.InOutComingModels.TestIn;
-import com.example.javaserver.testService.new_version.models.Question;
-import com.example.javaserver.testService.new_version.repo.QuestionRepo;
-import com.example.javaserver.testService.new_version.services.QuestionService;
+import com.example.javaserver.testing.models.InOutComingModels.AnswerInOut;
+import com.example.javaserver.testing.models.InOutComingModels.TestIn;
+import com.example.javaserver.testing.models.Question;
+import com.example.javaserver.testing.repo.QuestionRepo;
+import com.example.javaserver.testing.services.QuestionService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

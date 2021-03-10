@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testService.new_version.models.Question;
+import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;

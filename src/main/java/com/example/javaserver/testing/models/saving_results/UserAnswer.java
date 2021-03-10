@@ -1,11 +1,8 @@
-package com.example.javaserver.testService.new_version.models.saving_results;
+package com.example.javaserver.testing.models.saving_results;
 
-import com.example.javaserver.testService.new_version.models.AnswerChoice;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "user_answers")

@@ -1,3 +1,4 @@
+/*
 package com.example.javaserver._startup;
 
 
@@ -123,12 +124,15 @@ public class StartupCommonData implements ApplicationListener<ContextRefreshedEv
 
 
 
-        /*StudyGroup group1 = new StudyGroup(0001,1,1,"ИВТАП-11","Инф и выч техника",2020);
+        */
+/*StudyGroup group1 = new StudyGroup(0001,1,1,"ИВТАП-11","Инф и выч техника",2020);
         StudyGroup group2 = new StudyGroup(0002,1,2,"ИВТАП-21","Инф и выч техника",2019);
         StudyGroup group3 = new StudyGroup(0003,1,3,"ИВТАП-31","Инф и выч техника",2018);
         studyGroupRepo.save(group1);
         studyGroupRepo.save(group2);
-        studyGroupRepo.save(group3);*/
+        studyGroupRepo.save(group3);*//*
+
 
     }
 }
+*/
