@@ -2,8 +2,8 @@ package com.example.javaserver.testing.controllers;
 
 
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.testing.models.InOutComingModels.AnswerInOut;
-import com.example.javaserver.testing.models.InOutComingModels.TestIn;
+import com.example.javaserver.testing.models.dto.AnswerInOut;
+import com.example.javaserver.testing.models.dto.TestIn;
 import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.testing.repo.QuestionRepo;
 import com.example.javaserver.testing.services.QuestionService;

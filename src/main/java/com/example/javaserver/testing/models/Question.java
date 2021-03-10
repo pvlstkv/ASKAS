@@ -4,7 +4,7 @@ package com.example.javaserver.testing.models;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.testing.configs.QuestionType;
-import com.example.javaserver.testing.models.InOutComingModels.QuestionIn;
+import com.example.javaserver.testing.models.dto.QuestionIn;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;

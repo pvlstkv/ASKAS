@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.models.InOutComingModels.passed_test;
+package com.example.javaserver.testing.models.dto.passed_test;
 
 import com.example.javaserver.testing.models.saving_results.PassedTest;
 

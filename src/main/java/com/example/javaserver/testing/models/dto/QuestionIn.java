@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.models.InOutComingModels;
+package com.example.javaserver.testing.models.dto;
 
 
 import com.example.javaserver.testing.configs.QuestionType;
