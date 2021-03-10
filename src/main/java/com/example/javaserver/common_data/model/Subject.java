@@ -40,6 +40,10 @@ public class Subject {
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
+    @JoinTable(
+            name = "teacher_subject",
+            joinColumns = {@JoinColumn(name = "subject_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> teachers;
 
 //    @OneToMany(mappedBy = "subject")

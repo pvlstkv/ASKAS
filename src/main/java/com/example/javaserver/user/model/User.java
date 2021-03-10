@@ -51,6 +51,10 @@ public class User implements Serializable {
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
+    @JoinTable(
+            name = "teacher_subject",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subject_id")})
     private Set<Subject> teachingSubjects;
 
     private UserRole role;
