@@ -21,13 +21,21 @@ public class UserI {
 
     private String phone;
 
-    private String studyGroupName;
+    private Long studyGroupId;
 
     private String departmentName;
 
     private UserRole role;
 
     public UserI() {
+    }
+
+    public Long getStudyGroupId() {
+        return studyGroupId;
+    }
+
+    public void setStudyGroupId(Long studyGroupId) {
+        this.studyGroupId = studyGroupId;
     }
 
     public UserI(User user) {
@@ -38,25 +46,10 @@ public class UserI {
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
         this.phone = user.getPhone();
-        this.studyGroupName = user.getFirstName();
         this.role = user.getRole();
 
     }
 
-    public UserI(String login, String password, String email, String firstName, String lastName, String patronymic,
-                 String phone, String studyGroupName, String departmentName, UserRole role) {
-
-        this.login = login;
-        this.password = password;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.patronymic = patronymic;
-        this.phone = phone;
-        this.studyGroupName = studyGroupName;
-        this.departmentName = departmentName;
-        this.role = role;
-    }
 
     public String getLogin() {
         return login;
@@ -114,10 +107,6 @@ public class UserI {
         this.phone = phone;
     }
 
-    public String getStudyGroupName() {
-        return studyGroupName;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -126,9 +115,6 @@ public class UserI {
         this.id = id;
     }
 
-    public void setStudyGroupName(String studyGroupName) {
-        this.studyGroupName = studyGroupName;
-    }
 
     public String getDepartmentName() {
         return departmentName;

@@ -1,3 +1,4 @@
+/*
 package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.Subject;
@@ -36,3 +37,4 @@ public class InitSubjectsAndThemes implements ApplicationListener<ContextRefresh
         }
     }
 }
+*/

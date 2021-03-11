@@ -24,7 +24,7 @@ public class DepartmentController {
         this.departmentService = departmentService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> create(
             @RequestHeader("token") String token,
             @RequestBody DepartmentIn departmentIn
@@ -85,7 +85,7 @@ public class DepartmentController {
         );
     }
 
-    @GetMapping("/criteria-search")
+    @PostMapping("/criteria-search")
     public ResponseEntity<?> criteriaSearch(
             @RequestHeader("token") String token,
             @RequestBody Set<SearchCriteria> criteria
@@ -97,7 +97,7 @@ public class DepartmentController {
         );
     }
 
-    @GetMapping("/search-by-ids")
+    @PostMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids

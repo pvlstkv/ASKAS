@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class StudyGroupI {
+
     private Integer code;
 
     private Integer groupNumber;
@@ -19,27 +20,16 @@ public class StudyGroupI {
 
     private Integer yearOfStudyStart;
 
-    private String nameDepartment;
+    private Long idDepartment;
     
     private Set<UserI> Students;
 
     public StudyGroupI() {
     }
 
-    public StudyGroupI(StudyGroup studyGroup) {
-        this.code = studyGroup.getCode();
-        this.groupNumber = studyGroup.getGroupNumber();
-        this.courseNumber = studyGroup.getCourseNumber();
-        this.shortName = studyGroup.getShortName();
-        this.fullName = studyGroup.getFullName();
-        this.yearOfStudyStart = studyGroup.getYearOfStudyStart();
-        if(studyGroup.getDepartment() != null){
-            this.nameDepartment = studyGroup.getDepartment().getShortName();
-        }
-        this.Students = studyGroup.getStudents().stream().map(user -> new UserI(user)).collect(Collectors.toSet());
+    public void setIdDepartment(Long idDepartment) {
+        this.idDepartment = idDepartment;
     }
-    
-
 
     public Integer getCode() {
         return code;
@@ -89,12 +79,8 @@ public class StudyGroupI {
         this.yearOfStudyStart = yearOfStudyStart;
     }
 
-    public String getNameDepartment() {
-        return nameDepartment;
-    }
-
-    public void setNameDepartment(String nameDepartment) {
-        this.nameDepartment = nameDepartment;
+    public Long getIdDepartment() {
+        return idDepartment;
     }
 
     public Set<UserI> getStudents() {

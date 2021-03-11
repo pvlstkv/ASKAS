@@ -1,14 +1,15 @@
+/*
 package com.example.javaserver._startup;
 
 
 import com.example.javaserver.common_data.model.*;
-import com.example.javaserver.common_data.repo.DepartmentRepo;
-import com.example.javaserver.common_data.repo.FacultyRepo;
-import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
+import com.example.javaserver.common_data.repo.*;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Component
 public class StartupCommonData implements ApplicationListener<ContextRefreshedEvent> {
@@ -16,12 +17,14 @@ public class StartupCommonData implements ApplicationListener<ContextRefreshedEv
     private final DepartmentRepo departmentRepo;
     private final SubjectRepo subjectRepo;
     private final SubjectSemesterRepo semesterRepo;
+    private final StudyGroupRepo studyGroupRepo;
 
-    public StartupCommonData(FacultyRepo facultyRepo, DepartmentRepo departmentRepo, SubjectRepo subjectRepo, SubjectSemesterRepo semesterRepo) {
+    public StartupCommonData(FacultyRepo facultyRepo, DepartmentRepo departmentRepo, SubjectRepo subjectRepo, SubjectSemesterRepo semesterRepo, StudyGroupRepo studyGroupRepo) {
         this.facultyRepo = facultyRepo;
         this.departmentRepo = departmentRepo;
         this.subjectRepo = subjectRepo;
         this.semesterRepo = semesterRepo;
+        this.studyGroupRepo = studyGroupRepo;
     }
 
     @Override
@@ -118,5 +121,18 @@ public class StartupCommonData implements ApplicationListener<ContextRefreshedEv
         semester6.setHasCourseWork(true);
         semester6.setHasCourseProject(false);
         semesterRepo.save(semester6);
+
+
+
+        */
+/*StudyGroup group1 = new StudyGroup(0001,1,1,"ИВТАП-11","Инф и выч техника",2020);
+        StudyGroup group2 = new StudyGroup(0002,1,2,"ИВТАП-21","Инф и выч техника",2019);
+        StudyGroup group3 = new StudyGroup(0003,1,3,"ИВТАП-31","Инф и выч техника",2018);
+        studyGroupRepo.save(group1);
+        studyGroupRepo.save(group2);
+        studyGroupRepo.save(group3);*//*
+
+
     }
 }
+*/

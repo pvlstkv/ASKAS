@@ -37,7 +37,7 @@ public class StudyGroupService {
 
     public ResponseEntity<?> create(StudyGroupI studyGroupI) {
         StudyGroup studyGroup = new StudyGroup(studyGroupI);
-        Optional<Department> department = departmentRepo.findByShortName(studyGroupI.getNameDepartment());
+        Optional<Department> department = departmentRepo.findById(studyGroupI.getIdDepartment());
         if(studyGroupRepo.existsByShortName(studyGroupI.getShortName())){
             return new ResponseEntity<>(new Message("Ошибка, данная группа уже существует"), HttpStatus.BAD_REQUEST);
         }
@@ -50,19 +50,12 @@ public class StudyGroupService {
         return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> get(Long id,String nameGroup){
+    public ResponseEntity<?> get(Long id){
         if(id != null){
             Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
             if(!studyGroup.isPresent()){
                 return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(studyGroup.get(), HttpStatus.OK);
-        }else if(nameGroup != null){
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(nameGroup);
-            if(!studyGroup.isPresent()){
-                return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
-            }
-            StudyGroup res = studyGroup.get();
             return new ResponseEntity<>(studyGroup.get(), HttpStatus.OK);
         }else {
             return new ResponseEntity<>(new Message("Такой группы не существует"), HttpStatus.BAD_REQUEST);
@@ -90,6 +83,6 @@ public class StudyGroupService {
 
         Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
         group.get().getSubjectSemesters().addAll(subjectSemesters);
-        return new ResponseEntity<>(new Message("Пользователи были добавлены в группу"), HttpStatus.OK);
+        return new ResponseEntity<>(new Message("Семестры были успешно добавлены для группы"), HttpStatus.OK);
     }
 }

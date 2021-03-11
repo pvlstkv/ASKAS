@@ -1,6 +1,5 @@
-package com.example.javaserver.testService.new_version.models.saving_results;
+package com.example.javaserver.testing.models.saving_results;
 
-import com.example.javaserver.testService.new_version.models.saving_results.PassedQuestion;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

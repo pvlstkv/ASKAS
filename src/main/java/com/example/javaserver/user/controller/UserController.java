@@ -46,6 +46,7 @@ public class UserController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String patronymic,
+            @RequestParam(required = false) String email,       // todo реализовать изменение мыла
             @RequestParam(required = false) String phone,
             @RequestParam(required = false) String studyGroupName,
             @RequestParam(required = false) String role

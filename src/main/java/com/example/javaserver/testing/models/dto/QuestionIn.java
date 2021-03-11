@@ -1,8 +1,8 @@
-package com.example.javaserver.testService.new_version.models.InOutComingModels;
+package com.example.javaserver.testing.models.dto;
 
 
-import com.example.javaserver.testService.new_version.configs.QuestionType;
-import com.example.javaserver.testService.new_version.models.Question;
+import com.example.javaserver.testing.configs.QuestionType;
+import com.example.javaserver.testing.models.Question;
 
 import java.util.List;
 

@@ -51,6 +51,10 @@ public class User implements Serializable {
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
+    @JoinTable(
+            name = "teacher_subject",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "subject_id")})
     private Set<Subject> teachingSubjects;
 
     private UserRole role;
@@ -59,6 +63,13 @@ public class User implements Serializable {
     //todo to add a gender!!!!!!
 
     public User() { }
+
+    public User(String login, String password, StudyGroup studyGroup, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.studyGroup = studyGroup;
+        this.role = role;
+    }
 
     public User(UserI userI){
         this.login = userI.getLogin();

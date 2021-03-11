@@ -23,7 +23,7 @@ public class FilesController {
         this.fileService = fileService;
     }
 
-    @PutMapping
+    @PostMapping
     public ResponseEntity<?> uploadFile(
             @RequestHeader("token") String token,
             @RequestParam("fileName") String name,

@@ -33,17 +33,15 @@ public class StudyGroupController {
     @GetMapping
     public ResponseEntity<?> getGroup(
             @RequestHeader("token") String token,
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) String nameGroup
+            @RequestParam(required = false) Long id
     ){
-        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(id,nameGroup),EnumSet.allOf(UserRole.class));
+        return requestHandlerService.proceed(token,userContext -> studyGroupService.get(id),EnumSet.allOf(UserRole.class));
     }
 
     @GetMapping("/list")
     public ResponseEntity<?> getListGroupStudy(){
         List<StudyGroup> studyGroups = (List<StudyGroup>) studyGroupRepo.findAll();
-        List<String> listNameStudyGroup = studyGroups.stream().map(studyGroup -> studyGroup.getShortName()).collect(Collectors.toList());
-        return new ResponseEntity<>(listNameStudyGroup, HttpStatus.OK);
+        return new ResponseEntity<>(studyGroups, HttpStatus.OK);
     }
 
 
@@ -73,10 +71,10 @@ public class StudyGroupController {
         );
     }
 
-    @PostMapping("/subject_semester_addition")
+    @PatchMapping("/subject_semester_addition")
     public ResponseEntity<?> addSubjectSemesters(
             @RequestHeader("token") String token,
-            @RequestParam("study_group_id") Long studyGroupId,
+            @RequestParam("id") Long studyGroupId,
             @RequestBody Set<Long> subjectSemesterIds
     ) {
         return requestHandlerService.proceed(

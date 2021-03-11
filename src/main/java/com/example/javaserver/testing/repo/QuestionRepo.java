@@ -1,9 +1,9 @@
-package com.example.javaserver.testService.new_version.repo;
+package com.example.javaserver.testing.repo;
 
 
 
 import com.example.javaserver.common_data.model.Theme;
-import com.example.javaserver.testService.new_version.models.Question;
+import com.example.javaserver.testing.models.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testService.new_version.models.Question;
+import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -40,6 +40,10 @@ public class Subject {
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
+    @JoinTable(
+            name = "teacher_subject",
+            joinColumns = {@JoinColumn(name = "subject_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> teachers;
 
 //    @OneToMany(mappedBy = "subject")
