@@ -1,4 +1,4 @@
-/*
+
 package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.Subject;
@@ -14,7 +14,7 @@ import java.util.*;
 public class InitSubjectsAndThemes implements ApplicationListener<ContextRefreshedEvent> {
 
     private final SubjectRepo subjectRepo;
-    private List<String> themes = new ArrayList<String>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
+    private final List<String> themes = new ArrayList<String>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
 
     public InitSubjectsAndThemes(SubjectRepo subjectRepo) {
         this.subjectRepo = subjectRepo;
@@ -37,4 +37,4 @@ public class InitSubjectsAndThemes implements ApplicationListener<ContextRefresh
         }
     }
 }
-*/
+

@@ -54,12 +54,8 @@ public class QuestionService {
 
     private final String questionDoesntExist = "Вопрос с ";
 
-    public ResponseEntity<?> createQuestions(TestIn testIn, String token) {
-        return requestHandlerService.proceed(token, userContext -> addQuestions2TheDB(testIn),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-    }
 
-    private ResponseEntity<?> addQuestions2TheDB(TestIn testIn) {
+    public ResponseEntity<?> createQuestions(TestIn testIn) {
         Question newQuestion;
         Long l = testIn.getSubjectId();
         Subject tempSubject = (subjectRepo.findById(l)
@@ -83,12 +79,7 @@ public class QuestionService {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> updateQuestions(TestIn testIn, String token) {
-        return requestHandlerService.proceed(token, userContext -> refreshQuestionsInTheDB(testIn),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-    }
-
-    private ResponseEntity<?> refreshQuestionsInTheDB(TestIn testIn) {
+    public ResponseEntity<?> updateQuestions(TestIn testIn) {
         Optional<Question> oldQuestion;
         Question newQuestion;
         Subject tempSubject = (subjectRepo.findById(testIn.getSubjectId()))
@@ -116,43 +107,18 @@ public class QuestionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteManyQuestions(List<Long> ids, String token) {
-        return requestHandlerService.proceed(token, userContext -> removeQuestionsInTheDB(ids),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-    }
 
-    private ResponseEntity<?> removeQuestionsInTheDB(List<Long> ids) {
+    public ResponseEntity<?> deleteManyQuestions(List<Long> ids) {
         for (Long id : ids) {
             questionRepo.deleteById(id);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteAllQuestions(String token) {
-        return requestHandlerService.proceed(token,
-                userContext -> {
-                    questionRepo.deleteAll();
-                    return new ResponseEntity<>(HttpStatus.OK);
-                },
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-    }
 
-    public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions, String token) {
-        return requestHandlerService.proceed(token, userContext -> makeTestFromDBQuestions(subjectId, themeId, countOfQuestions),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
-    }
-
-    private ResponseEntity<?> makeTestFromDBQuestions(Long subjectId, Long themeId, int countOfQuestions) {
-
+    public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions) {
         if (countOfQuestions < 1)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        // it's not necessary because every theme is unique
-//        Subject tempSubject = (subjectRepo.findById(subjectId))
-//                .orElse(null);
-//        if (tempSubject == null) {
-//            String response = String.format("Предмета" + doesntExistById, subjectId);
-//            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-//        }
         Optional<Theme> theme = themeRepo.findById(themeId);
         if (!theme.isPresent()) {
             String response = String.format("Темы" + doesntExistById, themeId);
@@ -169,12 +135,7 @@ public class QuestionService {
         return new ResponseEntity<>(questionsOut, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> checkTest(List<AnswerInOut> userTest, String token) {
-        return requestHandlerService.proceed(token, userContext -> checkingAnswers(userTest, userContext),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
-    }
-
-    private ResponseEntity<ResultOut> checkingAnswers(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
+    public ResponseEntity<ResultOut> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
         Question currentCheckingQuestion;
         Optional<Question> optionalQuestion;
         CheckedQuestion checkedQuestion;
@@ -285,13 +246,8 @@ public class QuestionService {
         return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), rightSequence), rightAnswersCounter);
     }
 
-    public ResponseEntity<?> fetchUserPassedTest(String token) {
-        return requestHandlerService.proceed(token, userContext -> formUserPassedTest(userContext),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
 
-    }
-
-    private ResponseEntity<?> formUserPassedTest(UserContext userContext) {
+    public ResponseEntity<?> formUserPassedTest(UserContext userContext) {
         User user = fetchUser(userContext);
         if (user == null) {
             String response = String.format("Пользователя" + doesntExistById, userContext.getUserId());
@@ -303,36 +259,29 @@ public class QuestionService {
         return new ResponseEntity<>(passedTests, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> fetchSubjectThemes(Long subjectId, String token) {
-        return requestHandlerService.proceed(token, userContext -> {
-                    Subject tempSubject = (subjectRepo.findById(subjectId)
-                            .orElse(null));
-                    if (tempSubject == null) {
-                        String response = String.format("Предмета" + doesntExistById, subjectId);
-                        return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-                    }
-                    List<Theme> themes = themeRepo.findAllBySubjectId(subjectId);
-                    return new ResponseEntity<>(themes, HttpStatus.OK);
-                },
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
-
+    public ResponseEntity<?> fetchSubjectThemes(Long subjectId) {
+        Subject tempSubject = (subjectRepo.findById(subjectId)
+                .orElse(null));
+        if (tempSubject == null) {
+            String response = String.format("Предмета" + doesntExistById, subjectId);
+            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        List<Theme> themes = themeRepo.findAllBySubjectId(subjectId);
+        return new ResponseEntity<>(themes, HttpStatus.OK);
     }
 
 
-//    public ResponseEntity<?> findAllBySubjectAndTheme(String subject, String theme, String token) {
-//        return requestHandlerService.proceed(token, userContext -> fetchAllQuestionsFromDB(subject, theme),
-//                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
-//    }
-//
-//    private ResponseEntity<?> fetchAllQuestionsFromDB(String subject, String theme) {
-//        Optional<Subject> tempSubject = subjectRepo.findByName(subject);
-//        if (!tempSubject.isPresent()) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        Integer idOfSubject = tempSubject.get().getId();
-//        Iterable<Question> questions = questionRepo.findAllByIdAndTheme(idOfSubject.longValue(), theme);
-//        return new ResponseEntity<>(questions, HttpStatus.OK);
-//    }
+    public ResponseEntity<?> deleteAllQuestions() {
+        questionRepo.deleteAll();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<?> fetchAllQuestions() {
+        List<Question> question = questionRepo.findAll();
+        return new ResponseEntity<>(question, HttpStatus.OK);
+    }
+
 
     private User fetchUser(UserContext userContext) {
         Optional<User> user = userRepo.findById(userContext.getUserId());
