@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,7 +19,7 @@ public class PassedTest implements Serializable {
     @JsonIgnore
     private User user;
     @OneToMany(mappedBy = "passedTest", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PassedQuestion> passedQuestions;
+    private List<PassedQuestion> passedQuestions;
 
     private OffsetDateTime passedAt;
     private Integer ratingInPercent;
@@ -42,11 +43,11 @@ public class PassedTest implements Serializable {
         this.user = user;
     }
 
-    public Set<PassedQuestion> getPassedQuestions() {
+    public List<PassedQuestion> getPassedQuestions() {
         return passedQuestions;
     }
 
-    public void setPassedQuestions(Set<PassedQuestion> passedQuestions) {
+    public void setPassedQuestions(List<PassedQuestion> passedQuestions) {
         this.passedQuestions = passedQuestions;
     }
 

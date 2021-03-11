@@ -74,6 +74,10 @@ public class Subject {
         this.name = name;
     }
 
+    public Subject(Long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

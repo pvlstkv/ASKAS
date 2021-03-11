@@ -4,74 +4,48 @@ import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.testing.models.dto.*;
-import com.example.javaserver.testing.models.dto.passed_test.TestOut;
 import com.example.javaserver.testing.models.Question;
-import com.example.javaserver.testing.models.saving_results.PassedQuestion;
-import com.example.javaserver.testing.models.saving_results.PassedTest;
-import com.example.javaserver.testing.models.saving_results.UserAnswer;
-import com.example.javaserver.testing.repo.PassedTestRepo;
+import com.example.javaserver.testing.models.dto.QuestionIn;
+import com.example.javaserver.testing.models.dto.TestIn;
 import com.example.javaserver.testing.repo.QuestionRepo;
 import com.example.javaserver.testing.repo.ThemeRepo;
-import com.example.javaserver.testing.services.models.CheckedQuestion;
-import com.example.javaserver.user.model.User;
-import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.javaserver.testing.services.models.ResultOfSomethingChecking;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 public class QuestionService {
 
-    @Autowired
-    private PassedTestRepo passedTestRepo;
+    private final QuestionRepo questionRepo;
 
-    @Autowired
-    private UserRepo userRepo;
+    private final SubjectRepo subjectRepo;
 
-    @Autowired
-    private QuestionRepo questionRepo;
-
-    @Autowired
-    private SubjectRepo subjectRepo;
-
-    @Autowired
-    private ThemeRepo themeRepo;
-
-    @Autowired
-    private RequestHandlerService requestHandlerService;
+    private final ThemeRepo themeRepo;
 
     private final String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.";
 
-    private final String questionDoesntExist = "Вопрос с ";
+
+    public QuestionService(QuestionRepo questionRepo, SubjectRepo subjectRepo, ThemeRepo themeRepo, ResultOfSomethingChecking result) {
+        this.questionRepo = questionRepo;
+        this.subjectRepo = subjectRepo;
+        this.themeRepo = themeRepo;
+    }
 
 
     public ResponseEntity<?> createQuestions(TestIn testIn) {
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+        // it's need to check a subject and theme
+        ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
+        if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
         Question newQuestion;
-        Long l = testIn.getSubjectId();
-        Subject tempSubject = (subjectRepo.findById(l)
-                .orElse(null));
-        if (tempSubject == null) {
-            String response = String.format("Предмета" + doesntExistById, testIn.getSubjectId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        Optional<Theme> theme = themeRepo.findById(testIn.getThemeId());
-        if (!theme.isPresent()) {
-            String response = String.format("Темы" + doesntExistById, testIn.getThemeId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
-            newQuestion = new Question(oneRawQuestion, tempSubject, theme.get());
+            newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
             Question finalNewQuestion = newQuestion;
             newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
             questionRepo.save(newQuestion);
@@ -80,28 +54,20 @@ public class QuestionService {
     }
 
     public ResponseEntity<?> updateQuestions(TestIn testIn) {
-        Optional<Question> oldQuestion;
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+        // it's need to check a subject and theme
+        ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
+        if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
         Question newQuestion;
-        Subject tempSubject = (subjectRepo.findById(testIn.getSubjectId()))
-                .orElse(null);
-        if (tempSubject == null) {
-            String response = String.format("Предмета" + doesntExistById, testIn.getSubjectId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        Optional<Theme> theme = themeRepo.findById(testIn.getThemeId());
-        if (!theme.isPresent()) {
-            String response = String.format("Темы" + doesntExistById, testIn.getThemeId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
-            oldQuestion = questionRepo.findById(oneRawQuestion.getId());
-            if (!oldQuestion.isPresent()) {
-                String response = String.format("Вопроса" + doesntExistById, testIn.getSubjectId());
-                return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+            ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo, checkResult);
+            if (!checkResult.getItsOK()) {
+                return checkResult.getResponseEntity();
             }
-            newQuestion = new Question(oneRawQuestion, tempSubject, theme.get());
+            newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
             Question finalNewQuestion = newQuestion;
-            newQuestion.getAnswerChoiceList().stream().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
+            newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
             questionRepo.save(newQuestion);
         }
         return new ResponseEntity<>(HttpStatus.OK);
@@ -113,150 +79,6 @@ public class QuestionService {
             questionRepo.deleteById(id);
         }
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-
-    public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions) {
-        if (countOfQuestions < 1)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        Optional<Theme> theme = themeRepo.findById(themeId);
-        if (!theme.isPresent()) {
-            String response = String.format("Темы" + doesntExistById, themeId);
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        List<Question> questions4Test = questionRepo.findAllByTheme(theme.get());
-        Collections.shuffle(questions4Test);
-        countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
-        questions4Test = questions4Test.subList(0, countOfQuestions);
-        List<QuestionOut> questionsOut = new ArrayList<>();
-        for (Question originalQuestion : questions4Test) {
-            questionsOut.add(new QuestionOut(originalQuestion));
-        }
-        return new ResponseEntity<>(questionsOut, HttpStatus.OK);
-    }
-
-    public ResponseEntity<ResultOut> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
-        Question currentCheckingQuestion;
-        Optional<Question> optionalQuestion;
-        CheckedQuestion checkedQuestion;
-        List<AnswerInOut> answerInOutList = new ArrayList<>();
-
-        PassedTest passedTest = new PassedTest();
-        Set<PassedQuestion> passedQuestions = new HashSet<>();
-        passedTest.setPassedQuestions(passedQuestions);
-        PassedQuestion currentPassedQuestion = new PassedQuestion();
-        List<UserAnswer> userAnswers = new ArrayList<>();
-        double totalRating = 0.0;
-        for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
-            userAnswers.clear();
-            optionalQuestion = questionRepo.findById(oneAnswer.getQuestionId());
-            if (!optionalQuestion.isPresent()) {
-                answerInOutList.add(new AnswerInOut(oneAnswer.getQuestionId(), null));
-            }
-            currentPassedQuestion = new PassedQuestion();
-            currentCheckingQuestion = optionalQuestion.get();
-            currentPassedQuestion.setQuestion(currentCheckingQuestion);
-            currentPassedQuestion.setPassedTest(passedTest);
-            switch (currentCheckingQuestion.getQuestionType()) {
-                case MATCH:
-                    // todo there are some problems...
-                    break;
-                case WRITE:
-                case CHOOSE:
-                    checkedQuestion = checkChooseAndWriteTypeQuestion(currentCheckingQuestion,
-                            oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
-                    totalRating += checkedQuestion.getRating();
-                    answerInOutList.add(checkedQuestion.getAnswerInOut());
-                    break;
-                case SEQUENCE:
-                    checkedQuestion = checkSequenceTypeQuestion(currentCheckingQuestion,
-                            oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
-                    totalRating += checkedQuestion.getRating();
-                    answerInOutList.add(checkedQuestion.getAnswerInOut());
-                    break;
-            }
-            addAPassedQuestion(passedTest, passedQuestions, currentPassedQuestion, userAnswers);
-        }
-        int resInPercent = (int) Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
-        ResultOut res = new ResultOut(answerInOutList, resInPercent);
-        saveTest(userContext, passedTest, passedQuestions, resInPercent);
-        return new ResponseEntity<>(res, HttpStatus.OK);
-    }
-
-    private void addAPassedQuestion(PassedTest passedTest, Set<PassedQuestion> passedQuestions, PassedQuestion currentPassedQuestion, List<UserAnswer> userAnswers) {
-        currentPassedQuestion.setUserAnswers(new HashSet<>(userAnswers));
-        currentPassedQuestion.setPassedTest(passedTest);
-        passedQuestions.add(currentPassedQuestion);
-    }
-
-    private void saveTest(UserContext userContext, PassedTest passedTest, Set<PassedQuestion> passedQuestions, int resInPercent) {
-        passedTest.setPassedQuestions(passedQuestions);
-        passedTest.setUser(fetchUser(userContext));
-        passedTest.setRating(resInPercent);
-        passedTest.setPassedAt(OffsetDateTime.now());
-        passedTestRepo.save(passedTest);
-    }
-
-    private CheckedQuestion checkChooseAndWriteTypeQuestion(Question checkingQuestion,
-                                                            List<String> listOfUserAnswers,
-                                                            PassedQuestion passedQuestion,
-                                                            List<UserAnswer> userAnswers4Saving) {
-        double rightAnswersCounter = 0;
-        List<String> listOfRightAnswers = checkingQuestion.fetchRightAnswers();
-        boolean userAnswerIsRight;
-        for (String userAnswer : listOfUserAnswers) {
-            userAnswerIsRight = false;
-            for (String rightAnswer : listOfRightAnswers) {
-                if (rightAnswer.equals(userAnswer)) {
-                    userAnswerIsRight = true;
-                    // if user gave right answers more than in the original question, then the answer is making true and adding points
-                    if (listOfUserAnswers.size() <= listOfRightAnswers.size()) {
-                        rightAnswersCounter += 1.0 / listOfRightAnswers.size();
-                    }
-                    break;
-                }
-            }
-            userAnswers4Saving.add(new UserAnswer(userAnswer, userAnswerIsRight, passedQuestion));
-        }
-        AnswerInOut out = new AnswerInOut(checkingQuestion.getId(), listOfRightAnswers);
-        return new CheckedQuestion(out, rightAnswersCounter);
-    }
-
-    private CheckedQuestion checkSequenceTypeQuestion(Question checkingQuestion,
-                                                      List<String> listOfUserAnswers,
-                                                      PassedQuestion passedQuestion,
-                                                      List<UserAnswer> userAnswers4Saving) {
-        double rightAnswersCounter = 0;
-        List<String> rightSequence = checkingQuestion.fetchRightAnswers();
-        int sizeRS = rightSequence.size();
-        if (listOfUserAnswers.size() != sizeRS) {
-            userAnswers4Saving = listOfUserAnswers.stream().map(item -> new UserAnswer(item, false, passedQuestion))
-                    .collect(Collectors.toList());
-            return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), listOfUserAnswers), 0.0);
-        }
-        for (int i = 0; i < sizeRS; i++) {
-            if (rightSequence.get(i).equals(listOfUserAnswers.get(i))) {
-                rightAnswersCounter += 1.0 / sizeRS;
-                userAnswers4Saving.add(new UserAnswer(listOfUserAnswers.get(i), true, passedQuestion));
-            } else {
-                userAnswers4Saving.forEach(item -> item.setRight(false));
-                break;
-            }
-        }
-        return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), rightSequence), rightAnswersCounter);
-    }
-
-
-    public ResponseEntity<?> formUserPassedTest(UserContext userContext) {
-        User user = fetchUser(userContext);
-        if (user == null) {
-            String response = String.format("Пользователя" + doesntExistById, userContext.getUserId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.BAD_REQUEST);
-        }
-        List<PassedTest> passedTests = passedTestRepo.findAllByUser(user);
-        TestOut testOut = new TestOut();
-        testOut.setPassedTests(passedTests);
-        return new ResponseEntity<>(passedTests, HttpStatus.OK);
     }
 
     public ResponseEntity<?> fetchSubjectThemes(Long subjectId) {
@@ -282,10 +104,111 @@ public class QuestionService {
         return new ResponseEntity<>(question, HttpStatus.OK);
     }
 
+//    private ResultOfSubjectAndThemeChecking checkSubjectAndTheme(Long subjectId, Long themeId) {
+//        Subject tempSubject = (subjectRepo.findById(subjectId)
+//                .orElse(null));
+//        ResultOfSubjectAndThemeChecking result = new ResultOfSubjectAndThemeChecking();
+//        if (tempSubject == null) {
+//            String response = String.format("Предмета" + doesntExistById, subjectId);
+//            result.setItsOK(false);
+//            result.setResponseEntity(new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY));
+//            return result;
+//        }
+//        Optional<Theme> theme = themeRepo.findById(themeId);
+//        if (!theme.isPresent()) {
+//            String response = String.format("Темы" + doesntExistById, themeId);
+//            result.setItsOK(false);
+//            result.setResponseEntity(new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY));
+//            return result;
+//        }
+//        result.setItsOK(true);
+//        result.setSubject(tempSubject);
+//        result.setTheme(theme.get());
+//        return result;
+//    }
 
-    private User fetchUser(UserContext userContext) {
-        Optional<User> user = userRepo.findById(userContext.getUserId());
-        return user.orElse(null);
-    }
-
+//    private <T> void checkIfExistsInDB(T something, ResultOfSubjectAndThemeChecking result) {
+//        if (something instanceof Subject) {
+//            Subject tempSubject = (subjectRepo.findById(((Subject) something).getId()).orElse(null));
+//            if (tempSubject == null) {
+//                String response = String.format("Предмета" + doesntExistById, ((Subject) something).getId());
+//                result.setItsOK(false);
+//                result.setResponseEntity(new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY));
+//            }
+//            result.setItsOK(true);
+//            result.setSubject(tempSubject);
+//        }
+//        if (something instanceof Theme) {
+//            Optional<Theme> theme = themeRepo.findById(((Theme) something).getId());
+//            if (!theme.isPresent()) {
+//                String response = String.format("Темы" + doesntExistById, ((Theme) something).getId());
+//                result.setItsOK(false);
+//                result.setResponseEntity(new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY));
+//            }
+//            result.setItsOK(true);
+//            result.setTheme(theme.get());
+//        }
+//        if (something instanceof Question) {
+//            Optional<Question> question = questionRepo.findById(((Question) something).getId());
+//            if (!question.isPresent()) {
+//                String response = String.format("Вопроса" + doesntExistById, ((Question) something).getId());
+//                result.setItsOK(false);
+//                result.setResponseEntity(new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY));
+//            }
+//            result.setItsOK(true);
+//            result.setQuestion(question.get());
+//        }
+//        result.setItsOK(false);
+//    }
+//}
+//
+//class ResultOfSubjectAndThemeChecking {
+//    private Subject subject;
+//    private Theme theme;
+//    private Question question;
+//    private ResponseEntity<?> responseEntity;
+//    private Boolean itsOK;
+//
+//    public ResultOfSubjectAndThemeChecking() {
+//    }
+//
+//    public Boolean getItsOK() {
+//        return itsOK;
+//    }
+//
+//    public void setItsOK(Boolean itsOK) {
+//        this.itsOK = itsOK;
+//    }
+//
+//    public Question getQuestion() {
+//        return question;
+//    }
+//
+//    public void setQuestion(Question question) {
+//        this.question = question;
+//    }
+//
+//    public Subject getSubject() {
+//        return subject;
+//    }
+//
+//    public void setSubject(Subject subject) {
+//        this.subject = subject;
+//    }
+//
+//    public Theme getTheme() {
+//        return theme;
+//    }
+//
+//    public void setTheme(Theme theme) {
+//        this.theme = theme;
+//    }
+//
+//    public ResponseEntity<?> getResponseEntity() {
+//        return responseEntity;
+//    }
+//
+//    public void setResponseEntity(ResponseEntity<?> responseEntity) {
+//        this.responseEntity = responseEntity;
+//    }
 }

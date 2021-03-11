@@ -6,6 +6,8 @@ import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.testing.models.dto.AnswerInOut;
 import com.example.javaserver.testing.models.dto.TestIn;
 import com.example.javaserver.testing.services.QuestionService;
+import com.example.javaserver.testing.services.ResultService;
+import com.example.javaserver.testing.services.TestService;
 import com.example.javaserver.user.model.UserRole;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +22,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/testing/")
-public class QuestionController {
+public class TestingController {
 
-    @Autowired
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
-    @Autowired
-    private RequestHandlerService requestHandlerService;
+    private final ResultService resultService;
+
+    private final TestService testService;
+
+    private final RequestHandlerService requestHandlerService;
+
+    public TestingController(QuestionService questionService, ResultService resultService, TestService testService, RequestHandlerService requestHandlerService) {
+        this.questionService = questionService;
+        this.resultService = resultService;
+        this.testService = testService;
+        this.requestHandlerService = requestHandlerService;
+    }
 
     @GetMapping("/hello")
     public ResponseEntity<?> hi() {
@@ -57,7 +68,7 @@ public class QuestionController {
     @GetMapping("/questions")
     public ResponseEntity<?> fetchThemesBySubjectId(@RequestParam(value = "subj_id") Long id,
                                                     @RequestHeader(name = "token") String token) {
-        return requestHandlerService.proceed(token, userContext ->questionService.fetchSubjectThemes(id),
+        return requestHandlerService.proceed(token, userContext -> questionService.fetchSubjectThemes(id),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
@@ -82,7 +93,7 @@ public class QuestionController {
             @RequestParam(value = "limit") Integer countOfQuestions,
             @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
-                        questionService.createTest(subjectId, themeId, countOfQuestions),
+                        testService.createTest(subjectId, themeId, countOfQuestions),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
@@ -90,14 +101,14 @@ public class QuestionController {
     public ResponseEntity<?> checkTest(@RequestBody List<AnswerInOut> userTest,
                                        @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
-                        questionService.checkTest(userTest, userContext),
+                        testService.checkTest(userTest, userContext),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
     @GetMapping("/test/result")
     public ResponseEntity<?> fetchPassedTests(@RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
-                        questionService.formUserPassedTest(userContext),
+                        resultService.formUserPassedTest(userContext),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
 
     }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,21 +20,21 @@ public class PassedQuestion implements Serializable {
     @OneToOne
     private Question question;
     @OneToMany(mappedBy = "passedQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserAnswer> userAnswers;
+    private List<UserAnswer> userAnswers;
 
 
     @ManyToOne()
     @JsonIgnore
     private PassedTest passedTest;
 
-    public PassedQuestion(Long id, Question question, PassedTest passedTest, Set<UserAnswer> userAnswers) {
+    public PassedQuestion(Long id, Question question, PassedTest passedTest, List<UserAnswer> userAnswers) {
         this.id = id;
         this.question = question;
         this.passedTest = passedTest;
         this.userAnswers = userAnswers;
     }
 
-    public PassedQuestion(Question question, PassedTest passedTest, Set<UserAnswer> userAnswers) {
+    public PassedQuestion(Question question, PassedTest passedTest, List<UserAnswer> userAnswers) {
         this.question = question;
         this.passedTest = passedTest;
         this.userAnswers = userAnswers;
@@ -66,11 +67,11 @@ public class PassedQuestion implements Serializable {
         this.question = question;
     }
 
-    public Set<UserAnswer> getUserAnswers() {
+    public List<UserAnswer> getUserAnswers() {
         return userAnswers;
     }
 
-    public void setUserAnswers(Set<UserAnswer> userAnswers) {
+    public void setUserAnswers(List<UserAnswer> userAnswers) {
         this.userAnswers = userAnswers;
     }
 }

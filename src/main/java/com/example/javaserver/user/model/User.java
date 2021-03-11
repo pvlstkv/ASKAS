@@ -71,6 +71,10 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    public User(Integer id) {
+        this.id = id;
+    }
+
     public User(UserI userI){
         this.login = userI.getLogin();
         this.password = userI.getPassword();
