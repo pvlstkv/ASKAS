@@ -93,7 +93,7 @@ public class TestingController {
             @RequestParam(value = "limit") Integer countOfQuestions,
             @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
-                        testService.createTest(subjectId, themeId, countOfQuestions),
+                        testService.createTest(themeId, countOfQuestions),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
     }
 
@@ -107,8 +107,7 @@ public class TestingController {
 
     @GetMapping("/test/result")
     public ResponseEntity<?> fetchPassedTests(@RequestHeader(name = "token") String token) {
-        return requestHandlerService.proceed(token, userContext ->
-                        resultService.formUserPassedTest(userContext),
+        return requestHandlerService.proceed(token, resultService::formUserPassedTest,
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
 
     }

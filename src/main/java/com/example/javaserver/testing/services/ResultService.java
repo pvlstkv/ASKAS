@@ -2,11 +2,8 @@ package com.example.javaserver.testing.services;
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.testing.models.dto.passed_test.TestOut;
 import com.example.javaserver.testing.models.saving_results.PassedTest;
 import com.example.javaserver.testing.repo.PassedTestRepo;
-import com.example.javaserver.testing.repo.QuestionRepo;
-import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.testing.services.models.ResultOfSomethingChecking;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -38,8 +35,6 @@ public class ResultService {
             return new ResponseEntity<>(new Message(response), HttpStatus.BAD_REQUEST);
         }
         List<PassedTest> passedTests = passedTestRepo.findAllByUser(user);
-        TestOut testOut = new TestOut();
-        testOut.setPassedTests(passedTests);
         return new ResponseEntity<>(passedTests, HttpStatus.OK);
     }
 

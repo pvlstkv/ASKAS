@@ -1,20 +1,16 @@
 package com.example.javaserver.testing.services;
 
-import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.Theme;
-import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.testing.models.dto.AnswerInOut;
 import com.example.javaserver.testing.models.dto.QuestionOut;
-import com.example.javaserver.testing.models.dto.ResultOut;
 import com.example.javaserver.testing.models.saving_results.PassedQuestion;
 import com.example.javaserver.testing.models.saving_results.PassedTest;
 import com.example.javaserver.testing.models.saving_results.UserAnswer;
 import com.example.javaserver.testing.repo.PassedTestRepo;
 import com.example.javaserver.testing.repo.QuestionRepo;
 import com.example.javaserver.testing.repo.ThemeRepo;
-import com.example.javaserver.testing.services.models.CheckedQuestion;
 import com.example.javaserver.testing.services.models.ResultOfSomethingChecking;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -23,8 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 @Service
 public class TestService {
     private final PassedTestRepo passedTestRepo;
@@ -42,7 +42,7 @@ public class TestService {
         this.questionRepo = questionRepo;
     }
 
-    public ResponseEntity<?> createTest(Long subjectId, Long themeId, int countOfQuestions) {
+    public ResponseEntity<?> createTest(Long themeId, int countOfQuestions) {
         if (countOfQuestions < 1)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         ResultOfSomethingChecking result = new ResultOfSomethingChecking();
@@ -60,27 +60,19 @@ public class TestService {
     }
 
     public ResponseEntity<?> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
-        Question currentCheckingQuestion;
-        Optional<Question> optionalQuestion;
-        CheckedQuestion checkedQuestion;
-//        List<AnswerInOut> answerInOutList = new ArrayList<>();
-
         PassedTest passedTest = new PassedTest();
-//        Set<PassedQuestion> passedQuestions = new TreeSet<>();
         List<PassedQuestion> passedQuestions = new ArrayList<>();
-//        passedTest.setPassedQuestions(passedQuestions);
-        PassedQuestion currentPassedQuestion = new PassedQuestion();
         List<UserAnswer> userAnswers = new ArrayList<>();
         double totalRating = 0.0;
         for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
             userAnswers.clear();
             ResultOfSomethingChecking result = new ResultOfSomethingChecking();
             ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, result);
-            if (!result.getItsOK()){
+            if (!result.getItsOK()) {
                 return result.getResponseEntity();
             }
-            currentPassedQuestion = new PassedQuestion();
-            currentCheckingQuestion = result.getQuestion();
+            PassedQuestion currentPassedQuestion = new PassedQuestion();
+            Question currentCheckingQuestion = result.getQuestion();
             currentPassedQuestion.setQuestion(currentCheckingQuestion);
             currentPassedQuestion.setPassedTest(passedTest);
             switch (currentCheckingQuestion.getQuestionType()) {
@@ -89,33 +81,30 @@ public class TestService {
                     break;
                 case WRITE:
                 case CHOOSE:
-                    checkedQuestion = checkChooseAndWriteTypeQuestion(currentCheckingQuestion,
+                    totalRating += checkChooseAndWriteTypeQuestion(currentCheckingQuestion,
                             oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
-                    totalRating += checkedQuestion.getRating();
-//                    answerInOutList.add(checkedQuestion.getAnswerInOut());
                     break;
                 case SEQUENCE:
-                    checkedQuestion = checkSequenceTypeQuestion(currentCheckingQuestion,
+                    totalRating += checkSequenceTypeQuestion(currentCheckingQuestion,
                             oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
-                    totalRating += checkedQuestion.getRating();
-//                    answerInOutList.add(checkedQuestion.getAnswerInOut());
                     break;
             }
             addAPassedQuestion(passedTest, passedQuestions, currentPassedQuestion, new ArrayList<>(userAnswers));
         }
         int resInPercent = (int) Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
-//        ResultOut res = new ResultOut(answerInOutList, resInPercent);
         saveTest(userContext, passedTest, passedQuestions, resInPercent);
         return new ResponseEntity<>(passedTest, HttpStatus.OK);
     }
 
-    private void addAPassedQuestion(PassedTest passedTest, List<PassedQuestion> passedQuestions, PassedQuestion currentPassedQuestion, List<UserAnswer> userAnswers) {
+    private void addAPassedQuestion(PassedTest passedTest, List<PassedQuestion> passedQuestions,
+                                    PassedQuestion currentPassedQuestion, List<UserAnswer> userAnswers) {
         currentPassedQuestion.setUserAnswers(userAnswers);
         currentPassedQuestion.setPassedTest(passedTest);
         passedQuestions.add(currentPassedQuestion);
     }
 
-    private void saveTest(UserContext userContext, PassedTest passedTest, List<PassedQuestion> passedQuestions, int resInPercent) {
+    private void saveTest(UserContext userContext, PassedTest passedTest,
+                          List<PassedQuestion> passedQuestions, int resInPercent) {
         passedTest.setPassedQuestions(passedQuestions);
         passedTest.setUser(fetchUser(userContext));
         passedTest.setRating(resInPercent);
@@ -123,10 +112,10 @@ public class TestService {
         passedTestRepo.save(passedTest);
     }
 
-    private CheckedQuestion checkChooseAndWriteTypeQuestion(Question checkingQuestion,
-                                                            List<String> listOfUserAnswers,
-                                                            PassedQuestion passedQuestion,
-                                                            List<UserAnswer> userAnswers4Saving) {
+    private double checkChooseAndWriteTypeQuestion(Question checkingQuestion,
+                                                   List<String> listOfUserAnswers,
+                                                   PassedQuestion passedQuestion,
+                                                   List<UserAnswer> userAnswers4Saving) {
         double rightAnswersCounter = 0;
         List<String> listOfRightAnswers = checkingQuestion.fetchRightAnswers();
         boolean userAnswerIsRight;
@@ -144,21 +133,20 @@ public class TestService {
             }
             userAnswers4Saving.add(new UserAnswer(userAnswer, userAnswerIsRight, passedQuestion));
         }
-        AnswerInOut out = new AnswerInOut(checkingQuestion.getId(), listOfRightAnswers);
-        return new CheckedQuestion(out, rightAnswersCounter);
+        return rightAnswersCounter;
     }
 
-    private CheckedQuestion checkSequenceTypeQuestion(Question checkingQuestion,
-                                                      List<String> listOfUserAnswers,
-                                                      PassedQuestion passedQuestion,
-                                                      List<UserAnswer> userAnswers4Saving) {
+    private double checkSequenceTypeQuestion(Question checkingQuestion,
+                                             List<String> listOfUserAnswers,
+                                             PassedQuestion passedQuestion,
+                                             List<UserAnswer> userAnswers4Saving) {
         double rightAnswersCounter = 0;
         List<String> rightSequence = checkingQuestion.fetchRightAnswers();
         int sizeRS = rightSequence.size();
         if (listOfUserAnswers.size() != sizeRS) {
             userAnswers4Saving = listOfUserAnswers.stream().map(item -> new UserAnswer(item, false, passedQuestion))
                     .collect(Collectors.toList());
-            return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), listOfUserAnswers), 0.0);
+            return 0.0;
         }
         for (int i = 0; i < sizeRS; i++) {
             if (rightSequence.get(i).equals(listOfUserAnswers.get(i))) {
@@ -169,7 +157,7 @@ public class TestService {
                 break;
             }
         }
-        return new CheckedQuestion(new AnswerInOut(checkingQuestion.getId(), rightSequence), rightAnswersCounter);
+        return rightAnswersCounter;
     }
 
     private User fetchUser(UserContext userContext) {

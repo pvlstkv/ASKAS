@@ -42,12 +42,10 @@ public class QuestionService {
         ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
         ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
         if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
-        Question newQuestion;
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
-            newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
-            Question finalNewQuestion = newQuestion;
-            newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
+            Question newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
+            newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(newQuestion));
             questionRepo.save(newQuestion);
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
