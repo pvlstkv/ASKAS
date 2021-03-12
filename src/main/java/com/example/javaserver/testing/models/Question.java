@@ -86,6 +86,10 @@ public class Question {
     public Question() {
     }
 
+    public Question(Long id) {
+        this.id = id;
+    }
+
     public Double getComplexity() {
         return complexity;
     }

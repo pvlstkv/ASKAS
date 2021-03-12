@@ -42,7 +42,9 @@ public class Theme {
     public Theme(String name) {
         this.name = name;
     }
-
+    public Theme(Long id) {
+        this.id = id;
+    }
     public Theme(Long id, String name, String decryption, Subject subject, Set<Question> questions, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.name = name;
