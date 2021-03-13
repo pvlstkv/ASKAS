@@ -58,7 +58,7 @@ public class Subject {
     @JsonProperty("departmentId")
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Department department;
 
     @JsonProperty("questionIds")

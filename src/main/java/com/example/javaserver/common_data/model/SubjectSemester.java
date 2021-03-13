@@ -1,7 +1,6 @@
 package com.example.javaserver.common_data.model;
 
 
-
 import com.example.javaserver.study.model.Task;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -25,32 +24,54 @@ public class SubjectSemester {
     private Boolean hasCourseProject;
 
     @JsonProperty("taskIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks;
 
     @JsonProperty("subjectId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
     @JsonProperty("studentGroupIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany(mappedBy = "subjectSemesters")
     private Set<StudyGroup> studyGroups;
 
-    OffsetDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
+
+    @JsonProperty("semesterMarkIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(mappedBy = "subjectSemester", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SemesterMark> semesterMarks;
 
     // in the nearest future something like this
     // int countOfLecture;
     // int countOfLabWork;
 
     public SubjectSemester() {
+    }
+
+    public Set<SemesterMark> getSemesterMark() {
+        return semesterMarks;
+    }
+
+    public void setSemesterMark(Set<SemesterMark> semesterMarks) {
+        this.semesterMarks = semesterMarks;
+    }
+
+    public Set<SemesterMark> getSemesterMarks() {
+        return semesterMarks;
+    }
+
+    public void setSemesterMarks(Set<SemesterMark> semesterMarks) {
+        this.semesterMarks = semesterMarks;
     }
 
     public Long getId() {

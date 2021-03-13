@@ -1,5 +1,6 @@
 package com.example.javaserver.study.model;
 
+import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -17,22 +18,56 @@ public class File implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private Byte [] data;
+    private Byte[] data;
     private StudyFileType studyFileType;
 
-    @JsonProperty("userId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
-    @ManyToOne
-    private User user;
 
     @JsonProperty("taskId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Task task;
 
+    @JsonProperty("answerId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
+    private Work work;
+
+    @JsonProperty("answerId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
+    private Question question;
+
+
+
+
     public File() {
+    }
+
+    public Work getAnswer() {
+        return work;
+    }
+
+    public void setAnswer(Work work) {
+        this.work = work;
+    }
+
+    public Work getWork() {
+        return work;
+    }
+
+    public void setWork(Work work) {
+        this.work = work;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 
     public Long getId() {
@@ -75,13 +110,6 @@ public class File implements Serializable {
         this.studyFileType = studyFileType;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Task getTask() {
         return task;
