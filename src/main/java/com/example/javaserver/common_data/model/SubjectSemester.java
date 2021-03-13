@@ -2,6 +2,7 @@ package com.example.javaserver.common_data.model;
 
 
 
+import com.example.javaserver.study.model.Task;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,25 +14,26 @@ import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
-
 @Table(name = "subject_semesters")
 public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    Integer numberOfSemester;
-
+    private Long id;
+    private Integer numberOfSemester;
     private SubjectControlType controlType;
+    private Boolean hasCourseWork;
+    private Boolean hasCourseProject;
 
-    Boolean hasCourseWork;
-
-    Boolean hasCourseProject;
+    @JsonProperty("taskIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Task> tasks;
 
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
     @JsonProperty("studentGroupIds")
@@ -121,5 +123,13 @@ public class SubjectSemester {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Set<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<Task> tasks) {
+        this.tasks = tasks;
     }
 }
