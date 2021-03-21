@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/task")
@@ -30,6 +31,18 @@ public class TaskController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> taskService.create(taskIn, c),
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> delete(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.delete(ids),
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
         );
     }

@@ -76,4 +76,10 @@ public class TaskService {
 
         return new ResponseEntity<>(new Message("Задание успешно создано"), HttpStatus.CREATED);
     }
+
+    @Transactional
+    public ResponseEntity<?> delete(Set<Long> ids) {
+        taskRepo.deleteAllByIdIn(ids);
+        return new ResponseEntity<>(new Message("Найденные задания были успешно удалены"), HttpStatus.OK);
+    }
 }
