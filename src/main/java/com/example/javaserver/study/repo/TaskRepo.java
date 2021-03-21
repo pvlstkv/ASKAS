@@ -11,4 +11,5 @@ public interface TaskRepo extends
         JpaSpecificationExecutor<Task>
 {
     void deleteAllByIdIn(Set<Long> ids);
+    Set<Task> findAllByIdIn(Set<Long> ids);
 }

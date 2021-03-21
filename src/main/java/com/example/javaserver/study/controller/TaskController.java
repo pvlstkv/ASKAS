@@ -82,4 +82,16 @@ public class TaskController {
                 EnumSet.allOf(UserRole.class)
         );
     }
+
+    @PostMapping("/search-by-ids")
+    public ResponseEntity<?> searchByIds(
+            @RequestHeader("token") String token,
+            @RequestBody Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.searchByIds(ids),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
 }

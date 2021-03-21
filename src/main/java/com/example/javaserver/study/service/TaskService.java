@@ -194,4 +194,9 @@ public class TaskService {
             return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
         }
     }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
 }
