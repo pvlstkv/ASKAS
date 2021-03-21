@@ -5,7 +5,7 @@ import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.user.model.User;
-import com.example.javaserver.user_file.model.UserFile;
+import com.example.javaserver.user_file.model.UserrrrrrrFile;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user_file.repo.UserFileRepo;
 import com.example.javaserver.user.repo.UserRepo;
@@ -56,9 +56,9 @@ public class FileService {
 
         Integer userId = userContext.getUserId();
         User user = userRepo.getOne(userId);
-        UserFile userFile = new UserFile(name, user, semester.get(), data);
+        UserrrrrrrFile userrrrrrrFile = new UserrrrrrrFile(name, user, semester.get(), data);
         try {
-            userFileRepo.save(userFile);
+            userFileRepo.save(userrrrrrrFile);
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Ошибка записи файла"), HttpStatus.BAD_REQUEST);
         }
@@ -71,14 +71,14 @@ public class FileService {
             UserContext userContext,
             String name
     ) {
-        Optional<UserFile> fileOpt = userFileRepo.findUserFileByNameEquals(name);
+        Optional<UserrrrrrrFile> fileOpt = userFileRepo.findUserFileByNameEquals(name);
         if (!fileOpt.isPresent()) {
             return new ResponseEntity<>(new Message("Файл с таким именем не найден"), HttpStatus.BAD_REQUEST);
         }
 
         Integer userId = userContext.getUserId();
         User requester = userRepo.getOne(userId);
-        UserFile file = fileOpt.get();
+        UserrrrrrrFile file = fileOpt.get();
         User fileOwner = file.getUser();
         if ((!fileOwner.getId().equals(userId))
                 && !(rolesCanReadAnyFiles.contains(requester.getRole()))) {

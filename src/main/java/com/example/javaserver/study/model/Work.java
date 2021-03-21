@@ -34,7 +34,7 @@ public class Work {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<File> files;
+    private Set<UserFile> userFiles;
 
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
@@ -70,12 +70,12 @@ public class Work {
         this.user = user;
     }
 
-    public Set<File> getFiles() {
-        return files;
+    public Set<UserFile> getFiles() {
+        return userFiles;
     }
 
-    public void setFiles(Set<File> files) {
-        this.files = files;
+    public void setFiles(Set<UserFile> userFiles) {
+        this.userFiles = userFiles;
     }
 
     public OffsetDateTime getCreatedAt() {

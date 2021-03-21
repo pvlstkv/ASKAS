@@ -9,7 +9,7 @@ import java.io.Serializable;
 @SuppressWarnings("unused")
 @Entity
 @Table(name = "user_files")
-public class UserFile implements Serializable {
+public class UserrrrrrrFile implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +33,9 @@ public class UserFile implements Serializable {
     //@NotBlank
     private byte[] data;
 
-    public UserFile() {}
+    public UserrrrrrrFile() {}
 
-    public UserFile(String name, User user, SubjectSemester subjectSemester, byte[] data) {
+    public UserrrrrrrFile(String name, User user, SubjectSemester subjectSemester, byte[] data) {
         this.name = name;
         this.user = user;
         this.subjectSemester = subjectSemester;

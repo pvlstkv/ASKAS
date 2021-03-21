@@ -27,7 +27,7 @@ public class Task implements Serializable {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<File> file;
+    private Set<UserFile> userFiles;
 
     @JsonProperty("semesterId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -58,30 +58,6 @@ public class Task implements Serializable {
         this.id = id;
     }
 
-    public List<Work> getAnswers() {
-        return works;
-    }
-
-    public void setAnswers(List<Work> works) {
-        this.works = works;
-    }
-
-    public List<Work> getWorks() {
-        return works;
-    }
-
-    public void setWorks(List<Work> works) {
-        this.works = works;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public TaskType getType() {
         return type;
     }
@@ -106,12 +82,12 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Set<File> getFile() {
-        return file;
+    public Set<UserFile> getFiles() {
+        return userFiles;
     }
 
-    public void setFile(Set<File> file) {
-        this.file = file;
+    public void setFiles(Set<UserFile> userFiles) {
+        this.userFiles = userFiles;
     }
 
     public SubjectSemester getSemester() {
@@ -122,4 +98,19 @@ public class Task implements Serializable {
         this.semester = semester;
     }
 
+    public List<Work> getWorks() {
+        return works;
+    }
+
+    public void setWorks(List<Work> works) {
+        this.works = works;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "files")
-public class File implements Serializable {
+public class UserFile implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,7 +43,7 @@ public class File implements Serializable {
 
 
 
-    public File() {
+    public UserFile() {
     }
 
     public Work getAnswer() {
