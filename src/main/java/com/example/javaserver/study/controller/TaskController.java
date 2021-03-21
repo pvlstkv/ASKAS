@@ -58,4 +58,15 @@ public class TaskController {
                 EnumSet.of(UserRole.ADMIN)
         );
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll(
+            @RequestHeader("token") String token
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.getAll(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
 }

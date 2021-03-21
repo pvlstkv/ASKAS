@@ -1,5 +1,6 @@
 package com.example.javaserver.study.service;
 
+import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -176,5 +178,10 @@ public class TaskService {
         }
 
         return new ResponseEntity<>(new Message("Задание было успешно изменено"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getAll() {
+        Collection<Task> tasks = taskRepo.findAll(null);
+        return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 }
