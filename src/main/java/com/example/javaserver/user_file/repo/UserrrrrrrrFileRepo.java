@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface UserFileRepo extends CrudRepository<UserrrrrrrFile, Long> {
+public interface UserrrrrrrrFileRepo extends CrudRepository<UserrrrrrrFile, Long> {
     Optional<UserrrrrrrFile> findUserFileByNameEquals(String name);
 }

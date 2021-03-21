@@ -7,7 +7,7 @@ import com.example.javaserver.general.model.Message;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user_file.model.UserrrrrrrFile;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user_file.repo.UserFileRepo;
+import com.example.javaserver.user_file.repo.UserrrrrrrrFileRepo;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,13 +26,13 @@ public class FileService {
 
     private final UserRepo userRepo;
     private final SubjectSemesterRepo subjectSemesterRepo;
-    private final UserFileRepo userFileRepo;
+    private final UserrrrrrrrFileRepo userrrrrrrrFileRepo;
 
     @Autowired
-    public FileService(UserRepo userRepo, SubjectSemesterRepo subjectSemesterRepo, UserFileRepo userFileRepo) {
+    public FileService(UserRepo userRepo, SubjectSemesterRepo subjectSemesterRepo, UserrrrrrrrFileRepo userrrrrrrrFileRepo) {
         this.userRepo = userRepo;
         this.subjectSemesterRepo = subjectSemesterRepo;
-        this.userFileRepo = userFileRepo;
+        this.userrrrrrrrFileRepo = userrrrrrrrFileRepo;
     }
 
     @Transactional
@@ -58,7 +58,7 @@ public class FileService {
         User user = userRepo.getOne(userId);
         UserrrrrrrFile userrrrrrrFile = new UserrrrrrrFile(name, user, semester.get(), data);
         try {
-            userFileRepo.save(userrrrrrrFile);
+            userrrrrrrrFileRepo.save(userrrrrrrFile);
         } catch (Exception e) {
             return new ResponseEntity<>(new Message("Ошибка записи файла"), HttpStatus.BAD_REQUEST);
         }
@@ -71,7 +71,7 @@ public class FileService {
             UserContext userContext,
             String name
     ) {
-        Optional<UserrrrrrrFile> fileOpt = userFileRepo.findUserFileByNameEquals(name);
+        Optional<UserrrrrrrFile> fileOpt = userrrrrrrrFileRepo.findUserFileByNameEquals(name);
         if (!fileOpt.isPresent()) {
             return new ResponseEntity<>(new Message("Файл с таким именем не найден"), HttpStatus.BAD_REQUEST);
         }
