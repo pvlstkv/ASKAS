@@ -1,5 +1,6 @@
 package com.example.javaserver.study.controller;
 
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.service.TaskService;
@@ -66,6 +67,18 @@ public class TaskController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> taskService.getAll(),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @PostMapping("/criteria-search")
+    public ResponseEntity<?> criteriaSearch(
+            @RequestHeader("token") String token,
+            @RequestBody Set<SearchCriteria> criteria
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.criteriaSearch(criteria),
                 EnumSet.allOf(UserRole.class)
         );
     }

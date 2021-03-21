@@ -3,8 +3,10 @@ package com.example.javaserver.study.service;
 import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
+import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.UserFile;
@@ -15,15 +17,13 @@ import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TaskService {
@@ -183,5 +183,15 @@ public class TaskService {
     public ResponseEntity<?> getAll() {
         Collection<Task> tasks = taskRepo.findAll(null);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+        try {
+            Specification<Task> specification = CommonSpecification.of(criteria);
+            List<Task> tasks = taskRepo.findAll(specification);
+            return new ResponseEntity<>(tasks, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+        }
     }
 }
