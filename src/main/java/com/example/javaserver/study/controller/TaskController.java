@@ -46,4 +46,16 @@ public class TaskController {
                 EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
         );
     }
+
+    @PatchMapping
+    public ResponseEntity<?> update(
+            @RequestHeader("token") String token,
+            @RequestBody TaskIn taskIn
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.update(taskIn),
+                EnumSet.of(UserRole.ADMIN)
+        );
+    }
 }
