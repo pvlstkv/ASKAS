@@ -1,6 +1,7 @@
 package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.service.RequestHandlerService;
+import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.service.UserService;
@@ -40,28 +41,12 @@ public class UserController {
     @PatchMapping
     public ResponseEntity<?> patchUser(
             @RequestHeader("token") String token,
-            @RequestParam Integer id,
-            @RequestParam(required = false) String login,
-            @RequestParam(required = false) String password,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String patronymic,
-            @RequestParam(required = false) String email,       // todo реализовать изменение мыла
-            @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String studyGroupName,
-            @RequestParam(required = false) String role
+            @RequestBody UserI userI
 
-    ){
+
+            ){
         return requestHandlerService.proceed(token,(c) -> userService.updateUser(
-                id,
-                login,
-                password,
-                firstName,
-                lastName,
-                patronymic,
-                phone,
-                studyGroupName,
-                role
+               userI
         ),EnumSet.of(UserRole.ADMIN));
     }
 
