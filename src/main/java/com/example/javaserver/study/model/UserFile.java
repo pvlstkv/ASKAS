@@ -2,6 +2,7 @@ package com.example.javaserver.study.model;
 
 import com.example.javaserver.testing.models.Question;
 import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,9 +19,15 @@ public class UserFile implements Serializable {
     private Long id;
     private String name;
     private String description;
-    private Byte[] data;
+    private byte[] data;
     private StudyFileType studyFileType;
+    private UserRole accessLevel;
 
+    @JsonProperty("userId")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToOne
+    private User user;
 
     @JsonProperty("taskId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -40,35 +47,7 @@ public class UserFile implements Serializable {
     @ManyToOne
     private Question question;
 
-
-
-
-    public UserFile() {
-    }
-
-    public Work getAnswer() {
-        return work;
-    }
-
-    public void setAnswer(Work work) {
-        this.work = work;
-    }
-
-    public Work getWork() {
-        return work;
-    }
-
-    public void setWork(Work work) {
-        this.work = work;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
+    public UserFile() { }
 
     public Long getId() {
         return id;
@@ -94,11 +73,11 @@ public class UserFile implements Serializable {
         this.description = description;
     }
 
-    public Byte[] getData() {
+    public byte[] getData() {
         return data;
     }
 
-    public void setData(Byte[] data) {
+    public void setData(byte[] data) {
         this.data = data;
     }
 
@@ -110,6 +89,21 @@ public class UserFile implements Serializable {
         this.studyFileType = studyFileType;
     }
 
+    public UserRole getAccessLevel() {
+        return accessLevel;
+    }
+
+    public void setAccessLevel(UserRole accessLevel) {
+        this.accessLevel = accessLevel;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Task getTask() {
         return task;
@@ -119,4 +113,19 @@ public class UserFile implements Serializable {
         this.task = task;
     }
 
+    public Work getWork() {
+        return work;
+    }
+
+    public void setWork(Work work) {
+        this.work = work;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
 }
