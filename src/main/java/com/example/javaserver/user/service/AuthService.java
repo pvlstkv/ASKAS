@@ -6,6 +6,7 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.config.JwtUtil;
+import com.example.javaserver.user.client_model.LoginData;
 import com.example.javaserver.user.client_model.TokenIO;
 import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.model.User;
@@ -33,18 +34,18 @@ public class AuthService {
         this.departmentRepo = departmentRepo;
     }
 
-    public ResponseEntity<?> logUser(User user){
-        if(user.getLogin() == null){
+    public ResponseEntity<?> logUser(LoginData loginData){
+        if(loginData.login == null){
             return new ResponseEntity<>(new Message("Введите логин"),HttpStatus.BAD_REQUEST);
         }
-        if(user.getPassword() == null){
+        if(loginData.password == null){
             return new ResponseEntity<>(new Message("Введите пароль"),HttpStatus.BAD_REQUEST);
         }
-        if(!userRepo.existsByLogin(user.getLogin())){
+        if(!userRepo.existsByLogin(loginData.login)){
             return new ResponseEntity<>(new Message("Пользователя с таким логином не существует"),HttpStatus.BAD_REQUEST);
         }
-        User authUser = userRepo.getUserByLogin(user.getLogin());
-        if(authUser.getPassword().equals(user.getPassword())){
+        User authUser = userRepo.getUserByLogin(loginData.login);
+        if(authUser.getPassword().equals(loginData.password)){
             String token = jwtUtil.generateToken(authUser);
             return new ResponseEntity<>(new TokenIO(token),HttpStatus.OK);
         }

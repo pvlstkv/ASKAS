@@ -38,7 +38,7 @@ public class UserFileController {
     @GetMapping
     public ResponseEntity<?> getById(
             @RequestHeader("token") String token,
-            @RequestParam("fileId") Long id
+            @RequestParam("id") Long id
     ) {
         return requestHandlerService.proceed(
                 token,

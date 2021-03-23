@@ -47,7 +47,7 @@ public class User implements Serializable {
     @ManyToOne
     private Department department;
 
-    @JsonProperty("teachingSubjectsIds")
+    @JsonProperty("teachingSubjectIds")
     @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
@@ -206,6 +206,13 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    public Set<Subject> getTeachingSubjects() {
+        return teachingSubjects;
+    }
+
+    public void setTeachingSubjects(Set<Subject> teachingSubjects) {
+        this.teachingSubjects = teachingSubjects;
+    }
 
     @Override
     public String toString() {

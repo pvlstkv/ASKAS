@@ -11,8 +11,9 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.*;
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 @Entity
-@Table(name = "files")
+@Table(name = "file")
 public class UserFile implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
