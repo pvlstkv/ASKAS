@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 public class TaskService {
@@ -129,8 +130,8 @@ public class TaskService {
                 filesToRemove.add(f);
             }
         });
-        if (filesToRemove.isEmpty()) {
-            task.getUserFiles().removeAll(filesToRemove);
+        if (!filesToRemove.isEmpty()) {
+            filesToRemove.forEach(f -> f.setTask(null));
         }
         Set<Long> fileToAddIds = new HashSet<>();
         taskIn.fileIds.forEach(i -> {
@@ -138,14 +139,14 @@ public class TaskService {
                 fileToAddIds.add(i);
             }
         });
-        if (fileToAddIds.isEmpty()) {
+        if (!fileToAddIds.isEmpty()) {
             Set<UserFile> filesToAdd = userFileRepo.getUserFilesByIdIn(fileToAddIds);
-            for (Long id : taskIn.fileIds) {
+            for (Long id : fileToAddIds) {
                 if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
                     return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
                 }
             }
-            task.getUserFiles().addAll(filesToAdd);
+            filesToAdd.forEach(f -> f.setTask(task));
         }
 
         if (taskIn.workIds == null) {
@@ -157,8 +158,8 @@ public class TaskService {
                 worksToRemove.add(w);
             }
         });
-        if (worksToRemove.isEmpty()) {
-            task.getWorks().removeAll(worksToRemove);
+        if (!worksToRemove.isEmpty()) {
+            worksToRemove.forEach(f -> f.setTask(null));
         }
         Set<Long> workToAddIds = new HashSet<>();
         taskIn.workIds.forEach(i -> {
@@ -166,14 +167,14 @@ public class TaskService {
                 workToAddIds.add(i);
             }
         });
-        if (workToAddIds.isEmpty()) {
+        if (!workToAddIds.isEmpty()) {
             Set<Work> worksToAdd = workRepo.getWorksByIdIn(workToAddIds);
             for (Long id : taskIn.workIds) {
                 if (worksToAdd.stream().noneMatch(w -> w.getId().equals(id))) {
                     return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + id + " не найдена"), HttpStatus.BAD_REQUEST);
                 }
             }
-            task.getWorks().addAll(worksToAdd);
+            worksToAdd.forEach(f -> f.setTask(task));
         }
 
         return new ResponseEntity<>(new Message("Задание было успешно изменено"), HttpStatus.OK);
