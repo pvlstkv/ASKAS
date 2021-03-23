@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "file")
+@Table(name = "files")
 public class UserFile implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,13 +36,13 @@ public class UserFile implements Serializable {
     @ManyToOne
     private Task task;
 
-    @JsonProperty("answerId")
+    @JsonProperty("workId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Work work;
 
-    @JsonProperty("answerId")
+    @JsonProperty("questionId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne

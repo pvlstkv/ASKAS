@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "tasks")
 public class Task implements Serializable {
@@ -35,7 +35,7 @@ public class Task implements Serializable {
     @ManyToOne
     private SubjectSemester semester;
 
-    @JsonProperty("answerIds")
+    @JsonProperty("workIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -82,11 +82,11 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Set<UserFile> getFiles() {
+    public Set<UserFile> getUserFiles() {
         return userFiles;
     }
 
-    public void setFiles(Set<UserFile> userFiles) {
+    public void setUserFiles(Set<UserFile> userFiles) {
         this.userFiles = userFiles;
     }
 

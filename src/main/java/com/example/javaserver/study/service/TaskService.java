@@ -77,8 +77,7 @@ public class TaskService {
         task.setDescription(taskIn.description);
         task.setSemester(semester.get());
         task.setUser(user.get());
-        task.setFiles(userFiles);
-
+        userFiles.forEach(f -> f.setTask(task));
         taskRepo.save(task);
 
         return new ResponseEntity<>(new Message("Задание успешно создано"), HttpStatus.CREATED);
@@ -125,17 +124,17 @@ public class TaskService {
             return new ResponseEntity<>(new Message("Невозможно изменить задание: fileIds должно быть не null"), HttpStatus.BAD_REQUEST);
         }
         Set<UserFile> filesToRemove = new HashSet<>();
-        task.getFiles().forEach(f -> {
+        task.getUserFiles().forEach(f -> {
             if (!taskIn.fileIds.contains(f.getId())) {
                 filesToRemove.add(f);
             }
         });
         if (filesToRemove.isEmpty()) {
-            task.getFiles().removeAll(filesToRemove);
+            task.getUserFiles().removeAll(filesToRemove);
         }
         Set<Long> fileToAddIds = new HashSet<>();
         taskIn.fileIds.forEach(i -> {
-            if (task.getFiles().stream().noneMatch(f -> f.getId().equals(i))) {
+            if (task.getUserFiles().stream().noneMatch(f -> f.getId().equals(i))) {
                 fileToAddIds.add(i);
             }
         });
@@ -146,7 +145,7 @@ public class TaskService {
                     return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
                 }
             }
-            task.getFiles().addAll(filesToAdd);
+            task.getUserFiles().addAll(filesToAdd);
         }
 
         if (taskIn.workIds == null) {
