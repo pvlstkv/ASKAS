@@ -56,7 +56,7 @@ public class TaskController {
         return requestHandlerService.proceed(
                 token,
                 (c) -> taskService.update(taskIn),
-                EnumSet.of(UserRole.ADMIN)
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
         );
     }
 
