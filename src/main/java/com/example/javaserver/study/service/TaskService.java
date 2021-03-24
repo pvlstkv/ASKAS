@@ -70,6 +70,11 @@ public class TaskService {
                 return new ResponseEntity<>(new Message("Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
             }
         }
+        for (UserFile file : userFiles) {
+            if (file.getTask() != null) {
+                return new ResponseEntity<>(new Message("Невозможно создать задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
+            }
+        }
 
         Task task = new Task();
         task.setTitle(taskIn.title);
@@ -98,23 +103,23 @@ public class TaskService {
 
         if (task.getTitle() == null) {
             return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
-        } else if (!task.getTitle().equals(taskIn.title)) {
+        } else if (!Objects.equals(task.getTitle(), taskIn.title)) {
             task.setTitle(taskIn.title);
         }
 
         if (task.getType() == null) {
             return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
-        } else if (!task.getType().equals(taskIn.type)) {
+        } else if (!Objects.equals(task.getType(), taskIn.type)) {
             task.setType(taskIn.type);
         }
 
-        if (!task.getDescription().equals(taskIn.description)) {
+        if (!Objects.deepEquals(task.getDescription(), taskIn.description)) {
             task.setDescription(taskIn.description);
         }
 
         if (task.getSemester() == null) {
             return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
-        } else if (!task.getSemester().getId().equals(taskIn.semesterId)) {
+        } else if (!Objects.equals(task.getSemester().getId(), taskIn.semesterId)) {
             Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
             if (!semester.isPresent()) {
                 return new ResponseEntity<>(new Message("Невозможно изменить задание: семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);

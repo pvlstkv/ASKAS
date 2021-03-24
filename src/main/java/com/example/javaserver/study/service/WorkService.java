@@ -60,6 +60,11 @@ public class WorkService {
                 return new ResponseEntity<>(new Message("Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
             }
         }
+        for (UserFile file : userFiles) {
+            if (file.getWork() != null) {
+                return new ResponseEntity<>(new Message("Невозможно создать работу: Файл с id = " + file.getId() + " привязан к другой работе"), HttpStatus.BAD_REQUEST);
+            }
+        }
 
         Optional<User> user = userRepo.findById(userContext.getUserId());
         if (!user.isPresent()) {
@@ -93,9 +98,9 @@ public class WorkService {
             return new ResponseEntity<>(new Message("Нельзя сделать работу без файлов и комментариев"), HttpStatus.BAD_REQUEST);
         }
 
-        if (work.getTask() == null) {
+        if (workIn.taskId == null) {
             return new ResponseEntity<>(new Message("Работа должна быть привязана к заданию"), HttpStatus.BAD_REQUEST);
-        } else if (!work.getTask().getId().equals(workIn.taskId)) {
+        } else if (!Objects.equals(work.getTask().getId(), workIn.taskId)) {
             Optional<Task> task = taskRepo.findById(workIn.taskId);
             if (!task.isPresent()) {
                 return new ResponseEntity<>(new Message("Невозможно изменить задание: задание с указанным id не существует"), HttpStatus.BAD_REQUEST);
@@ -103,15 +108,15 @@ public class WorkService {
             work.setTask(task.get());
         }
 
-        if (!work.getStudentComment().equals(workIn.studentComment)) {
+        if (!Objects.deepEquals(work.getStudentComment(), workIn.studentComment)) {
             work.setStudentComment(workIn.studentComment);
         }
 
-        if (!work.getTeacherComment().equals(workIn.teacherComment)) {
+        if (!Objects.deepEquals(work.getTeacherComment(), workIn.teacherComment)) {
             work.setTeacherComment(workIn.teacherComment);
         }
 
-        if (work.getMark().equals(workIn.mark)) {
+        if (!Objects.deepEquals(work.getMark(), workIn.mark)) {
             work.setMark(workIn.mark);
         }
 
