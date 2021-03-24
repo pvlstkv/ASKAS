@@ -98,7 +98,7 @@ public class SubjectController {
         );
     }
 
-    @PostMapping("/search-by-user-id")
+    @GetMapping("/search-by")
     public ResponseEntity<?> searchByUserId(
             @RequestHeader("token") String token,
             @RequestParam("userId") Integer userId
