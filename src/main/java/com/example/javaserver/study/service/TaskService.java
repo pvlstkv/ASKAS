@@ -1,6 +1,5 @@
 package com.example.javaserver.study.service;
 
-import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -11,8 +10,8 @@ import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.model.Work;
-import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.study.repo.TaskRepo;
+import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 public class TaskService {
@@ -43,6 +41,7 @@ public class TaskService {
         this.userRepo = userRepo;
     }
 
+    @SuppressWarnings("Duplicates")
     @Transactional
     public ResponseEntity<?> create(TaskIn taskIn, UserContext userContext) {
         if (taskIn.title == null) {
@@ -97,11 +96,15 @@ public class TaskService {
         }
         Task task = taskO.get();
 
-        if (!task.getTitle().equals(taskIn.title)) {
+        if (task.getTitle() == null) {
+            return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
+        } else if (!task.getTitle().equals(taskIn.title)) {
             task.setTitle(taskIn.title);
         }
 
-        if (!task.getType().equals(taskIn.type)) {
+        if (task.getType() == null) {
+            return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
+        } else if (!task.getType().equals(taskIn.type)) {
             task.setType(taskIn.type);
         }
 
@@ -109,16 +112,14 @@ public class TaskService {
             task.setDescription(taskIn.description);
         }
 
-        if (!task.getSemester().getId().equals(taskIn.semesterId)) {
-            if (taskIn.semesterId == null) {
-                task.setSemester(null);
-            } else {
-                Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
-                if (!semester.isPresent()) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
-                }
-                task.setSemester(semester.get());
+        if (task.getSemester() == null) {
+            return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
+        } else if (!task.getSemester().getId().equals(taskIn.semesterId)) {
+            Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
+            if (!semester.isPresent()) {
+                return new ResponseEntity<>(new Message("Невозможно изменить задание: семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
             }
+            task.setSemester(semester.get());
         }
 
         if (taskIn.fileIds == null) {
@@ -144,6 +145,11 @@ public class TaskService {
             for (Long id : fileToAddIds) {
                 if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
                     return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
+                }
+            }
+            for (UserFile file : filesToAdd) {
+                if (file.getTask() != null) {
+                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
                 }
             }
             filesToAdd.forEach(f -> f.setTask(task));
@@ -172,6 +178,11 @@ public class TaskService {
             for (Long id : taskIn.workIds) {
                 if (worksToAdd.stream().noneMatch(w -> w.getId().equals(id))) {
                     return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + id + " не найдена"), HttpStatus.BAD_REQUEST);
+                }
+            }
+            for (Work work : worksToAdd) {
+                if (work.getTask() != null) {
+                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + work.getId() + " привязана к другому заданию"), HttpStatus.BAD_REQUEST);
                 }
             }
             worksToAdd.forEach(f -> f.setTask(task));

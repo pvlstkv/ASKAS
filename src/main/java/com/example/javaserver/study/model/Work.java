@@ -70,11 +70,11 @@ public class Work {
         this.user = user;
     }
 
-    public Set<UserFile> getFiles() {
+    public Set<UserFile> getUserFiles() {
         return userFiles;
     }
 
-    public void setFiles(Set<UserFile> userFiles) {
+    public void setUserFiles(Set<UserFile> userFiles) {
         this.userFiles = userFiles;
     }
 
