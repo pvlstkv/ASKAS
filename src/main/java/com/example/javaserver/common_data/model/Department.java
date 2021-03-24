@@ -30,7 +30,7 @@ public class Department implements Serializable {
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
     @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
-    Faculty faculty;
+    private Faculty faculty;
 
     @JsonProperty("studyGroupIds")
     @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")

@@ -1,8 +1,8 @@
-package com.example.javaserver.user_file.controller;
+package com.example.javaserver.study.controller;
 
-import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user_file.service.FileService;
 import com.example.javaserver.general.service.RequestHandlerService;
+import com.example.javaserver.study.service.UserFileService;
+import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,41 +10,39 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.EnumSet;
 
-
 @RestController
 @RequestMapping("/file")
-public class FilesController {
+public class UserFileController {
     private final RequestHandlerService requestHandlerService;
-    private final FileService fileService;
+    private final UserFileService userFileService;
 
     @Autowired
-    public FilesController(RequestHandlerService requestHandlerService, FileService fileService) {
+    public UserFileController(RequestHandlerService requestHandlerService, UserFileService userFileService) {
         this.requestHandlerService = requestHandlerService;
-        this.fileService = fileService;
+        this.userFileService = userFileService;
     }
 
     @PostMapping
-    public ResponseEntity<?> uploadFile(
+    public ResponseEntity<?> create(
             @RequestHeader("token") String token,
-            @RequestParam("fileName") String name,
-            @RequestParam("subjectSemesterId") Long subjectSemesterId,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "accessLevel", required = false) UserRole accessLevel
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> fileService.uploadFile(c, name, subjectSemesterId, file),
+                (c) -> userFileService.create(file, accessLevel, c),
                 EnumSet.allOf(UserRole.class)
         );
     }
 
     @GetMapping
-    public ResponseEntity<?> uploadFile(
+    public ResponseEntity<?> getById(
             @RequestHeader("token") String token,
-            @RequestParam("fileName") String name
+            @RequestParam("id") Long id
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> fileService.downloadFile(c, name),
+                (c) -> userFileService.getById(id, c),
                 EnumSet.allOf(UserRole.class)
         );
     }

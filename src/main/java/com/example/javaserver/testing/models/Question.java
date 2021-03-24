@@ -26,6 +26,8 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
     private Double complexity;
+    // todo how to do
+//    private File file;
 
     @ManyToOne()
     @JsonIgnore
