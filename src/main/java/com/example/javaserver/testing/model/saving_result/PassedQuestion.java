@@ -22,7 +22,8 @@ public class PassedQuestion implements Serializable {
     private List<UserAnswer> userAnswers;
 
 
-    @ManyToOne()
+
+    @ManyToOne
     @JsonIgnore
     private PassedTest passedTest;
 

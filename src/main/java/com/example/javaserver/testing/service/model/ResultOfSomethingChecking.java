@@ -46,24 +46,24 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    public static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo) {
+    private static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo) {
         ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        Subject tempSubject = repo.findById(subject.getId()).orElse(null);
-        if (tempSubject == null) {
+        subject = repo.findById(subject.getId()).orElse(null);
+        if (subject == null) {
             String response = String.format("Предмета" + doesntExistById, subject.getId());
             result.errors += response;
             result.setItsOK(false);
             result.setResponseEntity(new ResponseEntity<>(new Message(result.errors), HttpStatus.UNPROCESSABLE_ENTITY));
         }
         result.setItsOK(true);
-        result.setSubject(tempSubject);
+        result.setSubject(subject);
         return result;
     }
 
-    public static ResultOfSomethingChecking checkTheme(Theme theme, ThemeRepo repo) {
+    private static ResultOfSomethingChecking checkTheme(Theme theme, ThemeRepo repo) {
         ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        Theme tempTheme = repo.findById(theme.getId()).orElse(null);
-        if (tempTheme == null) {
+        theme = repo.findById(theme.getId()).orElse(null);
+        if (theme == null) {
             String response = String.format("Темы" + doesntExistById, theme.getId());
             result.errors += response;
             result.setItsOK(false);
@@ -74,10 +74,10 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    public static ResultOfSomethingChecking checkQuestion(Question question, QuestionRepo repo) {
+    private static ResultOfSomethingChecking checkQuestion(Question question, QuestionRepo repo) {
         ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        Question tempQuestion = repo.findById(question.getId()).orElse(null);
-        if (tempQuestion == null) {
+        question = repo.findById(question.getId()).orElse(null);
+        if (question == null) {
             String response = String.format("Вопроса" + doesntExistById, question.getId());
             result.errors += response;
             result.setItsOK(false);
@@ -88,7 +88,7 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    public static ResultOfSomethingChecking checkUser(User user, UserRepo repo) {
+    private static ResultOfSomethingChecking checkUser(User user, UserRepo repo) {
         ResultOfSomethingChecking result = new ResultOfSomethingChecking();
         User tempUser = repo.findById(user.getId()).orElse(null);
         if (tempUser == null) {

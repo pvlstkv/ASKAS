@@ -15,6 +15,7 @@ import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.testing.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class TestService {
     private final String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.";
 
-
+    @Autowired
     public TestService(PassedTestRepo passedTestRepo, UserRepo userRepo, ThemeRepo themeRepo, QuestionRepo questionRepo) {
         this.passedTestRepo = passedTestRepo;
         this.userRepo = userRepo;
@@ -52,7 +53,7 @@ public class TestService {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
                 return new ResponseEntity<>(new Message("Уточните количество вопросов в запросе или в БД."),
-                    HttpStatus.BAD_REQUEST);
+                        HttpStatus.BAD_REQUEST);
         }
         if (countOfQuestions < 1)
             return new ResponseEntity<>(new Message("Количество вопросов не может быть меньше 1."),
@@ -108,6 +109,7 @@ public class TestService {
 
     private void addAPassedQuestion(PassedTest passedTest, List<PassedQuestion> passedQuestions,
                                     PassedQuestion currentPassedQuestion, List<UserAnswer> userAnswers) {
+        passedTest.setTheme(currentPassedQuestion.getQuestion().getTheme());
         currentPassedQuestion.setUserAnswers(userAnswers);
         currentPassedQuestion.setPassedTest(passedTest);
         passedQuestions.add(currentPassedQuestion);
@@ -117,7 +119,7 @@ public class TestService {
                           List<PassedQuestion> passedQuestions, int resInPercent) {
         passedTest.setPassedQuestions(passedQuestions);
         passedTest.setUser(fetchUser(userContext));
-        passedTest.setRating(resInPercent);
+        passedTest.setRatingInPercent(resInPercent);
         passedTest.setPassedAt(OffsetDateTime.now());
         passedTestRepo.save(passedTest);
     }

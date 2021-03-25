@@ -81,18 +81,6 @@ public class QuestionService {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> fetchSubjectThemes(Long subjectId) {
-        Subject tempSubject = (subjectRepo.findById(subjectId)
-                .orElse(null));
-        if (tempSubject == null) {
-            String response = String.format("Предмета" + doesntExistById, subjectId);
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
-        }
-        List<Theme> themes = themeRepo.findAllBySubjectId(subjectId);
-        return new ResponseEntity<>(themes, HttpStatus.OK);
-    }
-
-
     public ResponseEntity<?> deleteAllQuestions() {
         questionRepo.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);

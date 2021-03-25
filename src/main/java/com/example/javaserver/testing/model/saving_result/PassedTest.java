@@ -1,7 +1,8 @@
 package com.example.javaserver.testing.model.saving_result;
 
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,9 +18,15 @@ public class PassedTest implements Serializable {
     @OneToOne
     @JsonIgnore
     private User user;
+
     @OneToMany(mappedBy = "passedTest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PassedQuestion> passedQuestions;
 
+    @ManyToOne
+    @JsonProperty("themeId")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
+    private Theme theme;
     private OffsetDateTime passedAt;
     private Integer ratingInPercent;
 
@@ -58,11 +65,19 @@ public class PassedTest implements Serializable {
         this.passedAt = passedAt;
     }
 
-    public Integer getRating() {
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
+    public Integer getRatingInPercent() {
         return ratingInPercent;
     }
 
-    public void setRating(Integer ratingInPercent) {
+    public void setRatingInPercent(Integer ratingInPercent) {
         this.ratingInPercent = ratingInPercent;
     }
 }

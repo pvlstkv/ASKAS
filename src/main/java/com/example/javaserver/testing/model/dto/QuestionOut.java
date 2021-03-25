@@ -15,7 +15,7 @@ public class QuestionOut {
     private String question;
     private List<String> answers;
     private QuestionType questionType;
-    private List<Long> filesId;
+    private List<Long> fileIds;
 
     public QuestionOut() {
     }
@@ -24,7 +24,7 @@ public class QuestionOut {
         this.id = question.getId();
         this.question = question.getQuestion();
         this.questionType = question.getQuestionType();
-        this.filesId = question.fetchUserFilesIds();
+        this.fileIds = question.fetchUserFilesIds();
         if (questionType != QuestionType.WRITE) {
             this.answers = question.getAnswerChoiceList().stream().
                     map(AnswerChoice::getAnswer).collect(Collectors.toList());
@@ -32,18 +32,18 @@ public class QuestionOut {
     }
 
     // when actor updates a old question
-    public QuestionOut(Long id, String question, List<String> answers, QuestionType questionType, List<Long> filesIds) {
+    public QuestionOut(Long id, String question, List<String> answers, QuestionType questionType, List<Long> fileIds) {
         this.questionType = questionType;
         this.id = id;
-        this.filesId = filesIds;
+        this.fileIds = fileIds;
         this.question = question;
         this.answers = answers;
     }
 
     // when actor creates a new question
-    public QuestionOut(String question, List<String> answers, QuestionType questionType, List<Long> filesIds) {
+    public QuestionOut(String question, List<String> answers, QuestionType questionType, List<Long> fileIds) {
         this.questionType = questionType;
-        this.filesId = filesIds;
+        this.fileIds = fileIds;
         this.question = question;
         this.answers = answers;
     }
@@ -80,11 +80,11 @@ public class QuestionOut {
         this.questionType = questionType;
     }
 
-    public List<Long> getFilesId() {
-        return filesId;
+    public List<Long> getFileIds() {
+        return fileIds;
     }
 
-    public void setFilesId(List<Long> filesId) {
-        this.filesId = filesId;
+    public void setFileIds(List<Long> fileIds) {
+        this.fileIds = fileIds;
     }
 }
