@@ -2,6 +2,7 @@ package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.service.UserService;
@@ -37,6 +38,15 @@ public class UserController {
     ){
         return requestHandlerService.proceed(token,(c) -> userService.getListUser(), EnumSet.of(UserRole.ADMIN,UserRole.TEACHER));
     }
+
+    @PutMapping
+    public ResponseEntity<?> putUser(
+            @RequestHeader("token") String token,
+            @RequestBody UpdateUser updateUser
+    ){
+        return requestHandlerService.proceed(token,userContext -> userService.putUser(userContext,updateUser),EnumSet.allOf(UserRole.class));
+    }
+
 
     @PatchMapping
     public ResponseEntity<?> patchUser(

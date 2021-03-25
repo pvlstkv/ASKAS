@@ -5,6 +5,7 @@ import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,24 @@ public class UserService {
             return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> putUser(UserContext userContext, UpdateUser updateUser){
+        Optional<User> user = userRepo.findById(userContext.getUserId());
+        if(!user.isPresent()){
+            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
+        }
+        if(updateUser.getLogin() != null)
+            user.get().setLogin(updateUser.getLogin());
+        if(updateUser.getPassword() != null)
+            user.get().setPassword(updateUser.getPassword());
+        if(updateUser.getEmail() != null)
+            user.get().setEmail(updateUser.getEmail());
+        if(updateUser.getPhone() != null)
+            user.get().setPhone(updateUser.getPhone());
+        userRepo.save(user.get());
+        return new ResponseEntity<>(new Message("Информация обновлена"), HttpStatus.OK);
+
     }
 
     public ResponseEntity<?> getListUser( ){
