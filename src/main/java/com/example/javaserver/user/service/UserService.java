@@ -5,6 +5,7 @@ import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,67 +42,70 @@ public class UserService {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    public ResponseEntity<?> putUser(UserContext userContext, UpdateUser updateUser){
+        Optional<User> user = userRepo.findById(userContext.getUserId());
+        if(!user.isPresent()){
+            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
+        }
+        if(updateUser.getLogin() != null)
+            user.get().setLogin(updateUser.getLogin());
+        if(updateUser.getPassword() != null)
+            user.get().setPassword(updateUser.getPassword());
+        if(updateUser.getEmail() != null)
+            user.get().setEmail(updateUser.getEmail());
+        if(updateUser.getPhone() != null)
+            user.get().setPhone(updateUser.getPhone());
+        userRepo.save(user.get());
+        return new ResponseEntity<>(new Message("Информация обновлена"), HttpStatus.OK);
+
+    }
+
     public ResponseEntity<?> getListUser( ){
         List<User> userList = userRepo.findAll();
         return new ResponseEntity<>(userList,HttpStatus.OK);
     }
 
-    public ResponseEntity<?> updateUser(Integer id,
-                                        String login,
-                                        String password,
-                                        String firstName,
-                                        String lastName,
-                                        String patronymic,
-                                        String phone,
-                                        String studyGroupName,
-                                        String role)
+    public ResponseEntity<?> updateUser(
+          UserI userI
+    )
     {
-        Optional<User> user = userRepo.findById(id);
+        Optional<User> user = userRepo.findById(userI.getId());
         if(user.isPresent()){
-            if(login != null){
-                user.get().setLogin(login);
+            if(userI.getLogin() != null){
+                user.get().setLogin(userI.getLogin());
             }
-            if(password != null){
-                user.get().setPassword(password);
+            if(userI.getPassword() != null){
+                user.get().setPassword(userI.getPassword());
             }
-            if(firstName != null){
-                user.get().setFirstName(firstName);
+            if(userI.getFirstName() != null){
+                user.get().setFirstName(userI.getFirstName());
             }
-            if(lastName != null){
-                user.get().setLastName(lastName);
+            if(userI.getLastName() != null){
+                user.get().setLastName(userI.getLastName());
             }
-            if(password != null){
-                user.get().setPatronymic(patronymic);
+            if(userI.getPatronymic() != null){
+                user.get().setPatronymic(userI.getPatronymic());
             }
-            if(phone != null){
-                user.get().setPhone(phone);
+            if(userI.getPhone() != null){
+                user.get().setPhone(userI.getPhone());
             }
-            if(studyGroupName != null){
-                if(studyGroupName.equals("null")){
-                    user.get().setStudyGroup(null);
+            if(userI.getStudyGroupId() != null){
+                if(studyGroupRepo.existsById(userI.getStudyGroupId())){
+                    user.get().setStudyGroup(studyGroupRepo.findById(userI.getStudyGroupId()).get());
                 }else {
-                    if(studyGroupRepo.existsByShortName(studyGroupName)){
-                        Optional<StudyGroup> studyGroup = studyGroupRepo.findByShortName(studyGroupName);
-                        user.get().setStudyGroup(studyGroup.get());
-                    }else {
-                        return new ResponseEntity<>(new Message("Такой группы не существует"),HttpStatus.BAD_REQUEST);
-                    }
+                    return new ResponseEntity<>(new Message("Такой группы не существует"),HttpStatus.BAD_REQUEST);
                 }
             }
             try {
                 userRepo.save(user.get());
-                return new ResponseEntity<>(new Message("информация о пользователи измнена"),HttpStatus.OK);
+                return new ResponseEntity<>(new Message("информация о пользователи изменена"),HttpStatus.OK);
             }catch (Exception e){
                 e.printStackTrace();
                 return new ResponseEntity<>(new Message("ошибка сервера"),HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-
-
         }else {
             return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
         }
-
     }
 
     public ResponseEntity<?> deleteUser(Integer id){

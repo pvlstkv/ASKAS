@@ -1,4 +1,3 @@
-
 package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.Subject;
@@ -14,7 +13,7 @@ import java.util.*;
 public class InitSubjectsAndThemes implements ApplicationListener<ContextRefreshedEvent> {
 
     private final SubjectRepo subjectRepo;
-    private final List<String> themes = new ArrayList<String>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
+    private List<String> themes = new ArrayList<>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
 
     public InitSubjectsAndThemes(SubjectRepo subjectRepo) {
         this.subjectRepo = subjectRepo;
@@ -24,7 +23,7 @@ public class InitSubjectsAndThemes implements ApplicationListener<ContextRefresh
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         if (!subjectRepo.existsByName("АЛМ")) {
             Subject subject = new Subject("АЛМ");
-            Theme theme = new Theme();
+            Theme theme;
             Set<Theme> set = new HashSet<>();
             for (String themeStr : themes) {
                 theme = new Theme(themeStr);
@@ -37,4 +36,3 @@ public class InitSubjectsAndThemes implements ApplicationListener<ContextRefresh
         }
     }
 }
-

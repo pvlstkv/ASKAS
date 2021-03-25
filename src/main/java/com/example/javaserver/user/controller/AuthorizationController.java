@@ -1,8 +1,8 @@
 package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.user.model.User;
 import com.example.javaserver.general.service.RequestHandlerService;
+import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
