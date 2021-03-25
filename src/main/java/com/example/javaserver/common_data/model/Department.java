@@ -110,4 +110,6 @@ public class Department implements Serializable {
     public void setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
     }
+
+
 }

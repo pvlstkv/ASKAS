@@ -1,3 +1,4 @@
+/*
 package com.example.javaserver._startup;
 
 
@@ -133,3 +134,4 @@ StudyGroup group1 = new StudyGroup(0001,1,1,"ИВТАП-11","Инф и выч т
 
     }
 }
+*/
