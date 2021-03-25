@@ -1,18 +1,12 @@
 package com.example.javaserver._startup;
 
-import com.example.javaserver.common_data.model.Theme;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 public class InitUsers implements ApplicationListener<ContextRefreshedEvent> {

@@ -1,6 +1,6 @@
 package com.example.javaserver.testing.repo;
 
-import com.example.javaserver.testing.models.saving_results.PassedTest;
+import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

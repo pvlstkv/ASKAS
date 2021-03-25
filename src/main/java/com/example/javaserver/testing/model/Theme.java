@@ -1,9 +1,11 @@
-package com.example.javaserver.common_data.model;
+package com.example.javaserver.testing.model;
 
-import com.example.javaserver.testing.models.Question;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.testing.model.Question;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.Set;
 
@@ -11,7 +13,7 @@ import java.util.Set;
 @Entity
 
 @Table(name = "themes")
-public class Theme {
+public class Theme implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,8 +23,8 @@ public class Theme {
     private String decryption;
 
     @JsonProperty("subjectId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne()
     private Subject subject;
 
@@ -31,6 +33,7 @@ public class Theme {
     @JsonIgnore
     private Set<Question> questions;
 
+    private Integer questionQuantityInTest;
 
     private OffsetDateTime createdAt;
 
@@ -42,15 +45,18 @@ public class Theme {
     public Theme(String name) {
         this.name = name;
     }
+
     public Theme(Long id) {
         this.id = id;
     }
-    public Theme(Long id, String name, String decryption, Subject subject, Set<Question> questions, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+
+    public Theme(Long id, String name, String decryption, Subject subject, Set<Question> questions, Integer questionQuantityInTest, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.decryption = decryption;
         this.subject = subject;
         this.questions = questions;
+        this.questionQuantityInTest = questionQuantityInTest;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -109,5 +115,13 @@ public class Theme {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getQuestionQuantityInTest() {
+        return questionQuantityInTest;
+    }
+
+    public void setQuestionQuantityInTest(Integer questionQuantityInTest) {
+        this.questionQuantityInTest = questionQuantityInTest;
     }
 }

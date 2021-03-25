@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.models.dto;
+package com.example.javaserver.testing.model.dto;
 
 import java.util.List;
 

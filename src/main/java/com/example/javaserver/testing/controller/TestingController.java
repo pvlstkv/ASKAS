@@ -1,13 +1,13 @@
-package com.example.javaserver.testing.controllers;
+package com.example.javaserver.testing.controller;
 
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.testing.models.dto.AnswerInOut;
-import com.example.javaserver.testing.models.dto.TestIn;
-import com.example.javaserver.testing.services.QuestionService;
-import com.example.javaserver.testing.services.ResultService;
-import com.example.javaserver.testing.services.TestService;
+import com.example.javaserver.testing.model.dto.AnswerInOut;
+import com.example.javaserver.testing.model.dto.TestIn;
+import com.example.javaserver.testing.service.QuestionService;
+import com.example.javaserver.testing.service.ResultService;
+import com.example.javaserver.testing.service.TestService;
 import com.example.javaserver.user.model.UserRole;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,7 @@ public class TestingController {
 
     private final RequestHandlerService requestHandlerService;
 
+    @Autowired
     public TestingController(QuestionService questionService, ResultService resultService, TestService testService, RequestHandlerService requestHandlerService) {
         this.questionService = questionService;
         this.resultService = resultService;
@@ -69,7 +70,7 @@ public class TestingController {
     public ResponseEntity<?> fetchThemesBySubjectId(@RequestParam(value = "subj_id") Long id,
                                                     @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext -> questionService.fetchSubjectThemes(id),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
+                EnumSet.allOf(UserRole.class));
     }
 
     @DeleteMapping("/question")
@@ -87,14 +88,14 @@ public class TestingController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<?> getTest(
+    public ResponseEntity<?> makeTest(
             @RequestParam(value = "subj_id") Long subjectId,
             @RequestParam(value = "theme_id") Long themeId,
-            @RequestParam(value = "limit") Integer countOfQuestions,
+            @RequestParam(value = "limit", required = false) Integer countOfQuestions,
             @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
                         testService.createTest(themeId, countOfQuestions),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
+                EnumSet.allOf(UserRole.class));
     }
 
     @PostMapping("/test/checking")
@@ -102,13 +103,13 @@ public class TestingController {
                                        @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, userContext ->
                         testService.checkTest(userTest, userContext),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
+                EnumSet.allOf(UserRole.class));
     }
 
     @GetMapping("/test/result")
     public ResponseEntity<?> fetchPassedTests(@RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token, resultService::formUserPassedTest,
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER, UserRole.USER));
+                EnumSet.allOf(UserRole.class));
 
     }
 

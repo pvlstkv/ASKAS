@@ -1,6 +1,6 @@
 package com.example.javaserver.testing.repo;
 
-import com.example.javaserver.common_data.model.Theme;
+import com.example.javaserver.testing.model.Theme;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

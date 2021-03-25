@@ -1,17 +1,18 @@
-package com.example.javaserver.testing.services;
+package com.example.javaserver.testing.service;
 
-import com.example.javaserver.common_data.model.Theme;
+import com.example.javaserver.general.model.Message;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.testing.models.Question;
-import com.example.javaserver.testing.models.dto.AnswerInOut;
-import com.example.javaserver.testing.models.dto.QuestionOut;
-import com.example.javaserver.testing.models.saving_results.PassedQuestion;
-import com.example.javaserver.testing.models.saving_results.PassedTest;
-import com.example.javaserver.testing.models.saving_results.UserAnswer;
+import com.example.javaserver.testing.model.Question;
+import com.example.javaserver.testing.model.dto.AnswerInOut;
+import com.example.javaserver.testing.model.dto.QuestionOut;
+import com.example.javaserver.testing.model.saving_result.PassedQuestion;
+import com.example.javaserver.testing.model.saving_result.PassedTest;
+import com.example.javaserver.testing.model.saving_result.UserAnswer;
 import com.example.javaserver.testing.repo.PassedTestRepo;
 import com.example.javaserver.testing.repo.QuestionRepo;
 import com.example.javaserver.testing.repo.ThemeRepo;
-import com.example.javaserver.testing.services.models.ResultOfSomethingChecking;
+import com.example.javaserver.testing.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.http.HttpStatus;
@@ -42,13 +43,22 @@ public class TestService {
         this.questionRepo = questionRepo;
     }
 
-    public ResponseEntity<?> createTest(Long themeId, int countOfQuestions) {
+    public ResponseEntity<?> createTest(Long themeId, Integer countOfQuestions) {
+        ResultOfSomethingChecking checkResult;
+        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo);
+        if (!checkResult.getItsOK())
+            return checkResult.getResponseEntity();
+        if (countOfQuestions == null) {
+            countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
+            if (countOfQuestions == null)
+                return new ResponseEntity<>(new Message("Уточните количество вопросов в запросе или в БД."),
+                    HttpStatus.BAD_REQUEST);
+        }
         if (countOfQuestions < 1)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo, result);
-        if (!result.getItsOK()) return result.getResponseEntity();
-        List<Question> questions4Test = questionRepo.findAllByTheme(result.getTheme());
+            return new ResponseEntity<>(new Message("Количество вопросов не может быть меньше 1."),
+                    HttpStatus.BAD_REQUEST);
+
+        List<Question> questions4Test = questionRepo.findAllByTheme(checkResult.getTheme());
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);
@@ -66,13 +76,13 @@ public class TestService {
         double totalRating = 0.0;
         for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
             userAnswers.clear();
-            ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-            ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, result);
-            if (!result.getItsOK()) {
-                return result.getResponseEntity();
+            ResultOfSomethingChecking checkResult;
+            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo);
+            if (!checkResult.getItsOK()) {
+                return checkResult.getResponseEntity();
             }
             PassedQuestion currentPassedQuestion = new PassedQuestion();
-            Question currentCheckingQuestion = result.getQuestion();
+            Question currentCheckingQuestion = checkResult.getQuestion();
             currentPassedQuestion.setQuestion(currentCheckingQuestion);
             currentPassedQuestion.setPassedTest(passedTest);
             switch (currentCheckingQuestion.getQuestionType()) {

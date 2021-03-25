@@ -1,11 +1,12 @@
-package com.example.javaserver.testing.models;
+package com.example.javaserver.testing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class AnswerChoice {
+public class AnswerChoice implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -1,14 +1,13 @@
-package com.example.javaserver.testing.models.saving_results;
+package com.example.javaserver.testing.model.saving_result;
 
 
-import com.example.javaserver.testing.models.Question;
+import com.example.javaserver.testing.model.Question;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "passed_questions")

@@ -1,10 +1,10 @@
-package com.example.javaserver.testing.services;
+package com.example.javaserver.testing.service;
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.testing.models.saving_results.PassedTest;
+import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.testing.repo.PassedTestRepo;
-import com.example.javaserver.testing.services.models.ResultOfSomethingChecking;
+import com.example.javaserver.testing.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class ResultService {
     }
 
     public ResponseEntity<?> formUserPassedTest(UserContext userContext) {
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        ResultOfSomethingChecking.checkIfExistsInDB(new User(userContext.getUserId()), userRepo, result);
+        ResultOfSomethingChecking checkResult;
+        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new User(userContext.getUserId()), userRepo);
         User user = fetchUser(userContext);
         if (user == null) {
             String response = String.format("Пользователя" + doesntExistById, userContext.getUserId());

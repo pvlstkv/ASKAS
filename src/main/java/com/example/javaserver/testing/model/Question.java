@@ -1,20 +1,22 @@
-package com.example.javaserver.testing.models;
+package com.example.javaserver.testing.model;
 
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.common_data.model.Theme;
-import com.example.javaserver.testing.configs.QuestionType;
-import com.example.javaserver.testing.models.dto.QuestionIn;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.javaserver.study.model.UserFile;
+import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.model.dto.QuestionIn;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
 
-public class Question {
+public class Question implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +29,12 @@ public class Question {
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
     private Double complexity;
     // todo how to do
-//    private File file;
+
+    @JsonProperty("fileIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserFile> userFiles;
 
     @ManyToOne()
     @JsonIgnore
@@ -36,6 +43,38 @@ public class Question {
     @ManyToOne()
     @JsonIgnore
     private Subject subject;
+
+    public Question(QuestionIn questionIn, Subject subject, Theme theme) {
+        this.id = questionIn.getId();
+        this.subject = subject;
+        this.question = questionIn.getQuestion();
+        this.complexity = questionIn.getComplexity();
+        this.theme = theme;
+        this.questionType = questionIn.getQuestionType();
+        this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
+                new AnswerChoice(strAns, false)).collect(Collectors.toList());
+        if (this.answerChoiceList.size() == 0) {
+            this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
+            return;
+        }
+        this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))
+                .forEach(answerChoice -> answerChoice.setRight(true));
+    }
+
+    public Question() {
+    }
+
+    public Question(Long id) {
+        this.id = id;
+    }
+
+    public Set<UserFile> getUserFiles() {
+        return userFiles;
+    }
+
+    public void setUserFiles(Set<UserFile> userFiles) {
+        this.userFiles = userFiles;
+    }
 
     public List<AnswerChoice> getAnswerChoiceList() {
         return answerChoiceList;
@@ -85,12 +124,6 @@ public class Question {
         return id;
     }
 
-    public Question() {
-    }
-
-    public Question(Long id) {
-        this.id = id;
-    }
 
     public Double getComplexity() {
         return complexity;
@@ -110,29 +143,12 @@ public class Question {
     }
 
 
-    public Question(QuestionIn questionIn, Subject subject, Theme theme) {
-        this.id = questionIn.getId();
-        this.subject = subject;
-        this.question = questionIn.getQuestion();
-        this.complexity = questionIn.getComplexity();
-        this.theme = theme;
-        this.questionType = questionIn.getQuestionType();
-        this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
-                new AnswerChoice(strAns, false)).collect(Collectors.toList());
-        if (this.answerChoiceList.size() == 0) {
-            this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
-            return;
+    public List<Long> fetchUserFilesIds() {
+        List<Long> ids = new ArrayList<>();
+        for (UserFile file : this.userFiles) {
+            ids.add(file.getId());
         }
-//        for (AnswerChoice item : this.answerChoiceList) {
-//            for (String right : questionIn.getRightAnswers()) {
-//                if (item.getAnswer().equals(right)){
-//                    item.setRight(true);
-//                }
-//            }
-//        }
-        this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))
-                .forEach(answerChoice -> answerChoice.setRight(true));
+        return ids;
     }
-
 
 }
