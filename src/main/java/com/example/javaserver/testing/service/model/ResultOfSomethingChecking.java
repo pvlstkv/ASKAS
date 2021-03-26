@@ -28,26 +28,25 @@ public class ResultOfSomethingChecking {
 
 
     //    private static <T, K extends GetIdAble> void checkIfExistsInDB(T something, K  repo, ResultOfSomethingChecking result) {
-    public static <T, K> ResultOfSomethingChecking checkIfExistsInDB(T something, K repo) {
+    public static <T, K> ResultOfSomethingChecking checkIfExistsInDB(T something, K repo, ResultOfSomethingChecking result) {
         if ((something instanceof Subject) && (repo instanceof SubjectRepo)) {
-            return checkSubject((Subject) something, (SubjectRepo) repo);
+            return checkSubject((Subject) something, (SubjectRepo) repo, result);
         }
         if (something instanceof Theme && repo instanceof ThemeRepo) {
-            return checkTheme((Theme) something, (ThemeRepo) repo);
+            return checkTheme((Theme) something, (ThemeRepo) repo, result);
         }
         if (something instanceof Question && repo instanceof QuestionRepo) {
-            return checkQuestion((Question) something, (QuestionRepo) repo);
+            return checkQuestion((Question) something, (QuestionRepo) repo, result);
         }
         if (something instanceof User && repo instanceof UserRepo) {
-            return checkUser((User) something, (UserRepo) repo);
+            return checkUser((User) something, (UserRepo) repo, result);
         }
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
+        result.setErrors("Косяк в коде");
         result.setItsOK(false);
         return result;
     }
 
-    private static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo) {
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
+    private static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo, ResultOfSomethingChecking result) {
         subject = repo.findById(subject.getId()).orElse(null);
         if (subject == null) {
             String response = String.format("Предмета" + doesntExistById, subject.getId());
@@ -60,8 +59,7 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    private static ResultOfSomethingChecking checkTheme(Theme theme, ThemeRepo repo) {
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
+    private static ResultOfSomethingChecking checkTheme(Theme theme, ThemeRepo repo, ResultOfSomethingChecking result) {
         theme = repo.findById(theme.getId()).orElse(null);
         if (theme == null) {
             String response = String.format("Темы" + doesntExistById, theme.getId());
@@ -74,8 +72,7 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    private static ResultOfSomethingChecking checkQuestion(Question question, QuestionRepo repo) {
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
+    private static ResultOfSomethingChecking checkQuestion(Question question, QuestionRepo repo, ResultOfSomethingChecking result) {
         question = repo.findById(question.getId()).orElse(null);
         if (question == null) {
             String response = String.format("Вопроса" + doesntExistById, question.getId());
@@ -88,10 +85,9 @@ public class ResultOfSomethingChecking {
         return result;
     }
 
-    private static ResultOfSomethingChecking checkUser(User user, UserRepo repo) {
-        ResultOfSomethingChecking result = new ResultOfSomethingChecking();
-        User tempUser = repo.findById(user.getId()).orElse(null);
-        if (tempUser == null) {
+    private static ResultOfSomethingChecking checkUser(User user, UserRepo repo, ResultOfSomethingChecking result) {
+        user = repo.findById(user.getId()).orElse(null);
+        if (user == null) {
             String response = String.format("Пользователя" + doesntExistById, user.getId());
             result.errors += response;
             result.setItsOK(false);

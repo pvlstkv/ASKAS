@@ -31,7 +31,6 @@ public class ThemeService {
     }
 
     public ResponseEntity<?> createTheme(ThemeIn themeIn) {
-        ResultOfSomethingChecking checkResult;
         if (themeRepo.existsByName(themeIn.getName())) {
             return new ResponseEntity<>(new Message("Такой предмет уже сущетвует."), HttpStatus.CONFLICT);
         }

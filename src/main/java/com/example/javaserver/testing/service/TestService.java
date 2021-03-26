@@ -45,8 +45,8 @@ public class TestService {
     }
 
     public ResponseEntity<?> createTest(Long themeId, Integer countOfQuestions) {
-        ResultOfSomethingChecking checkResult;
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo);
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK())
             return checkResult.getResponseEntity();
         if (countOfQuestions == null) {
@@ -77,8 +77,8 @@ public class TestService {
         double totalRating = 0.0;
         for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
             userAnswers.clear();
-            ResultOfSomethingChecking checkResult;
-            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo);
+            ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
             if (!checkResult.getItsOK()) {
                 return checkResult.getResponseEntity();
             }

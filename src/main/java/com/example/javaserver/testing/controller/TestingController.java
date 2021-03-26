@@ -121,17 +121,19 @@ public class TestingController {
 
     @GetMapping("/test/result")
     public ResponseEntity<?> fetchPassedTests(@RequestParam(value = "theme_id") Long themeId,
+                                              @RequestParam(value = "user_id") Integer userId,
                                               @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token,
-                userContext -> resultService.fetchUserPassedTestsByTheme(userContext, themeId),
+                userContext -> resultService.fetchUserPassedTestsByThemeAndUserId(userId, themeId),
                 EnumSet.allOf(UserRole.class));
     }
 
-    @GetMapping("test/passed-themes")
+    @GetMapping("/test/passed-themes")
     public ResponseEntity<?> fetchPassedThemes(@RequestParam(value = "subj_id") Long subjectId,
+                                               @RequestParam(value = "user_id") Integer userId,
                                                @RequestHeader(name = "token") String token) {
         return requestHandlerService.proceed(token,
-                userContext -> resultService.fetchUserPassedThemes(userContext, subjectId),
+                userContext -> resultService.fetchUserPassedThemesBySubjectIdAndUserId(userId, subjectId),
                 EnumSet.allOf(UserRole.class));
     }
 

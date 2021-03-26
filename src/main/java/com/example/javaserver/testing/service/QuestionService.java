@@ -38,11 +38,10 @@ public class QuestionService {
 
 
     public ResponseEntity<?> createQuestions(TestIn testIn) {
-
         // it's need to check a subject and theme
-        ResultOfSomethingChecking checkResult;
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo);
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo);
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
         if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
@@ -54,14 +53,14 @@ public class QuestionService {
     }
 
     public ResponseEntity<?> updateQuestions(TestIn testIn) {
-        ResultOfSomethingChecking checkResult;
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         // it's need to check a subject and theme
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo);
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo);
+        ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
         if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
         Question newQuestion;
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
-            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo);
+            ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo, checkResult);
             if (!checkResult.getItsOK()) {
                 return checkResult.getResponseEntity();
             }
