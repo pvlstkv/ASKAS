@@ -40,7 +40,7 @@ create table "files"
     "id"           bigserial not null,
     "access_level" int4,
     "data"         bytea,
-    "name"         varchar(255) not null unique,
+    "name"         varchar(255) not null,
     "question_id"  int8,
     "task_id"      int8,
     "user_id"      int4,
