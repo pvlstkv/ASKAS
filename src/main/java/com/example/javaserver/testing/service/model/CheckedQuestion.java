@@ -1,6 +1,6 @@
-package com.example.javaserver.testing.services.models;
+package com.example.javaserver.testing.service.model;
 
-import com.example.javaserver.testing.models.dto.AnswerInOut;
+import com.example.javaserver.testing.model.dto.AnswerInOut;
 
 public class CheckedQuestion {
     private AnswerInOut answerInOut;

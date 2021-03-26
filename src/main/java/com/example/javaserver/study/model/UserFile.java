@@ -1,12 +1,14 @@
 package com.example.javaserver.study.model;
 
-import com.example.javaserver.testing.models.Question;
+import com.example.javaserver.testing.model.Question;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("unused")
 @Entity
@@ -114,4 +116,5 @@ public class UserFile implements Serializable {
     public void setQuestion(Question question) {
         this.question = question;
     }
+
 }

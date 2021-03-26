@@ -2,7 +2,7 @@
 package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.common_data.model.Theme;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -14,7 +14,7 @@ import java.util.*;
 public class InitSubjectsAndThemes implements ApplicationListener<ContextRefreshedEvent> {
 
     private final SubjectRepo subjectRepo;
-    private List<String> themes = new ArrayList<>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
+    private final List<String> themes = new ArrayList<>(Arrays.asList("Автоматы", "Графы", "Булевы функции"));
 
     public InitSubjectsAndThemes(SubjectRepo subjectRepo) {
         this.subjectRepo = subjectRepo;
@@ -24,11 +24,11 @@ public class InitSubjectsAndThemes implements ApplicationListener<ContextRefresh
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         if (!subjectRepo.existsByName("АЛМ")) {
             Subject subject = new Subject("АЛМ");
-            Theme theme;
             Set<Theme> set = new HashSet<>();
             for (String themeStr : themes) {
-                theme = new Theme(themeStr);
+                Theme theme = new Theme(themeStr);
                 theme.setSubject(subject);
+                theme.setQuestionQuantityInTest(5);
                 set.add(theme);
             }
             subject.setThemes(set);

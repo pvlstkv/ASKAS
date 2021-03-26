@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.configs;
+package com.example.javaserver.testing.config;
 
 public enum QuestionType {
     CHOOSE(0),

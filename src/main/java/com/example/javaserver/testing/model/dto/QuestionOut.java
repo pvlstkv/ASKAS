@@ -1,9 +1,9 @@
-package com.example.javaserver.testing.models.dto;
+package com.example.javaserver.testing.model.dto;
 
 
-import com.example.javaserver.testing.configs.QuestionType;
-import com.example.javaserver.testing.models.AnswerChoice;
-import com.example.javaserver.testing.models.Question;
+import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.model.AnswerChoice;
+import com.example.javaserver.testing.model.Question;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
@@ -15,6 +15,7 @@ public class QuestionOut {
     private String question;
     private List<String> answers;
     private QuestionType questionType;
+    private List<Long> fileIds;
 
     public QuestionOut() {
     }
@@ -23,6 +24,7 @@ public class QuestionOut {
         this.id = question.getId();
         this.question = question.getQuestion();
         this.questionType = question.getQuestionType();
+        this.fileIds = question.fetchUserFilesIds();
         if (questionType != QuestionType.WRITE) {
             this.answers = question.getAnswerChoiceList().stream().
                     map(AnswerChoice::getAnswer).collect(Collectors.toList());
@@ -30,16 +32,18 @@ public class QuestionOut {
     }
 
     // when actor updates a old question
-    public QuestionOut(Long id, String question, List<String> answers, QuestionType questionType) {
+    public QuestionOut(Long id, String question, List<String> answers, QuestionType questionType, List<Long> fileIds) {
         this.questionType = questionType;
         this.id = id;
+        this.fileIds = fileIds;
         this.question = question;
         this.answers = answers;
     }
 
     // when actor creates a new question
-    public QuestionOut(String question, List<String> answers, QuestionType questionType) {
+    public QuestionOut(String question, List<String> answers, QuestionType questionType, List<Long> fileIds) {
         this.questionType = questionType;
+        this.fileIds = fileIds;
         this.question = question;
         this.answers = answers;
     }
@@ -74,5 +78,13 @@ public class QuestionOut {
 
     public void setQuestionType(QuestionType questionType) {
         this.questionType = questionType;
+    }
+
+    public List<Long> getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(List<Long> fileIds) {
+        this.fileIds = fileIds;
     }
 }

@@ -1,12 +1,13 @@
-package com.example.javaserver.testing.models.saving_results;
+package com.example.javaserver.testing.model.saving_result;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "user_answers")
-public class UserAnswer {
+public class UserAnswer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
