@@ -41,4 +41,3 @@ public class UpdateUser {
         this.phone = phone;
     }
 }
-

@@ -47,7 +47,6 @@ public class UserController {
         return requestHandlerService.proceed(token,userContext -> userService.putUser(userContext,updateUser),EnumSet.allOf(UserRole.class));
     }
 
-
     @PatchMapping
     public ResponseEntity<?> patchUser(
             @RequestHeader("token") String token,

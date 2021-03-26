@@ -1,3 +1,4 @@
+/*
 package com.example.javaserver._startup;
 
 import com.example.javaserver.common_data.model.StudyGroup;
@@ -41,3 +42,4 @@ public class InitStudyGroups implements ApplicationListener<ContextRefreshedEven
         userRepo.save(user);
     }
 }
+*/
