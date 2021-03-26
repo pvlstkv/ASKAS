@@ -84,7 +84,7 @@ public class StudyGroupController {
         );
     }
 
-    @GetMapping("/search-by-user")
+    @GetMapping("/teaching")
     public ResponseEntity<?> getGroupsByUser(
             @RequestHeader("token") String token,
             @RequestParam(value = "userId", required = false) Integer userId

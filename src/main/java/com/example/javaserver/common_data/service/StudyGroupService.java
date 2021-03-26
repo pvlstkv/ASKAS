@@ -10,6 +10,7 @@ import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -94,13 +95,18 @@ public class StudyGroupService {
             userId = userContext.getUserId();
         }
 
-        Optional<User> user = userRepo.findById(userId);
-        if (!user.isPresent()) {
+        Optional<User> userO = userRepo.findById(userId);
+        if (!userO.isPresent()) {
             return new ResponseEntity<>(new Message("Нет пользователя с указанным (явно или по токену) id"), HttpStatus.BAD_REQUEST);
         }
+        User user = userO.get();
 
-        Collection<StudyGroup> groups = user.get().
-                getTeachingSubjects().stream()
+        if (!user.getRole().equals(UserRole.TEACHER)) {
+            return new ResponseEntity<>(new Message("Пользователь не является преподавателем"), HttpStatus.BAD_REQUEST);
+        }
+
+        Collection<StudyGroup> groups = user
+                .getTeachingSubjects().stream()
                 .flatMap(sub -> sub.getSemesters().stream())
                 .flatMap(sem -> sem.getStudyGroups().stream())
                 .collect(Collectors.toSet());
