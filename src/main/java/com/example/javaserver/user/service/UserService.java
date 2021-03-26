@@ -14,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +42,11 @@ public class UserService {
             return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Integer> ids) {
+        Collection<User> users = userRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     public ResponseEntity<?> putUser(UserContext userContext, UpdateUser updateUser){

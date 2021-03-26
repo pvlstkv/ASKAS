@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -37,6 +38,18 @@ public class UserController {
             @RequestHeader("token") String token
     ){
         return requestHandlerService.proceed(token,(c) -> userService.getListUser(), EnumSet.of(UserRole.ADMIN,UserRole.TEACHER));
+    }
+
+    @GetMapping("/search-by-ids")
+    public ResponseEntity<?> searchByIds(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Set<Integer> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> userService.searchByIds(ids),
+                EnumSet.allOf(UserRole.class)
+        );
     }
 
     @PutMapping

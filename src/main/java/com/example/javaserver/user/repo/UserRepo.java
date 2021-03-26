@@ -11,6 +11,7 @@ import java.util.Set;
 public interface UserRepo extends JpaRepository<User,Integer> {
     boolean existsByLogin(String login);
     User getUserByLogin(String login);
+    Set<User> findAllByIdIn(Set<Integer> ids);
     Set<User> getUsersByIdIn(Set<Integer> id);
     Set<User> getUsersByIdInAndRoleEquals(Set<Integer> id, UserRole userRole);
     //List<User> findByIdIn()

@@ -43,7 +43,7 @@ public class StudyGroupController {
         return new ResponseEntity<>(studyGroups, HttpStatus.OK);
     }
 
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     public ResponseEntity<?> searchByIds(
             @RequestHeader("token") String token,
             @RequestParam("id") Set<Long> ids
