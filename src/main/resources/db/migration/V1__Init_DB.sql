@@ -1,4 +1,3 @@
-
 create table "answer_choice"
 (
     "id"          serial not null,
@@ -21,8 +20,8 @@ create table "departments"
 (
     "id"         bigserial not null,
     "created_at" timestamp,
-    "full_name"  varchar(255) NOT NULL UNIQUE,
-    "short_name" varchar(255) NOT NULL UNIQUE,
+    "full_name"  varchar(255) not null unique,
+    "short_name" varchar(255) not null unique,
     "updated_at" timestamp,
     "faculty_id" int8,
     primary key ("id")
@@ -31,23 +30,21 @@ create table "faculties"
 (
     "id"         bigserial not null,
     "created_at" timestamp,
-    "full_name"  varchar(255) NOT NULL UNIQUE,
-    "short_name" varchar(255) NOT NULL UNIQUE,
+    "full_name"  varchar(255) not null unique,
+    "short_name" varchar(255) not null unique,
     "updated_at" timestamp,
     primary key ("id")
 );
 create table "files"
 (
-    "id"              bigserial not null,
-    "access_level"    int4,
-    "data"            bytea,
-    "description"     varchar(255),
-    "name"            varchar(255),
-    "study_file_type" int4,
-    "question_id"     int8,
-    "task_id"         int8,
-    "user_id"         int4,
-    "work_id"         int8,
+    "id"           bigserial not null,
+    "access_level" int4,
+    "data"         bytea,
+    "name"         varchar(255) not null unique,
+    "question_id"  int8,
+    "task_id"      int8,
+    "user_id"      int4,
+    "work_id"      int8,
     primary key ("id")
 );
 create table "passed_questions"
@@ -62,6 +59,7 @@ create table "passed_tests"
     "id"                bigserial not null,
     "passed_at"         timestamp,
     "rating_in_percent" int4,
+    "theme_id"          int8,
     "user_id"           int4,
     primary key ("id")
 );
@@ -94,9 +92,9 @@ create table "study_groups"
     "code"                int4,
     "course_number"       int4,
     "created_at"          timestamp,
-    "full_name"           varchar(255) NOT NULL UNIQUE,
+    "full_name"           varchar(255) not null unique,
     "group_number"        int4,
-    "short_name"          varchar(255) NOT NULL UNIQUE,
+    "short_name"          varchar(255) not null unique,
     "updated_at"          timestamp,
     "year_of_study_start" int4,
     "department_id"       int8,
@@ -125,7 +123,7 @@ create table "subjects"
     "id"            bigserial not null,
     "created_at"    timestamp,
     "decryption"    varchar(255),
-    "name"          varchar(255) NOT NULL UNIQUE,
+    "name"          varchar(255) not null unique,
     "updated_at"    timestamp,
     "department_id" int8,
     primary key ("id")
@@ -148,12 +146,14 @@ create table "teacher_subject"
 );
 create table "themes"
 (
-    "id"         bigserial not null,
-    "created_at" timestamp,
-    "decryption" varchar(255),
-    "name"       varchar(255),
-    "updated_at" timestamp,
-    "subject_id" int8,
+    "id"                        bigserial not null,
+    "attempt_number_in_test"    int4,
+    "created_at"                timestamp,
+    "decryption"                varchar(255),
+    "name"                      varchar(255) not null unique,
+    "question_quantity_in_test" int4,
+    "updated_at"                timestamp,
+    "subject_id"                int8,
     primary key ("id")
 );
 create table "user_answers"
@@ -170,7 +170,7 @@ create table "users"
     "email"          varchar(255),
     "first_name"     varchar(255),
     "last_name"      varchar(255),
-    "login"          varchar(255),
+    "login"          varchar(255) not null unique,
     "password"       varchar(255),
     "patronymic"     varchar(255),
     "phone"          varchar(255),
@@ -211,6 +211,8 @@ alter table "passed_questions"
     add constraint "passed_test_id" foreign key ("passed_test_id") references "passed_tests";
 alter table "passed_questions"
     add constraint "question_id" foreign key ("question_id") references "question";
+alter table "passed_tests"
+    add constraint "theme_id" foreign key ("theme_id") references "themes";
 alter table "passed_tests"
     add constraint "user_id" foreign key ("user_id") references "users";
 alter table "semester_marks"

@@ -81,14 +81,10 @@ public class UserFileService {
         return new ResponseEntity<>(file.get().getData(), HttpStatus.OK);
     }
 
-<<<<<<< HEAD
     public ResponseEntity<?> getBy(Long[] idsArr, UserContext userContext) {
         Set<Long> ids = Arrays.stream(idsArr).collect(Collectors.toSet());
         Set<UserFile> files = userFileRepo.getUserFilesByIdIn(ids);
 
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
-=======
-
->>>>>>> feature/testing-service
 }
