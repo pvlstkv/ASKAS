@@ -54,6 +54,11 @@ public class StudyGroupService {
         return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
     }
 
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<StudyGroup> groups = studyGroupRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(groups, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> get(Long id){
         if(id != null){
             Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
