@@ -83,4 +83,16 @@ public class StudyGroupController {
                 EnumSet.of(UserRole.ADMIN)
         );
     }
+
+    @GetMapping("/search-by-user")
+    public ResponseEntity<?> getGroupsByUser(
+            @RequestHeader("token") String token,
+            @RequestParam(value = "userId", required = false) Integer userId
+    ){
+        return requestHandlerService.proceed(
+                token,
+                (c) -> studyGroupService.getGroupsByUser(userId, c),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
 }

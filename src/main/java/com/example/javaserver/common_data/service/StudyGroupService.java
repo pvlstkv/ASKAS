@@ -8,6 +8,7 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StudyGroupService {
@@ -84,5 +87,24 @@ public class StudyGroupService {
         Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
         group.get().getSubjectSemesters().addAll(subjectSemesters);
         return new ResponseEntity<>(new Message("Семестры были успешно добавлены для группы"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getGroupsByUser(Integer userId, UserContext userContext){
+        if (userId == null) {
+            userId = userContext.getUserId();
+        }
+
+        Optional<User> user = userRepo.findById(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(new Message("Нет пользователя с указанным (явно или по токену) id"), HttpStatus.BAD_REQUEST);
+        }
+
+        Collection<StudyGroup> groups = user.get().
+                getTeachingSubjects().stream()
+                .flatMap(sub -> sub.getSemesters().stream())
+                .flatMap(sem -> sem.getStudyGroups().stream())
+                .collect(Collectors.toSet());
+
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 }
