@@ -114,7 +114,7 @@ public class SubjectController {
     public ResponseEntity<?> addTeachers(
             @RequestHeader("token") String token,
             @RequestParam("subjectId") Long subjectId,
-            @RequestBody Set<Integer> userIds
+            @RequestParam("userId") Set<Integer> userIds
     ){
         return requestHandlerService.proceed(
                 token,
@@ -122,5 +122,4 @@ public class SubjectController {
                 EnumSet.of(UserRole.ADMIN)
         );
     }
-
 }
