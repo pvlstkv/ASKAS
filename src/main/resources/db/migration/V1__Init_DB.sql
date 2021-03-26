@@ -21,8 +21,8 @@ create table "departments"
 (
     "id"         bigserial not null,
     "created_at" timestamp,
-    "full_name"  varchar(255),
-    "short_name" varchar(255),
+    "full_name"  varchar(255) NOT NULL UNIQUE,
+    "short_name" varchar(255) NOT NULL UNIQUE,
     "updated_at" timestamp,
     "faculty_id" int8,
     primary key ("id")
@@ -31,8 +31,8 @@ create table "faculties"
 (
     "id"         bigserial not null,
     "created_at" timestamp,
-    "full_name"  varchar(255),
-    "short_name" varchar(255),
+    "full_name"  varchar(255) NOT NULL UNIQUE,
+    "short_name" varchar(255) NOT NULL UNIQUE,
     "updated_at" timestamp,
     primary key ("id")
 );
@@ -79,7 +79,7 @@ create table "schedule"
     "teacher"      varchar(255),
     "type_subject" int4,
     primary key ("id")
-);/*
+);
 create table "semester_marks"
 (
     "id"                  bigserial not null,
@@ -94,9 +94,9 @@ create table "study_groups"
     "code"                int4,
     "course_number"       int4,
     "created_at"          timestamp,
-    "full_name"           varchar(255),
+    "full_name"           varchar(255) NOT NULL UNIQUE,
     "group_number"        int4,
-    "short_name"          varchar(255),
+    "short_name"          varchar(255) NOT NULL UNIQUE,
     "updated_at"          timestamp,
     "year_of_study_start" int4,
     "department_id"       int8,
@@ -125,7 +125,7 @@ create table "subjects"
     "id"            bigserial not null,
     "created_at"    timestamp,
     "decryption"    varchar(255),
-    "name"          varchar(255),
+    "name"          varchar(255) NOT NULL UNIQUE,
     "updated_at"    timestamp,
     "department_id" int8,
     primary key ("id")
@@ -192,58 +192,58 @@ create table "works"
     primary key ("id")
 );
 alter table "answer_choice"
-    add constraint "FKato6fndoobpapfedw7tra8md2" foreign key ("question_id") references "question";
+    add constraint "question_id" foreign key ("question_id") references "question";
 alter table "question"
-    add constraint "FKpghg1kiitomybfduse6wwx90h" foreign key ("subject_id") references "subjects";
+    add constraint "subject_id" foreign key ("subject_id") references "subjects";
 alter table "question"
-    add constraint "FKaue9153g00pml9q8dk0remvmp" foreign key ("theme_id") references "themes";
+    add constraint "theme_id" foreign key ("theme_id") references "themes";
 alter table "departments"
-    add constraint "FK3s8plsoc0lynf5j8oi7b5q3u1" foreign key ("faculty_id") references "faculties";
+    add constraint "faculty_id" foreign key ("faculty_id") references "faculties";
 alter table "files"
-    add constraint "FKhx035wl396vhea0vprnrhyk45" foreign key ("question_id") references "question";
+    add constraint "question_id" foreign key ("question_id") references "question";
 alter table "files"
-    add constraint "FKbon9qrhh9df3dps5j5fi1a4tc" foreign key ("task_id") references "tasks";
+    add constraint "task_id" foreign key ("task_id") references "tasks";
 alter table "files"
-    add constraint "FK70hxcygu4axwbhpdfap1scoxe" foreign key ("user_id") references "users";
+    add constraint "user_id" foreign key ("user_id") references "users";
 alter table "files"
-    add constraint "FKdkbdy9q2jonhf8w1136517aqx" foreign key ("work_id") references "works";
+    add constraint "work_id" foreign key ("work_id") references "works";
 alter table "passed_questions"
-    add constraint "FKqxpxdaungecgp1npdix6chvb3" foreign key ("passed_test_id") references "passed_tests";
+    add constraint "passed_test_id" foreign key ("passed_test_id") references "passed_tests";
 alter table "passed_questions"
-    add constraint "FKd4l0tf335wf0csc1sbkwuvhh5" foreign key ("question_id") references "question";
+    add constraint "question_id" foreign key ("question_id") references "question";
 alter table "passed_tests"
-    add constraint "FKdgr5nljms5odqiikj03994ykv" foreign key ("user_id") references "users";
+    add constraint "user_id" foreign key ("user_id") references "users";
 alter table "semester_marks"
-    add constraint "FK81umjvayuu43t56amn254uxp8" foreign key ("subject_semester_id") references "subject_semesters";
+    add constraint "subject_semester_id" foreign key ("subject_semester_id") references "subject_semesters";
 alter table "semester_marks"
-    add constraint "FK921spfn5gxq0ar7vqxyrojaoy" foreign key ("user_id") references "users";
+    add constraint "user_id" foreign key ("user_id") references "users";
 alter table "study_groups"
-    add constraint "FKa4185p8ec0p20m9ueib2ddbe9" foreign key ("department_id") references "departments";
+    add constraint "department_id" foreign key ("department_id") references "departments";
 alter table "study_groups_subject_semesters"
-    add constraint "FKsp95lhlcxh7tdp8nu32sl3pv0" foreign key ("subject_semester_id") references "subject_semesters";
+    add constraint "subject_semester_id" foreign key ("subject_semester_id") references "subject_semesters";
 alter table "study_groups_subject_semesters"
-    add constraint "FKscm4x7x3jw5av7xuxmp6kh1ok" foreign key ("study_group_id") references "study_groups";
+    add constraint "study_group_id" foreign key ("study_group_id") references "study_groups";
 alter table "subject_semesters"
-    add constraint "FKo3gq9snplsuyy8fw3kh0jetli" foreign key ("subject_id") references "subjects";
+    add constraint "subject_id" foreign key ("subject_id") references "subjects";
 alter table "subjects"
-    add constraint "FK87octokwu9ksi3l68kcrdwy8q" foreign key ("department_id") references "departments";
+    add constraint "department_id" foreign key ("department_id") references "departments";
 alter table "tasks"
-    add constraint "FKpp2o3fv8ydkpficsrq3sh44en" foreign key ("semester_id") references "subject_semesters";
+    add constraint "semester_id" foreign key ("semester_id") references "subject_semesters";
 alter table "tasks"
-    add constraint "FKerjv7s3gg14l9r6fug99597vq" foreign key ("user_id") references "users";
+    add constraint "user_id" foreign key ("user_id") references "users";
 alter table "teacher_subject"
-    add constraint "FKgsge0u48er7ky9qg0q74jkfgx" foreign key ("subject_id") references "subjects";
+    add constraint "subject_id" foreign key ("subject_id") references "subjects";
 alter table "teacher_subject"
-    add constraint "FKnhlcm26sl25yqdk3ckpycq2m4" foreign key ("user_id") references "users";
+    add constraint "user_id" foreign key ("user_id") references "users";
 alter table "themes"
-    add constraint "FKk9y3oaalhtb2wx2482rmc3gp9" foreign key ("subject_id") references "subjects";
+    add constraint "subject_id" foreign key ("subject_id") references "subjects";
 alter table "user_answers"
-    add constraint "FK3elt386mn0ah1cnra6fr8k76p" foreign key ("passed_question_id") references "passed_questions";
+    add constraint "passed_question_id" foreign key ("passed_question_id") references "passed_questions";
 alter table "users"
-    add constraint "FKowjuwfuaig2ujr9bqqvcl336t" foreign key ("department_id") references "departments";
+    add constraint "department_id" foreign key ("department_id") references "departments";
 alter table "users"
-    add constraint "FKmvx1us0w8j1d3w5252vnjd1u" foreign key ("study_group_id") references "study_groups";
+    add constraint "study_group_id" foreign key ("study_group_id") references "study_groups";
 alter table "works"
-    add constraint "FKf0vrd9bu8xax6y5g4w70gg405" foreign key ("task_id") references "tasks";
+    add constraint "task_id" foreign key ("task_id") references "tasks";
 alter table "works"
-    add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users";*/
+    add constraint "user_id" foreign key ("user_id") references "users";
