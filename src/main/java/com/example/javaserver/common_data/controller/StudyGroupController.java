@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/study-group")
@@ -44,7 +43,17 @@ public class StudyGroupController {
         return new ResponseEntity<>(studyGroups, HttpStatus.OK);
     }
 
-
+    @PostMapping("/search-by-ids")
+    public ResponseEntity<?> searchByIds(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Set<Long> ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> studyGroupService.searchByIds(ids),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
 
     @PostMapping
     public ResponseEntity<?> create(
@@ -81,6 +90,18 @@ public class StudyGroupController {
                 token,
                 (c) -> studyGroupService.addSubjectSemesters(studyGroupId, subjectSemesterIds),
                 EnumSet.of(UserRole.ADMIN)
+        );
+    }
+
+    @GetMapping("/teaching")
+    public ResponseEntity<?> getGroupsByUser(
+            @RequestHeader("token") String token,
+            @RequestParam(value = "userId", required = false) Integer userId
+    ){
+        return requestHandlerService.proceed(
+                token,
+                (c) -> studyGroupService.getGroupsByUser(userId, c),
+                EnumSet.allOf(UserRole.class)
         );
     }
 }

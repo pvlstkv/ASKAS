@@ -8,7 +8,9 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class StudyGroupService {
@@ -48,6 +52,11 @@ public class StudyGroupService {
         }
         studyGroupRepo.save(studyGroup);
         return new ResponseEntity<>(new Message("Учебная группа успешно создана"), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<?> searchByIds(Set<Long> ids) {
+        Collection<StudyGroup> groups = studyGroupRepo.findAllByIdIn(ids);
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     public ResponseEntity<?> get(Long id){
@@ -84,5 +93,29 @@ public class StudyGroupService {
         Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
         group.get().getSubjectSemesters().addAll(subjectSemesters);
         return new ResponseEntity<>(new Message("Семестры были успешно добавлены для группы"), HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getGroupsByUser(Integer userId, UserContext userContext){
+        if (userId == null) {
+            userId = userContext.getUserId();
+        }
+
+        Optional<User> userO = userRepo.findById(userId);
+        if (!userO.isPresent()) {
+            return new ResponseEntity<>(new Message("Нет пользователя с указанным (явно или по токену) id"), HttpStatus.BAD_REQUEST);
+        }
+        User user = userO.get();
+
+        if (!user.getRole().equals(UserRole.TEACHER)) {
+            return new ResponseEntity<>(new Message("Пользователь не является преподавателем"), HttpStatus.BAD_REQUEST);
+        }
+
+        Collection<StudyGroup> groups = user
+                .getTeachingSubjects().stream()
+                .flatMap(sub -> sub.getSemesters().stream())
+                .flatMap(sem -> sem.getStudyGroups().stream())
+                .collect(Collectors.toSet());
+
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 }

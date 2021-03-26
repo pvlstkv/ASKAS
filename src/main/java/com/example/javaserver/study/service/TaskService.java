@@ -1,6 +1,9 @@
 package com.example.javaserver.study.service;
 
+import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
@@ -214,5 +217,33 @@ public class TaskService {
     public ResponseEntity<?> searchByIds(Set<Long> ids) {
         Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> searchBySubjectAndUser(Long subjectId, Integer userId, UserContext userContext) {
+        if (userId == null) {
+            userId = userContext.getUserId();
+        }
+
+        Optional<User> user = userRepo.findById(userId);
+        if (!user.isPresent()) {
+            return new ResponseEntity<>(new Message("Id пользователя инвалидный"), HttpStatus.BAD_REQUEST);
+        }
+
+        StudyGroup group = user.get().getStudyGroup();
+        if (group == null) {
+            return new ResponseEntity<>(new Message("Студент не привязан к группе"), HttpStatus.BAD_REQUEST);
+        }
+
+        Set<SubjectSemester> semesters = group.getSubjectSemesters();
+        if (semesters.isEmpty()) {
+            return new ResponseEntity<>(new Message("Группа, в которой состоит студент не имеет семестров"), HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<SubjectSemester> semester = semesters.stream().filter(s -> subjectId.equals(s.getSubject().getId())).findFirst();
+        if (!semester.isPresent()) {
+            return new ResponseEntity<>(new Message("Предмета с указанным id нет у пользователя"), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(semester.get().getTasks(), HttpStatus.OK);
     }
 }
