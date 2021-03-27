@@ -26,7 +26,7 @@ values (1,
         true,
         true,
         1,
-        (select id from subjects where name like 'Архитектура процессоров')) returning id;
+        (select id from subjects where name like 'Архитектура процессоров'));
 
 insert into study_groups_subject_semesters(study_group_id, subject_semester_id)
 values ((select id from departments where short_name like 'ВТ'),
