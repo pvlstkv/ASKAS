@@ -1,14 +1,8 @@
-#
-# Build stage
-#
-
-# docker pull maven:3.6.3-ibmjava-8-alpine
-
 FROM maven:3.6.3-jdk-8-slim AS build
-COPY ../src /home/app/src
-COPY ../pom.xml /home/app
+COPY src /home/app/src
+COPY pom.xml /home/app
 CMD rm /home/app/src/main/resources/application.properties
-COPY application.properties /home/app/src/main/resources
+COPY deployments/application.properties /home/app/src/main/resources
 RUN mvn -f /home/app/pom.xml clean package -DskipTests
 
 #
