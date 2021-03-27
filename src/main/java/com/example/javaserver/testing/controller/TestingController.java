@@ -5,6 +5,7 @@ import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.testing.model.dto.AnswerInOut;
 import com.example.javaserver.testing.model.dto.TestIn;
+import com.example.javaserver.testing.model.dto.ThemeIn;
 import com.example.javaserver.testing.service.QuestionService;
 import com.example.javaserver.testing.service.ResultService;
 import com.example.javaserver.testing.service.TestService;
@@ -44,7 +45,6 @@ public class TestingController {
         this.requestHandlerService = requestHandlerService;
     }
 
-    @Autowired
 
 
     @GetMapping("/hello")
@@ -79,7 +79,11 @@ public class TestingController {
         return requestHandlerService.proceed(token, userContext -> themeService.fetchSubjectThemes(subjectId),
                 EnumSet.allOf(UserRole.class));
     }
-
+    @PostMapping("/theme")
+    public ResponseEntity<?> createTheme(@RequestBody ThemeIn themeIn, @RequestHeader(name = "token") String token){
+        return requestHandlerService.proceed(token, userContext -> themeService.createTheme(themeIn),
+                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER));
+    }
     @DeleteMapping("/question")
     public ResponseEntity<?> deleteOneQuestion(@RequestParam(value = "limit") Long id,
                                                @RequestHeader(name = "token") String token) {
