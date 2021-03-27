@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  jserver:
+    build:
+      context: ../
+      dockerfile: deployments/Dockerfile
+    depends_on:
+      - "postgres"
+    links:
+      - "postgres"
+    ports:
+      - "9099:8080"
+  postgres:
+    image: postgres:12.6-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: "main"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "123456"
