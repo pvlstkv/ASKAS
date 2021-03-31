@@ -12,7 +12,7 @@ import java.io.IOException;
 public class AuthenticationEntryPointImp implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
-        //System.out.println("Unauthorized: " + e.toString());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized");
+        //System.out.println("Unauthorized: " + e.toString()); TODO сделать логирование
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.toString());
     }
 }
