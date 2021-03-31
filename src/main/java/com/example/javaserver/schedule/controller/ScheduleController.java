@@ -1,9 +1,9 @@
 package com.example.javaserver.schedule.controller;
 
-import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.schedule.service.ParserService;
-import com.example.javaserver.schedule.service.ScheduleService;
 import com.example.javaserver.general.service.RequestHandlerService;
+import com.example.javaserver.schedule.service.ScheduleService;
+import com.example.javaserver.user.model.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +13,13 @@ import java.util.EnumSet;
 @RequestMapping("/schedule")
 public class ScheduleController {
     private final RequestHandlerService requestHandlerService;
-    private final ParserService parserService;
+    //private final ParserService parserService;
     private final ScheduleService scheduleService;
 
-    public ScheduleController(RequestHandlerService requestHandlerService, ParserService parserService, ScheduleService scheduleService) {
+    @Autowired
+    public ScheduleController(RequestHandlerService requestHandlerService,/* ParserService parserService,*/ ScheduleService scheduleService) {
         this.requestHandlerService = requestHandlerService;
-        this.parserService = parserService;
+        /*this.parserService = parserService;*/
         this.scheduleService = scheduleService;
     }
 

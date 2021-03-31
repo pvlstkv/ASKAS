@@ -1,15 +1,19 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.FacultyIn;
-import com.example.javaserver.general.criteria.SearchCriteria;
+import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.service.FacultyService;
+import com.example.javaserver.general.criteria.SearchCriteria;
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -26,15 +30,12 @@ public class FacultyController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ADMIN"})
+    public Message create(
             @RequestBody FacultyIn facultyIn
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> facultyService.create(facultyIn),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return facultyService.create(facultyIn);
     }
 
     @DeleteMapping
@@ -64,8 +65,9 @@ public class FacultyController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('USER') or hasRole('TEACHER') or hasRole('ADMIN')")
-    public ResponseEntity<?> getAll() {
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<Faculty> getAll() {
         return facultyService.getAll();
     }
 

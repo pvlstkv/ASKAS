@@ -1,6 +1,5 @@
 package com.example.javaserver.general.config;
 
-import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,15 +16,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    UserDetailsServiceImp userDetailsService;
-
-    @Autowired
+    private UserDetailsServiceImp userDetailsService;
     private AuthenticationEntryPointImp authenticationEntryPoint;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return NoOpPasswordEncoder.getInstance();
     }
 
     @Bean
@@ -45,43 +46,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers("/schedule/**").permitAll()
+                .antMatchers("/schedule", "/schedule/list").permitAll()
                 .antMatchers("/login").not().fullyAuthenticated()
-                .antMatchers("/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
         httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
-
-
-        /*httpSecurity
-                .csrf()
-                .disable()
-                .authorizeRequests()
-                //Доступ только для не зарегистрированных пользователей
-                .antMatchers("/registration").not().fullyAuthenticated()
-                //Доступ только для пользователей с ролью Администратор
-                .antMatchers("/**").hasRole("ADMIN")
-                .antMatchers("/**").hasRole("TEACHER")
-                .antMatchers("/**").hasRole("USER")
-                //Доступ разрешен всем пользователей
-                .antMatchers("/", "/schedule/**").permitAll()
-                //Все остальные страницы требуют аутентификации
-                .anyRequest().authenticated()
-                .and()
-                //Настройка для входа в систему
-                .formLogin()
-                .loginPage("/login")
-                //Перенарпавление на главную страницу после успешного входа
-                .defaultSuccessUrl("/")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll()
-                .logoutSuccessUrl("/");*/
     }
 
-    @Bean
-    public PasswordEncoder encoder() {
-        return NoOpPasswordEncoder.getInstance();
+    @Autowired
+    public void setUserDetailsService(UserDetailsServiceImp userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+    @Autowired
+    public void setAuthenticationEntryPoint(AuthenticationEntryPointImp authenticationEntryPoint) {
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 }
