@@ -29,7 +29,7 @@ public class UserDetailsImp implements UserDetails {
                 user.getId(),
                 user.getLogin(),
                 user.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
 
