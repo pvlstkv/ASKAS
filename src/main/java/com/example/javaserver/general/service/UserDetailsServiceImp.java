@@ -1,5 +1,6 @@
-package com.example.javaserver.general.config;
+package com.example.javaserver.general.service;
 
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;

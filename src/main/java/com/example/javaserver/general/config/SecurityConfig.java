@@ -1,5 +1,8 @@
 package com.example.javaserver.general.config;
 
+import com.example.javaserver.general.entry_point.AuthenticationEntryPointImp;
+import com.example.javaserver.general.filter.AuthTokenFilter;
+import com.example.javaserver.general.service.UserDetailsServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;

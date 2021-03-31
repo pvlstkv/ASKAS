@@ -1,4 +1,4 @@
-package com.example.javaserver.general.config;
+package com.example.javaserver.general.entry_point;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

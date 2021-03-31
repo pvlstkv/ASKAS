@@ -1,4 +1,4 @@
-package com.example.javaserver.general.config;
+package com.example.javaserver.general.model;
 
 import com.example.javaserver.user.model.User;
 import org.springframework.security.core.GrantedAuthority;

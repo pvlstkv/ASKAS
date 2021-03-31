@@ -1,7 +1,8 @@
-package com.example.javaserver.general.config;
+package com.example.javaserver.general.filter;
 
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.service.JwtService;
+import com.example.javaserver.general.service.UserDetailsServiceImp;
 import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
