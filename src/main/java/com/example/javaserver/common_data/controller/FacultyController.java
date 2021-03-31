@@ -7,6 +7,7 @@ import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
@@ -63,14 +64,9 @@ public class FacultyController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> facultyService.getAll(),
-                EnumSet.allOf(UserRole.class)
-        );
+    @PreAuthorize("hasRole('USER') or hasRole('TEACHER') or hasRole('ADMIN')")
+    public ResponseEntity<?> getAll() {
+        return facultyService.getAll();
     }
 
     @PostMapping("/criteria-search")

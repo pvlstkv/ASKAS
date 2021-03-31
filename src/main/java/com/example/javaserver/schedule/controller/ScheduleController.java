@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.EnumSet;
 
 @RestController
+@RequestMapping("/schedule")
 public class ScheduleController {
     private final RequestHandlerService requestHandlerService;
     private final ParserService parserService;
@@ -21,19 +22,19 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
-    @GetMapping("/schedule")
+    @GetMapping
     public ResponseEntity<?> getScheduleGroup(
             @RequestParam("nameGroup") String nameGroup
             ){
         return scheduleService.getScheduleGroup(nameGroup);
     }
 
-    @GetMapping("/schedule-list")
+    @GetMapping("/list")
     public ResponseEntity<?> getListScheduleGroups(){
         return scheduleService.getListScheduleGroups();
     }
 
-    @PostMapping("/schedule-update")
+    @PostMapping("/update")
     public ResponseEntity<?> updateAllGroup(@RequestHeader("token") String token){
         return requestHandlerService.proceed(token,(с) -> scheduleService.iteratingThroughGroups(), EnumSet.of(UserRole.ADMIN));
     }
