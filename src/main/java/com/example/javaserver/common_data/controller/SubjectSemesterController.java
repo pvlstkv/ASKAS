@@ -5,27 +5,21 @@ import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/subject-semester")
 public class SubjectSemesterController {
-    private final RequestHandlerService requestHandlerService;
     private final SubjectSemesterService subjectSemesterService;
 
     @Autowired
-    public SubjectSemesterController(RequestHandlerService requestHandlerService, SubjectSemesterService subjectSemesterService) {
-        this.requestHandlerService = requestHandlerService;
+    public SubjectSemesterController(SubjectSemesterService subjectSemesterService) {
         this.subjectSemesterService = subjectSemesterService;
     }
 

@@ -1,10 +1,13 @@
 package com.example.javaserver.schedule.controller;
 
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.schedule.service.ScheduleService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
@@ -12,14 +15,10 @@ import java.util.EnumSet;
 @RestController
 @RequestMapping("/schedule")
 public class ScheduleController {
-    private final RequestHandlerService requestHandlerService;
-    //private final ParserService parserService;
     private final ScheduleService scheduleService;
 
     @Autowired
-    public ScheduleController(RequestHandlerService requestHandlerService,/* ParserService parserService,*/ ScheduleService scheduleService) {
-        this.requestHandlerService = requestHandlerService;
-        /*this.parserService = parserService;*/
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 
@@ -36,8 +35,10 @@ public class ScheduleController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateAllGroup(@RequestHeader("token") String token){
-        return requestHandlerService.proceed(token,(с) -> scheduleService.iteratingThroughGroups(), EnumSet.of(UserRole.ADMIN));
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message updateAllGroup(){
+        return scheduleService.iteratingThroughGroups();
     }
 
 }
