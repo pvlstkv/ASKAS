@@ -76,4 +76,8 @@ public class UserDetailsImp implements UserDetails {
             return false;
         return id.equals(((UserDetailsImp) obj).id);
     }
+
+    public Integer getId() {
+        return id;
+    }
 }
