@@ -62,7 +62,7 @@ public class SubjectController {
         return subjectService.getAll();
     }
 
-    @GetMapping("/criteria-search")
+    @PostMapping("/criteria-search")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     public Collection<Subject> criteriaSearch(
