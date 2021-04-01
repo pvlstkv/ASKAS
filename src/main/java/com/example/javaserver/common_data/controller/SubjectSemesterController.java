@@ -1,14 +1,19 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -25,32 +30,27 @@ public class SubjectSemesterController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ADMIN"})
+    public Message create(
             @RequestBody SubjectSemesterIn subjectSemesterIn
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.create(subjectSemesterIn),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return subjectSemesterService.create(subjectSemesterIn);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message delete(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.delete(ids),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return subjectSemesterService.delete(ids);
     }
 
     @PatchMapping
-    public ResponseEntity<?> update(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message update(
             @RequestParam("id") Long id,
             @RequestParam(value = "controlType", required = false) String controlType,
             @RequestParam(value = "hasCourseProject", required = false) String hasCourseProject,
@@ -58,58 +58,41 @@ public class SubjectSemesterController {
             @RequestParam(value = "numberOfSemester", required = false) String numberOfSemester,
             @RequestParam(value = "subjectId", required = false) String subjectId
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, numberOfSemester, subjectId),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, numberOfSemester, subjectId);
     }
 
     @PatchMapping("/assign")
-    public ResponseEntity<?> setSubject(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message setSubject(
             @RequestParam("subjectSemesterId") Long subjectSemesterId,
             @RequestParam("subjectId") Long subjectId
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.setSubject(subjectSemesterId, subjectId),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return subjectSemesterService.setSubject(subjectSemesterId, subjectId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> search(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.getAll(),
-                EnumSet.allOf(UserRole.class)
-        );
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<SubjectSemester> search() {
+        return subjectSemesterService.getAll();
     }
 
     @PostMapping("/criteria-search")
-    public ResponseEntity<?> criteriaSearch(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<SubjectSemester> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.criteriaSearch(criteria),
-                EnumSet.allOf(UserRole.class)
-        );
+        return subjectSemesterService.criteriaSearch(criteria);
     }
 
     @PostMapping("/search-by-ids")
-    public ResponseEntity<?> searchByIds(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<SubjectSemester> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> subjectSemesterService.searchByIds(ids),
-                EnumSet.allOf(UserRole.class)
-        );
+        return subjectSemesterService.searchByIds(ids);
     }
 }

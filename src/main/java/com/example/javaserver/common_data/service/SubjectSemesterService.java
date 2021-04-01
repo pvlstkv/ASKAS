@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -32,8 +33,7 @@ public class SubjectSemesterService {
         this.subjectRepo = subjectRepo;
     }
 
-    @Transactional
-    public ResponseEntity<?> create(SubjectSemesterIn subjectSemesterIn) {
+    public Message create(SubjectSemesterIn subjectSemesterIn) {
         SubjectSemester subjectSemester = new SubjectSemester();
         subjectSemester.setControlType(subjectSemesterIn.controlType);
         subjectSemester.setHasCourseProject(subjectSemesterIn.hasCourseProject);
@@ -43,24 +43,23 @@ public class SubjectSemesterService {
         if (subjectSemesterIn.subjectId != null) {
             Optional<Subject> subject = subjectRepo.findById(subjectSemesterIn.subjectId);
             if (!subject.isPresent()) {
-                return new ResponseEntity<>(new Message("Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
             }
             subjectSemester.setSubject(subject.get());
         }
 
         subjectSemesterRepo.save(subjectSemester);
-        return new ResponseEntity<>(new Message("Семестр предмета успешно создан"), HttpStatus.OK);
+        return new Message("Семестр предмета успешно создан");
     }
 
-    @Transactional
-    public ResponseEntity<?> delete(Set<Long> ids) {
+    public Message delete(Set<Long> ids) {
         subjectSemesterRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные семестры были успешно удалены"), HttpStatus.OK);
+        return new Message("Найденные семестры были успешно удалены");
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public ResponseEntity<?> update(
+    public Message update(
             Long id,
             String controlType,
             String hasCourseProject,
@@ -70,7 +69,7 @@ public class SubjectSemesterService {
     ) {
         Optional<SubjectSemester> semesterOptional = subjectSemesterRepo.findById(id);
         if (!semesterOptional.isPresent()) {
-            return new ResponseEntity<>(new Message("Семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с указанным id не существует");
         }
         SubjectSemester semester = semesterOptional.get();
 
@@ -78,7 +77,7 @@ public class SubjectSemesterService {
             try {
                 semester.setControlType(controlType.equals("null") ? null : SubjectControlType.valueOf(controlType));
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: controlType"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: controlType");
             }
         }
 
@@ -86,7 +85,7 @@ public class SubjectSemesterService {
             try {
                 semester.setHasCourseProject(hasCourseProject.equals("null") ? null : Boolean.parseBoolean(hasCourseProject));
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: hasCourseProject"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseProject");
             }
         }
 
@@ -94,7 +93,7 @@ public class SubjectSemesterService {
             try {
                 semester.setHasCourseWork(hasCourseWork.equals("null") ? null : Boolean.parseBoolean(hasCourseWork));
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: hasCourseWork"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
             }
         }
 
@@ -102,7 +101,7 @@ public class SubjectSemesterService {
             try {
                 semester.setNumberOfSemester(numberOfSemester.equals("null") ? null : Integer.parseInt(numberOfSemester));
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: hasCourseWork"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
             }
         }
 
@@ -113,52 +112,50 @@ public class SubjectSemesterService {
                 try {
                     subjectOptional = subjectRepo.findById(Long.parseLong(subjectId));
                 } catch (Exception e) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения семестра. Недопустимый id предмета"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения семестра. Недопустимый id предмета");
                 }
                 if (!subjectOptional.isPresent()) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения семестра. Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения семестра. Предмет с указанным id не существует");
                 }
                 subject = subjectOptional.get();
             }
             semester.setSubject(subject);
         }
 
-        return new ResponseEntity<>(new Message("Семестр был успешно изменён"), HttpStatus.OK);
+        return new Message("Семестр был успешно изменён");
     }
 
     @Transactional
-    public ResponseEntity<?> setSubject(Long subjectSemesterId, Long subjectId) {
+    public Message setSubject(Long subjectSemesterId, Long subjectId) {
         Optional<SubjectSemester> subjectSemester = subjectSemesterRepo.findById(subjectSemesterId);
         if (!subjectSemester.isPresent()) {
-            return new ResponseEntity<>(new Message("Семестр с указанным id не был существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с указанным id не был существует");
         }
 
         Optional<Subject> subject = subjectRepo.findById(subjectId);
         if (!subject.isPresent()) {
-            return new ResponseEntity<>(new Message("Предмет с указанным id не был существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не был существует");
         }
 
         subjectSemester.get().setSubject(subject.get());
-        return new ResponseEntity<>(new Message("Семестр был успешно привязан к предмету"), HttpStatus.OK);
+
+        return new Message("Семестр был успешно привязан к предмету");
     }
 
-    public ResponseEntity<?> getAll() {
-        Collection<SubjectSemester> subjectSemesters = subjectSemesterRepo.findAllBy();
-        return new ResponseEntity<>(subjectSemesters, HttpStatus.OK);
+    public Collection<SubjectSemester> getAll() {
+        return subjectSemesterRepo.findAllBy();
     }
 
-    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<SubjectSemester> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<SubjectSemester> specification = CommonSpecification.of(criteria);
-            List<SubjectSemester> subjectSemesters = subjectSemesterRepo.findAll(specification);
-            return new ResponseEntity<>(subjectSemesters, HttpStatus.OK);
+            return subjectSemesterRepo.findAll(specification);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<SubjectSemester> semesters = subjectSemesterRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(semesters, HttpStatus.OK);
+    public Collection<SubjectSemester> searchByIds(Set<Long> ids) {
+        return subjectSemesterRepo.findAllByIdIn(ids);
     }
 }
