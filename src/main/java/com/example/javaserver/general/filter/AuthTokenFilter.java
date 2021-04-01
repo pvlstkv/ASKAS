@@ -19,7 +19,7 @@ import java.io.IOException;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private JwtService jwtService;
+    private JwtService jwtService; // TODO сделать нормальный Bearer token и не искать каждый раз юзера в бд
 
     @Autowired
     private UserDetailsServiceImp userDetailsService;
