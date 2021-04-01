@@ -83,11 +83,21 @@ public class SubjectController {
     @GetMapping("/learning")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Subject> searchByUserId(
+    public Collection<Subject> searchByStudentId(
             @RequestParam(value = "userId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return subjectService.searchByUserId(userId, userDetails);
+        return subjectService.searchByStudentId(userId, userDetails);
+    }
+
+    @GetMapping("/teaching")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<Subject> searchByTeacherId(
+            @RequestParam(value = "userId", required = false) Integer userId,
+            @AuthenticationPrincipal UserDetailsImp userDetails
+    ) {
+        return subjectService.searchByTeacherId(userId, userDetails);
     }
 
     @PostMapping("/teacher-adding")

@@ -14,6 +14,7 @@ import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
+import jdk.internal.loader.AbstractClassLoaderValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -129,7 +130,7 @@ public class SubjectService {
         return subjectRepo.findAllByIdIn(ids);
     }
 
-    public Collection<Subject> searchByUserId(Integer userId, UserDetailsImp userDetails) {
+    public Collection<Subject> searchByStudentId(Integer userId, UserDetailsImp userDetails) {
         if (userId == null) {
             userId = userDetails.getId();
         }
@@ -149,6 +150,23 @@ public class SubjectService {
                 .stream()
                 .map(SubjectSemester::getSubject)
                 .collect(Collectors.toSet());
+    }
+
+    public Collection<Subject> searchByTeacherId(Integer userId, UserDetailsImp userDetails) {
+        if (userId == null) {
+            userId = userDetails.getId();
+        }
+
+        Optional<User> user = userRepo.findById(userId);
+        if (!user.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
+        }
+
+        if (!user.get().getRole().equals(UserRole.TEACHER)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
+        }
+
+        return user.get().getTeachingSubjects();
     }
 
     @Transactional
