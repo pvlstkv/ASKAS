@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class DepartmentService {
     }
 
     @Transactional
-    public ResponseEntity<?> create(DepartmentIn departmentIn) {
+    public Message create(DepartmentIn departmentIn) {
         Department department = new Department();
         department.setFullName(departmentIn.fullName);
         department.setShortName(departmentIn.shortName);
@@ -41,24 +42,23 @@ public class DepartmentService {
         if (departmentIn.facultyId != null) {
             Optional<Faculty> faculty = facultyRepo.findById(departmentIn.facultyId);
             if (!faculty.isPresent()) {
-                return new ResponseEntity<>(new Message("Факультет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Факультет с указанным id не существует");
             }
             department.setFaculty(faculty.get());
         }
 
         departmentRepo.save(department);
-        return new ResponseEntity<>(new Message("Кафедра успешно создана"), HttpStatus.OK);
+        return new Message("Кафедра успешно создана");
     }
 
-    @Transactional
-    public ResponseEntity<?> delete(Set<Long> ids) {
+    public Message delete(Set<Long> ids) {
         departmentRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные кафедры были успешно удалены"), HttpStatus.OK);
+        return new Message("Найденные кафедры были успешно удалены");
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public ResponseEntity<?> update(
+    public Message update(
             Long id,
             String shortName,
             String fullName,
@@ -66,7 +66,7 @@ public class DepartmentService {
     ) {
         Optional<Department> departmentOptional = departmentRepo.findById(id);
         if (!departmentOptional.isPresent()) {
-            return new ResponseEntity<>(new Message("Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Кафедра с указанным id не существует");
         }
         Department department = departmentOptional.get();
 
@@ -74,7 +74,7 @@ public class DepartmentService {
             try {
                 department.setShortName(shortName.equals("null") ? null : shortName);
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: shortName"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: shortName");
             }
         }
 
@@ -82,7 +82,7 @@ public class DepartmentService {
             try {
                 department.setFullName(fullName.equals("null") ? null : fullName);
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: fullName"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: fullName");
             }
         }
 
@@ -93,45 +93,41 @@ public class DepartmentService {
                 try {
                     facultyOptional = facultyRepo.findById(Long.parseLong(facultyId));
                 } catch (Exception e) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения кафедры. Недопустимый id факультета"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения кафедры. Недопустимый id факультета");
                 }
                 if (!facultyOptional.isPresent()) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения кафедры. Факультет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения кафедры. Факультет с указанным id не существует");
                 }
                 faculty = facultyOptional.get();
             }
             department.setFaculty(faculty);
         }
 
-        return new ResponseEntity<>(new Message("Кафедра была успешно изменена"), HttpStatus.OK);
+        return new Message("Кафедра была успешно изменена");
     }
 
-    public ResponseEntity<?> getAll() {
-        Collection<Department> departments = departmentRepo.findAllBy();
-        return new ResponseEntity<>(departments, HttpStatus.OK);
+    public Collection<Department> getAll() {
+        return departmentRepo.findAllBy();
     }
 
-    public ResponseEntity<?> getAllShortNames() {
-        Collection<String> shortNames = departmentRepo
+    public Collection<String> getAllShortNames() {
+        return departmentRepo
                 .findAllBy()
                 .stream()
                 .map(Department::getShortName)
                 .collect(Collectors.toSet());
-        return new ResponseEntity<>(shortNames, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<Department>  criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Department> specification = CommonSpecification.of(criteria);
-            List<Department> departments = departmentRepo.findAll(specification);
-            return new ResponseEntity<>(departments, HttpStatus.OK);
+            return departmentRepo.findAll(specification);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<Department> departments = departmentRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(departments, HttpStatus.OK);
+    public Collection<Department> searchByIds(Set<Long> ids) {
+        return departmentRepo.findAllByIdIn(ids);
     }
 }
