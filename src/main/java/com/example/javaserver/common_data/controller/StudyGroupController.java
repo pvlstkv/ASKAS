@@ -5,9 +5,11 @@ import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.service.StudyGroupService;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -83,8 +85,9 @@ public class StudyGroupController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     public Collection<StudyGroup> getGroupsByUser(
-            @RequestParam(value = "userId", required = false) Integer userId
+            @RequestParam(value = "userId", required = false) Integer userId,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ){
-        return studyGroupService.getGroupsByUser(userId);
+        return studyGroupService.getGroupsByUser(userId, userDetails);
     }
 }

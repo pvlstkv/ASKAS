@@ -8,16 +8,12 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -98,9 +94,9 @@ public class StudyGroupService {
         return new Message("Семестры были успешно добавлены для группы");
     }
 
-    public Collection<StudyGroup> getGroupsByUser(Integer userId){
+    public Collection<StudyGroup> getGroupsByUser(Integer userId, UserDetailsImp userDetails){
         if (userId == null) {
-            userId = ((UserDetailsImp) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            userId = userDetails.getId();
         }
 
         Optional<User> userO = userRepo.findById(userId);
