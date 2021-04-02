@@ -3,6 +3,7 @@ package com.example.javaserver.testing.controller;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.PassedTestOut;
+import com.example.javaserver.testing.model.dto.PassedThemeOut;
 import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.testing.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class ResultController {
     @GetMapping("/test/passed-themes")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public List<Theme> fetchPassedThemes(
+    public List<PassedThemeOut>  fetchPassedThemes(
             @RequestParam(value = "subj_id") Long subjectId,
             @RequestParam(value = "user_id") Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails

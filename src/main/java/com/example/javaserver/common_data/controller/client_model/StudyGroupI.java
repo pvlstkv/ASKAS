@@ -12,7 +12,7 @@ public class StudyGroupI {
 
     private Integer groupNumber;
 
-    private Integer courseNumber;
+    private Integer numberOfSemester;
 
     private String shortName;
 
@@ -21,7 +21,7 @@ public class StudyGroupI {
     private Integer yearOfStudyStart;
 
     private Long idDepartment;
-    
+
     private Set<UserI> Students;
 
     public StudyGroupI() {
@@ -47,12 +47,12 @@ public class StudyGroupI {
         this.groupNumber = groupNumber;
     }
 
-    public Integer getCourseNumber() {
-        return courseNumber;
+    public Integer getNumberOfSemester() {
+        return numberOfSemester;
     }
 
-    public void setCourseNumber(Integer courseNumber) {
-        this.courseNumber = courseNumber;
+    public void setNumberOfSemester(Integer numberOfSemester) {
+        this.numberOfSemester = numberOfSemester;
     }
 
     public String getShortName() {

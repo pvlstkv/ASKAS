@@ -7,8 +7,8 @@ public class SubjectSemesterIn {
     public SubjectControlType controlType;
     public Boolean hasCourseProject;
     public Boolean hasCourseWork;
-    public Integer numberOfSemester;
     public Long subjectId;
+
 
     public SubjectSemesterIn() { }
 }
