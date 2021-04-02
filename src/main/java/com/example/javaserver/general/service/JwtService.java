@@ -14,7 +14,7 @@ public class JwtService {
         this.jwtUtil = jwtUtil;
     }
 
-    public UserContext modelAuth(String token){
+    public UserContext parseUserContext(String token){
         //token = token.substring(7);
         UserContext userContext = new UserContext();
         userContext.setUserId(jwtUtil.extractUserId(token));

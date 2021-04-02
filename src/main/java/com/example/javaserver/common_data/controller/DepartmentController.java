@@ -1,111 +1,87 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.client_model.DepartmentIn;
+import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.service.DepartmentService;
 import com.example.javaserver.general.criteria.SearchCriteria;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.user.model.UserRole;
+import com.example.javaserver.general.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.EnumSet;
+import java.util.Collection;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/department")
 public class DepartmentController {
-    private final RequestHandlerService requestHandlerService;
     private final DepartmentService departmentService;
 
     @Autowired
-    public DepartmentController(RequestHandlerService requestHandlerService, DepartmentService departmentService) {
-        this.requestHandlerService = requestHandlerService;
+    public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
 
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ADMIN"})
+    public Message create(
             @RequestBody DepartmentIn departmentIn
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.create(departmentIn),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return departmentService.create(departmentIn);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message delete(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.delete(ids),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return departmentService.delete(ids);
     }
 
     @PatchMapping
-    public ResponseEntity<?> update(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    public Message update(
             @RequestParam("id") Long id,
             @RequestParam(value = "shortName", required = false) String shortName,
             @RequestParam(value = "fullName", required = false) String fullName,
             @RequestParam(value = "facultyId", required = false) String facultyId
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.update(id, shortName, fullName, facultyId),
-                EnumSet.of(UserRole.ADMIN)
-        );
+        return departmentService.update(id, shortName, fullName, facultyId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> search(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.getAll(),
-                EnumSet.allOf(UserRole.class)
-        );
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<Department> search() {
+        return departmentService.getAll();
     }
 
     @GetMapping("/all/short-names")
-    public ResponseEntity<?> searchAllShortNames(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.getAllShortNames(),
-                EnumSet.allOf(UserRole.class)
-        );
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<String> searchAllShortNames() {
+        return departmentService.getAllShortNames();
     }
 
     @PostMapping("/criteria-search")
-    public ResponseEntity<?> criteriaSearch(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<Department> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.criteriaSearch(criteria),
-                EnumSet.allOf(UserRole.class)
-        );
+        return departmentService.criteriaSearch(criteria);
     }
 
     @PostMapping("/search-by-ids")
-    public ResponseEntity<?> searchByIds(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<Department> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> departmentService.searchByIds(ids),
-                EnumSet.allOf(UserRole.class)
-        );
+        return departmentService.searchByIds(ids);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.javaserver.schedule.service;
 
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.schedule.controller.model.Couple;
 import com.example.javaserver.schedule.controller.model.Day;
 import com.example.javaserver.schedule.controller.model.Group;
@@ -21,7 +22,7 @@ public class ScheduleService {
         this.parserService = parserService;
     }
 
-    public ResponseEntity<?> iteratingThroughGroups() {
+    public Message iteratingThroughGroups() {
         int part;
         int numberGroup;
         String baseUrl;
@@ -37,7 +38,7 @@ public class ScheduleService {
                 }
             }
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new Message("Всё ок");
     }
 
     public ResponseEntity<?> getScheduleGroup(String nameGroup){
@@ -52,8 +53,8 @@ public class ScheduleService {
     public ResponseEntity<?> getListScheduleGroups(){
         List<Schedule> scheduleList = (List<Schedule>) scheduleRepo.findAll();
         Set<String> res = new LinkedHashSet<>();
-        for (int i = 0; i < scheduleList.size(); i++) {
-            res.add(scheduleList.get(i).getNameGroup());
+        for (Schedule schedule : scheduleList) {
+            res.add(schedule.getNameGroup());
         }
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
