@@ -1,3 +1,4 @@
+/*
 package com.example.javaserver._startup;
 
 import com.example.javaserver.user.model.User;
@@ -44,3 +45,4 @@ public class InitUsers implements ApplicationListener<ContextRefreshedEvent> {
 
     }
 }
+*/

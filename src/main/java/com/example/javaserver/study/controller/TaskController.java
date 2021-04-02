@@ -94,4 +94,17 @@ public class TaskController {
                 EnumSet.allOf(UserRole.class)
         );
     }
+
+    @GetMapping
+    public ResponseEntity<?> searchBySubjectAndUser(
+            @RequestHeader("token") String token,
+            @RequestParam("subjectId") Long subjectId,
+            @RequestParam(value = "userId", required = false) Integer userId
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> taskService.searchBySubjectAndUser(subjectId, userId, c),
+                EnumSet.allOf(UserRole.class) /*EnumSet.of(UserRole.USER)*/
+        );
+    }
 }

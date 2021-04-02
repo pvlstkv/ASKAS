@@ -36,13 +36,25 @@ public class UserFileController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getById(
+    public ResponseEntity<?> download(
             @RequestHeader("token") String token,
             @RequestParam("id") Long id
     ) {
         return requestHandlerService.proceed(
                 token,
-                (c) -> userFileService.getById(id, c),
+                (c) -> userFileService.download(id, c),
+                EnumSet.allOf(UserRole.class)
+        );
+    }
+
+    @GetMapping("/search-by")
+    public ResponseEntity<?> getById(
+            @RequestHeader("token") String token,
+            @RequestParam("id") Long[] ids
+    ) {
+        return requestHandlerService.proceed(
+                token,
+                (c) -> userFileService.getBy(ids, c),
                 EnumSet.allOf(UserRole.class)
         );
     }

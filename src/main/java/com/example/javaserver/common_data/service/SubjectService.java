@@ -1,11 +1,15 @@
 package com.example.javaserver.common_data.service;
 
 import com.example.javaserver.common_data.controller.client_model.SubjectIn;
-import com.example.javaserver.common_data.model.*;
+import com.example.javaserver.common_data.model.Department;
+import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
@@ -13,15 +17,11 @@ import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +40,7 @@ public class SubjectService {
     }
 
     @Transactional
-    public ResponseEntity<?> create(SubjectIn subjectIn) {
+    public Message create(SubjectIn subjectIn) {
         Subject subject = new Subject();
         subject.setName(subjectIn.name);
         subject.setDecryption(subjectIn.decryption);
@@ -48,24 +48,23 @@ public class SubjectService {
         if (subjectIn.departmentId != null) {
             Optional<Department> department = departmentRepo.findById(subjectIn.departmentId);
             if (!department.isPresent()) {
-                return new ResponseEntity<>(new Message("Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Кафедра с указанным id не существует");
             }
             subject.setDepartment(department.get());
         }
 
         subjectRepo.save(subject);
-        return new ResponseEntity<>(new Message("Предмет успешно создан"), HttpStatus.OK);
+        return new Message("Предмет успешно создан");
     }
 
-    @Transactional
-    public ResponseEntity<?> delete(Set<Long> ids) {
+    public Message delete(Set<Long> ids) {
         subjectRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные предметы были успешно удалены"), HttpStatus.OK);
+        return new Message("Найденные предметы были успешно удалены");
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public ResponseEntity<?> update(
+    public Message update(
             Long id,
             String name,
             String decryption,
@@ -73,7 +72,7 @@ public class SubjectService {
     ) {
         Optional<Subject> subjectOptional = subjectRepo.findById(id);
         if (!subjectOptional.isPresent()) {
-            return new ResponseEntity<>(new Message("Предмет с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
         }
         Subject subject = subjectOptional.get();
 
@@ -81,7 +80,7 @@ public class SubjectService {
             try {
                 subject.setName(name.equals("null") ? null : name);
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: name"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: name");
             }
         }
 
@@ -89,7 +88,7 @@ public class SubjectService {
             try {
                 subject.setDecryption(decryption.equals("null") ? null : decryption);
             } catch (Exception e) {
-                return new ResponseEntity<>(new Message("Недопустимое значение поля: decryption"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: decryption");
             }
         }
 
@@ -100,71 +99,88 @@ public class SubjectService {
                 try {
                     departmentOptional = departmentRepo.findById(Long.parseLong(departmentId));
                 } catch (Exception e) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения предмета. Недопустимый id кафедры"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения предмета. Недопустимый id кафедры");
                 }
                 if (!departmentOptional.isPresent()) {
-                    return new ResponseEntity<>(new Message("Ошибка изменения предмета. Кафедра с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения предмета. Кафедра с указанным id не существует");
                 }
                 department = departmentOptional.get();
             }
             subject.setDepartment(department);
         }
 
-        return new ResponseEntity<>(new Message("Предмет был успешно изменён"), HttpStatus.OK);
+        return new Message("Предмет был успешно изменён");
     }
 
-    public ResponseEntity<?> getAll() {
-        Collection<Subject> subjects = subjectRepo.findAllBy();
-        return new ResponseEntity<>(subjects, HttpStatus.OK);
+    public Collection<Subject> getAll() {
+        return subjectRepo.findAllBy();
     }
 
-    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<Subject> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Subject> specification = CommonSpecification.of(criteria);
-            List<Subject> subjects = subjectRepo.findAll(specification);
-            return new ResponseEntity<>(subjects, HttpStatus.OK);
+            return subjectRepo.findAll(specification);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<Subject> subjects = subjectRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(subjects, HttpStatus.OK);
+    public Collection<Subject> searchByIds(Set<Long> ids) {
+        return subjectRepo.findAllByIdIn(ids);
     }
 
-    public ResponseEntity<?> searchByUserId(Integer userId) {
+    public Collection<Subject> searchByStudentId(Integer userId, UserDetailsImp userDetails) {
+        if (userId == null) {
+            userId = userDetails.getId();
+        }
+
         Optional<User> user = userRepo.findById(userId);
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Пользователь с указанным id не найден"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
         }
 
         StudyGroup group = user.get().getStudyGroup();
         if (group == null) {
-            return new ResponseEntity<>(new Message("Пользователь не привязан ни к какой группе"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не привязан ни к какой группе");
         }
 
-        Set<Subject> subjects = group
+        return group
                 .getSubjectSemesters()
                 .stream()
                 .map(SubjectSemester::getSubject)
                 .collect(Collectors.toSet());
-        return new ResponseEntity<>(subjects, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> addTeachers(
+    public Collection<Subject> searchByTeacherId(Integer userId, UserDetailsImp userDetails) {
+        if (userId == null) {
+            userId = userDetails.getId();
+        }
+
+        Optional<User> user = userRepo.findById(userId);
+        if (!user.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
+        }
+
+        if (!user.get().getRole().equals(UserRole.TEACHER)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
+        }
+
+        return user.get().getTeachingSubjects();
+    }
+
+    @Transactional
+    public Message addTeachers(
            Long subjectId,
            Set<Integer> userIds
     ){
         Optional<Subject> subject = subjectRepo.findById(subjectId);
         if(!subject.isPresent()){
-            return new ResponseEntity<>(new Message("нет такого предмета"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "нет такого предмета");
         }
         Set<User> userSet = userRepo.getUsersByIdInAndRoleEquals(userIds,UserRole.TEACHER);
         subject.get().getTeachers().addAll(userSet);
 
         subjectRepo.save(subject.get());
-        return new ResponseEntity<>(new Message("преподаватели добавлены"), HttpStatus.OK);
-
+        return new Message("преподаватели добавлены");
     }
 }

@@ -44,9 +44,16 @@ public class StudyGroup implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 
+
+    @JsonProperty("studentIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> students;
 
+    @JsonProperty("subjectSemesterIds")
+    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+    @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
     @JoinTable(
             name = "study_groups_subject_semesters",

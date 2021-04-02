@@ -16,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserFileService {
@@ -51,6 +54,7 @@ public class UserFileService {
         userFile.setUser(user.get());
         userFile.setAccessLevel(accessLevel == null ? UserRole.USER : accessLevel);
         userFile.setData(data);
+        userFile.setName(file.getOriginalFilename());
         userFile = userFileRepo.save(userFile);
 
         UserFileOut fileOut = new UserFileOut();
@@ -59,7 +63,7 @@ public class UserFileService {
         return new ResponseEntity<>(fileOut, HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getById(Long id, UserContext userContext) {
+    public ResponseEntity<?> download(Long id, UserContext userContext) {
         Optional<UserFile> file = userFileRepo.findById(id);
         if (!file.isPresent()) {
             return new ResponseEntity<>(new Message("Файл с указанным id не найден"), HttpStatus.BAD_REQUEST);
@@ -77,5 +81,10 @@ public class UserFileService {
         return new ResponseEntity<>(file.get().getData(), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getBy(Long[] idsArr, UserContext userContext) {
+        Set<Long> ids = Arrays.stream(idsArr).collect(Collectors.toSet());
+        Set<UserFile> files = userFileRepo.getUserFilesByIdIn(ids);
 
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
 }
