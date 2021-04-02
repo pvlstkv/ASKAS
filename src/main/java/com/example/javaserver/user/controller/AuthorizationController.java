@@ -4,6 +4,8 @@ import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.service.AuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
