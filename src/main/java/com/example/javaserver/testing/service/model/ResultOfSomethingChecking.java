@@ -13,6 +13,7 @@ import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class ResultOfSomethingChecking {
@@ -20,30 +21,39 @@ public class ResultOfSomethingChecking {
     private Theme theme;
     private Question question;
     private User user;
-    private ResponseEntity<?> responseEntity;
+    private ResponseStatusException responseStatusException;
     private Boolean itsOK;
     private String errors;
     private static String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.\n";
 
+    public ResultOfSomethingChecking(ResultOfSomethingChecking oldResult) {
+        this.subject = oldResult.getSubject();
+        this.theme = oldResult.getTheme();
+        this.question = oldResult.getQuestion();
+        this.user = oldResult.getUser();
+        this.responseStatusException = oldResult.getResponseStatusException();
+        this.itsOK = oldResult.getItsOK();
+        this.errors = oldResult.getErrors();
+    }
 
-    //    private static <T, K extends GetIdAble> void checkIfExistsInDB(T something, K  repo, ResultOfSomethingChecking result) {
-    public static <T, K> ResultOfSomethingChecking checkIfExistsInDB(T something, K repo, ResultOfSomethingChecking result) {
+    public <T, K> ResultOfSomethingChecking checkIfExistsInDB(T something, K repo, ResultOfSomethingChecking prevResult) {
+        ResultOfSomethingChecking newResult = new ResultOfSomethingChecking(prevResult);
         if ((something instanceof Subject) && (repo instanceof SubjectRepo)) {
-            return checkSubject((Subject) something, (SubjectRepo) repo, result);
+            return checkSubject((Subject) something, (SubjectRepo) repo, newResult);
         }
         if (something instanceof Theme && repo instanceof ThemeRepo) {
-            return checkTheme((Theme) something, (ThemeRepo) repo, result);
+            return checkTheme((Theme) something, (ThemeRepo) repo, newResult);
         }
         if (something instanceof Question && repo instanceof QuestionRepo) {
-            return checkQuestion((Question) something, (QuestionRepo) repo, result);
+            return checkQuestion((Question) something, (QuestionRepo) repo, newResult);
         }
         if (something instanceof User && repo instanceof UserRepo) {
-            return checkUser((User) something, (UserRepo) repo, result);
+            return checkUser((User) something, (UserRepo) repo, newResult);
         }
-        result.setErrors("Косяк в коде");
-        result.setItsOK(false);
-        return result;
+        newResult.setErrors("хех");
+        newResult.setItsOK(false);
+        return newResult;
     }
 
     private static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo, ResultOfSomethingChecking result) {
@@ -52,7 +62,8 @@ public class ResultOfSomethingChecking {
             String response = String.format("Предмета" + doesntExistById, subject.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseEntity(new ResponseEntity<>(new Message(result.errors), HttpStatus.UNPROCESSABLE_ENTITY));
+            result.setResponseStatusException(
+                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
         }
         result.setItsOK(true);
         result.setSubject(subject);
@@ -65,7 +76,8 @@ public class ResultOfSomethingChecking {
             String response = String.format("Темы" + doesntExistById, theme.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseEntity(new ResponseEntity<>(new Message(result.errors), HttpStatus.UNPROCESSABLE_ENTITY));
+            result.setResponseStatusException(
+                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
         }
         result.setItsOK(true);
         result.setTheme(theme);
@@ -78,7 +90,8 @@ public class ResultOfSomethingChecking {
             String response = String.format("Вопроса" + doesntExistById, question.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseEntity(new ResponseEntity<>(new Message(result.errors), HttpStatus.UNPROCESSABLE_ENTITY));
+            result.setResponseStatusException(
+                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
         }
         result.setItsOK(true);
         result.setQuestion(question);
@@ -91,7 +104,8 @@ public class ResultOfSomethingChecking {
             String response = String.format("Пользователя" + doesntExistById, user.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseEntity(new ResponseEntity<>(new Message(result.errors), HttpStatus.UNPROCESSABLE_ENTITY));
+            result.setResponseStatusException(
+                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
         }
         result.setItsOK(true);
         result.setUser(user);
@@ -102,12 +116,12 @@ public class ResultOfSomethingChecking {
         this.errors = "";
     }
 
-    public ResultOfSomethingChecking(Subject subject, Theme theme, Question question, User user, ResponseEntity<?> responseEntity, Boolean itsOK, String errors) {
+    public ResultOfSomethingChecking(Subject subject, Theme theme, Question question, User user, ResponseStatusException responseStatusException, Boolean itsOK, String errors) {
         this.subject = subject;
         this.theme = theme;
         this.question = question;
         this.user = user;
-        this.responseEntity = responseEntity;
+        this.responseStatusException = responseStatusException;
         this.itsOK = itsOK;
         this.errors = errors;
     }
@@ -161,11 +175,19 @@ public class ResultOfSomethingChecking {
         this.theme = theme;
     }
 
-    public ResponseEntity<?> getResponseEntity() {
-        return responseEntity;
+    public ResponseStatusException getResponseStatusException() {
+        return responseStatusException;
     }
 
-    public void setResponseEntity(ResponseEntity<?> responseEntity) {
-        this.responseEntity = responseEntity;
+    public void setResponseStatusException(ResponseStatusException responseStatusException) {
+        this.responseStatusException = responseStatusException;
+    }
+
+    public static String getDoesntExistById() {
+        return doesntExistById;
+    }
+
+    public static void setDoesntExistById(String doesntExistById) {
+        ResultOfSomethingChecking.doesntExistById = doesntExistById;
     }
 }

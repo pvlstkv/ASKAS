@@ -1,6 +1,7 @@
 package com.example.javaserver.testing.service;
 
 import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.testing.model.Question;
@@ -46,9 +47,9 @@ public class TestService {
 
     public ResponseEntity<?> createTest(Long themeId, Integer countOfQuestions) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
+        checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK())
-            return checkResult.getResponseEntity();
+            throw checkResult.getResponseStatusException();
         if (countOfQuestions == null) {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
@@ -58,8 +59,7 @@ public class TestService {
         if (countOfQuestions < 1)
             return new ResponseEntity<>(new Message("Количество вопросов не может быть меньше 1."),
                     HttpStatus.BAD_REQUEST);
-
-        List<Question> questions4Test = questionRepo.findAllByTheme(checkResult.getTheme());
+        List<Question> questions4Test = questionRepo.findAllByThemeId(checkResult.getTheme().getId());
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);
@@ -70,7 +70,7 @@ public class TestService {
         return new ResponseEntity<>(questionsOut, HttpStatus.OK);
     }
 
-    public ResponseEntity<?> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
+    public ResponseEntity<?> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserDetailsImp userDetails) {
         PassedTest passedTest = new PassedTest();
         List<PassedQuestion> passedQuestions = new ArrayList<>();
         List<UserAnswer> userAnswers = new ArrayList<>();
@@ -78,9 +78,9 @@ public class TestService {
         for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
             userAnswers.clear();
             ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
+            checkResult = checkResult.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
             if (!checkResult.getItsOK()) {
-                return checkResult.getResponseEntity();
+                throw checkResult.getResponseStatusException();
             }
             PassedQuestion currentPassedQuestion = new PassedQuestion();
             Question currentCheckingQuestion = checkResult.getQuestion();
@@ -103,7 +103,7 @@ public class TestService {
             addAPassedQuestion(passedTest, passedQuestions, currentPassedQuestion, new ArrayList<>(userAnswers));
         }
         int resInPercent = (int) Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
-        saveTest(userContext, passedTest, passedQuestions, resInPercent);
+        saveTest(userDetails, passedTest, passedQuestions, resInPercent);
         return new ResponseEntity<>(passedTest, HttpStatus.OK);
     }
 
@@ -115,10 +115,10 @@ public class TestService {
         passedQuestions.add(currentPassedQuestion);
     }
 
-    private void saveTest(UserContext userContext, PassedTest passedTest,
+    private void saveTest(UserDetailsImp userDetails, PassedTest passedTest,
                           List<PassedQuestion> passedQuestions, int resInPercent) {
         passedTest.setPassedQuestions(passedQuestions);
-        passedTest.setUser(fetchUser(userContext));
+        passedTest.setUser(fetchUser(userDetails));
         passedTest.setRatingInPercent(resInPercent);
         passedTest.setPassedAt(OffsetDateTime.now());
         passedTestRepo.save(passedTest);
@@ -172,8 +172,8 @@ public class TestService {
         return rightAnswersCounter;
     }
 
-    private User fetchUser(UserContext userContext) {
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+    private User fetchUser(UserDetailsImp userDetails) {
+        Optional<User> user = userRepo.findById(userDetails.getId());
         return user.orElse(null);
     }
 }

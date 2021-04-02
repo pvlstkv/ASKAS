@@ -10,5 +10,7 @@ import java.util.List;
 
 
 public interface QuestionRepo extends JpaRepository<Question, Long> {
-    List<Question> findAllByTheme(Theme theme);
+    List<Question> findAllByThemeId(Long themeId);
+
+//    void deleteAll(List<Long> ids);
 }
