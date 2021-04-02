@@ -5,7 +5,6 @@ import com.example.javaserver.testing.model.dto.TestIn;
 import com.example.javaserver.testing.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,10 +32,10 @@ public class QuestionController {
     @PutMapping("/questions")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    public ResponseEntity<?> updateQuestions(
+    public void updateQuestions(
             @RequestBody TestIn testIn
     ) {
-        return questionService.updateQuestions(testIn);
+        questionService.updateQuestions(testIn);
     }
 
     @DeleteMapping("/questions")

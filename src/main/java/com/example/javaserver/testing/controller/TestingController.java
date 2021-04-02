@@ -3,15 +3,12 @@ package com.example.javaserver.testing.controller;
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.testing.model.Question;
-import com.example.javaserver.testing.model.dto.*;
-import com.example.javaserver.testing.service.QuestionService;
-import com.example.javaserver.testing.service.ResultService;
+import com.example.javaserver.testing.model.dto.AnswerInOut;
+import com.example.javaserver.testing.model.dto.QuestionOut;
+import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.testing.service.TestService;
-import com.example.javaserver.testing.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +36,7 @@ public class TestingController {
     @GetMapping("/test")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> makeTest(
+    public List<QuestionOut> makeTest(
             @RequestParam(value = "theme_id") Long themeId,
             @RequestParam(value = "limit", required = false) Integer countOfQuestions,
             @AuthenticationPrincipal UserDetailsImp userDetails
@@ -50,8 +47,8 @@ public class TestingController {
     @PostMapping("/test/checking")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> checkTest(@RequestBody List<AnswerInOut> userTest,
-                                       @AuthenticationPrincipal UserDetailsImp userDetails
+    public PassedTest checkTest(@RequestBody List<AnswerInOut> userTest,
+                                @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
         return testService.checkTest(userTest, userDetails);
     }

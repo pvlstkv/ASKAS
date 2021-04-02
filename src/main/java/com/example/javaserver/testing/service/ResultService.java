@@ -2,8 +2,6 @@ package com.example.javaserver.testing.service;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.PassedTestOut;
@@ -15,7 +13,6 @@ import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,18 +38,17 @@ public class ResultService {
     }
 
 
-    public ResponseEntity<?> fetchUserPassedTestsByThemeAndUserId(Integer userId, Long themeId, UserDetailsImp userDetailsImp) {
+    public List<PassedTest> fetchUserPassedTestsByThemeAndUserId(Integer userId, Long themeId, UserDetailsImp userDetailsImp) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
         checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK()) {
-            return new ResponseEntity<>(checkResult.getErrors(), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, checkResult.getErrors());
         }
-        List<PassedTest> passedTests = passedTestRepo.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
-        return new ResponseEntity<>(passedTests, HttpStatus.OK);
+        return passedTestRepo.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
     }
 
-    public ResponseEntity<?> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
+    public List<Theme> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
         // todo set up the access control
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
@@ -61,8 +57,7 @@ public class ResultService {
             throw checkResult.getResponseStatusException();
         }
         List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
-        List<Theme> themes = themeRepo.findAllById(themeIds);
-        return new ResponseEntity<>(themes, HttpStatus.OK);
+        return themeRepo.findAllById(themeIds);
     }
 
     public List<PassedTestOut> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {
@@ -75,7 +70,7 @@ public class ResultService {
         Theme theme = themeOptional.get();
         for (User user : users) {
             List<PassedTest> userPassedTest = passedTestRepo.findAllByUserAndTheme(user, theme);
-            if (userPassedTest.size() == 0){
+            if (userPassedTest.size() == 0) {
 //                continue;
             }
             List<Integer> ratingsPerUser = new ArrayList<>();
@@ -86,17 +81,17 @@ public class ResultService {
         return results;
     }
 
-    public ResponseEntity<?> formUserPassedTest(UserDetailsImp userDetails) {
+    public List<PassedTest> formUserPassedTest(UserDetailsImp userDetails) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userDetails.getId()), userRepo, checkResult);
         User user = fetchUser(userDetails);
         if (user == null) {
             String response = String.format("Пользователя" + doesntExistById, userDetails.getId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response);
         }
         List<PassedTest> passedTests = passedTestRepo.findAllByUser(user);
         System.out.println(themeRepo.fetchPassedThemeIdsByUserId(user.getId(), 1L));
-        return new ResponseEntity<>(passedTests, HttpStatus.OK);
+        return passedTests;
     }
 
     private User fetchUser(UserDetailsImp userDetails) {

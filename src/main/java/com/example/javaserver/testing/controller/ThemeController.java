@@ -1,11 +1,11 @@
 package com.example.javaserver.testing.controller;
 
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.ThemeIn;
 import com.example.javaserver.testing.model.dto.ThemeUpdateIn;
 import com.example.javaserver.testing.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +25,7 @@ public class ThemeController {
     @GetMapping("/themes")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> fetchThemesBySubjectId(
+    public List<Theme> fetchThemesBySubjectId(
             @RequestParam(value = "subj_id") Long subjectId
     ) {
         return themeService.fetchSubjectThemes(subjectId);
@@ -34,10 +34,10 @@ public class ThemeController {
     @PostMapping("/theme")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    public ResponseEntity<?> createTheme(
+    public void createTheme(
             @RequestBody ThemeIn themeIn
     ) {
-        return themeService.createTheme(themeIn);
+        themeService.createTheme(themeIn);
     }
 
     @PutMapping("/theme")

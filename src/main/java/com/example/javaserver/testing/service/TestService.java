@@ -1,10 +1,8 @@
 package com.example.javaserver.testing.service;
 
-import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.testing.model.Theme;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.testing.model.Question;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.AnswerInOut;
 import com.example.javaserver.testing.model.dto.QuestionOut;
 import com.example.javaserver.testing.model.saving_result.PassedQuestion;
@@ -18,8 +16,8 @@ import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -45,7 +43,7 @@ public class TestService {
         this.questionRepo = questionRepo;
     }
 
-    public ResponseEntity<?> createTest(Long themeId, Integer countOfQuestions) {
+    public List<QuestionOut> createTest(Long themeId, Integer countOfQuestions) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK())
@@ -53,12 +51,10 @@ public class TestService {
         if (countOfQuestions == null) {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
-                return new ResponseEntity<>(new Message("Уточните количество вопросов в запросе или в БД."),
-                        HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уточните количество вопросов в запросе или в БД.");
         }
         if (countOfQuestions < 1)
-            return new ResponseEntity<>(new Message("Количество вопросов не может быть меньше 1."),
-                    HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Количество вопросов не может быть меньше 1.");
         List<Question> questions4Test = questionRepo.findAllByThemeId(checkResult.getTheme().getId());
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
@@ -67,10 +63,10 @@ public class TestService {
         for (Question originalQuestion : questions4Test) {
             questionsOut.add(new QuestionOut(originalQuestion));
         }
-        return new ResponseEntity<>(questionsOut, HttpStatus.OK);
+        return questionsOut;
     }
 
-    public ResponseEntity<?> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserDetailsImp userDetails) {
+    public PassedTest checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserDetailsImp userDetails) {
         PassedTest passedTest = new PassedTest();
         List<PassedQuestion> passedQuestions = new ArrayList<>();
         List<UserAnswer> userAnswers = new ArrayList<>();
@@ -104,7 +100,7 @@ public class TestService {
         }
         int resInPercent = (int) Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
         saveTest(userDetails, passedTest, passedQuestions, resInPercent);
-        return new ResponseEntity<>(passedTest, HttpStatus.OK);
+        return passedTest;
     }
 
     private void addAPassedQuestion(PassedTest passedTest, List<PassedQuestion> passedQuestions,

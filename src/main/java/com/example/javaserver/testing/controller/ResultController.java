@@ -1,11 +1,12 @@
 package com.example.javaserver.testing.controller;
 
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.PassedTestOut;
+import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.testing.service.ResultService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class ResultController {
     @GetMapping("/test/result/all")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> fetchAllPassedTests(
+    public List<PassedTest> fetchAllPassedTests(
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
         return resultService.formUserPassedTest(userDetails);
@@ -35,7 +36,7 @@ public class ResultController {
     @GetMapping("/test/result")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> fetchPassedTests(
+    public List<PassedTest> fetchPassedTests(
             @RequestParam(value = "theme_id") Long themeId,
             @RequestParam(value = "user_id") Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
@@ -46,7 +47,7 @@ public class ResultController {
     @GetMapping("/test/passed-themes")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public ResponseEntity<?> fetchPassedThemes(
+    public List<Theme> fetchPassedThemes(
             @RequestParam(value = "subj_id") Long subjectId,
             @RequestParam(value = "user_id") Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
