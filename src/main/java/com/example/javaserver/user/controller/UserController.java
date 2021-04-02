@@ -45,7 +45,6 @@ public class UserController {
     @Secured({"TEACHER", "ADMIN"})
     @GetMapping("/list")
     public List<User> getUserList(
-            @RequestHeader("token") String token
     ){
         return userService.getListUser();
     }
