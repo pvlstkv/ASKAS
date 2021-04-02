@@ -58,8 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/schedule",
                         "/schedule/list",
-                        "/study-group/list",
-                        "/v2/api-docs"
+                        "/study-group/list"
                 ).permitAll()
                 .antMatchers("/login").not().fullyAuthenticated()
                 .anyRequest().authenticated();
