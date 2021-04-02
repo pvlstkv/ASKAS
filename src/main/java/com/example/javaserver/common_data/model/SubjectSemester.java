@@ -18,7 +18,6 @@ public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer numberOfSemester;
     private SubjectControlType controlType;
     private Boolean hasCourseWork;
     private Boolean hasCourseProject;
@@ -80,14 +79,6 @@ public class SubjectSemester {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getNumberOfSemester() {
-        return numberOfSemester;
-    }
-
-    public void setNumberOfSemester(Integer numberOfSemester) {
-        this.numberOfSemester = numberOfSemester;
     }
 
     public SubjectControlType getControlType() {

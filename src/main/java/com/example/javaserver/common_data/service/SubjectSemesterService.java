@@ -36,7 +36,6 @@ public class SubjectSemesterService {
         subjectSemester.setControlType(subjectSemesterIn.controlType);
         subjectSemester.setHasCourseProject(subjectSemesterIn.hasCourseProject);
         subjectSemester.setHasCourseWork(subjectSemesterIn.hasCourseWork);
-        subjectSemester.setNumberOfSemester(subjectSemesterIn.numberOfSemester);
 
         if (subjectSemesterIn.subjectId != null) {
             Optional<Subject> subject = subjectRepo.findById(subjectSemesterIn.subjectId);
@@ -90,14 +89,6 @@ public class SubjectSemesterService {
         if (hasCourseWork != null) {
             try {
                 semester.setHasCourseWork(hasCourseWork.equals("null") ? null : Boolean.parseBoolean(hasCourseWork));
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
-            }
-        }
-
-        if (numberOfSemester != null) {
-            try {
-                semester.setNumberOfSemester(numberOfSemester.equals("null") ? null : Integer.parseInt(numberOfSemester));
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
             }
