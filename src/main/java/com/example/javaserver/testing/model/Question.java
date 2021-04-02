@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-
 public class Question implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +35,7 @@ public class Question implements Serializable {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserFile> userFiles;
 
-    @ManyToOne()
+    @ManyToOne
     @JsonIgnore
     private Theme theme;
 

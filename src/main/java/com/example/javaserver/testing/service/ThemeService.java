@@ -2,17 +2,14 @@ package com.example.javaserver.testing.service;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.ThemeIn;
+import com.example.javaserver.testing.model.dto.ThemeUpdateIn;
 import com.example.javaserver.testing.repo.ThemeRepo;
-import com.example.javaserver.testing.service.model.ResultOfSomethingChecking;
-import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,29 +27,43 @@ public class ThemeService {
         this.userRepo = userRepo;
     }
 
-    public ResponseEntity<?> createTheme(ThemeIn themeIn) {
+    public void createTheme(ThemeIn themeIn) {
         if (themeRepo.existsByName(themeIn.getName())) {
-            return new ResponseEntity<>(new Message("Такой предмет уже сущетвует."), HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
         }
         if (!subjectRepo.existsById(themeIn.getSubjectId())) {
             String response = String.format("Предмета" + doesntExistById, themeIn.getSubjectId());
-            return new ResponseEntity<>(new Message(response), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response);
         }
         Subject subject = subjectRepo.findById(themeIn.getSubjectId()).get();
         Theme theme = new Theme(themeIn, subject);
         themeRepo.save(theme);
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> fetchSubjectThemes(Long subjectId) {
+    public void updateTheme(ThemeUpdateIn themeUpdateIn) {
+        if (!subjectRepo.existsById(themeUpdateIn.getSubjectId())) {
+            String response = String.format("Предмета" + doesntExistById, themeUpdateIn.getSubjectId());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, response);
+        }
+        Subject subject = subjectRepo.findById(themeUpdateIn.getSubjectId()).get();
+        if (themeRepo.existsById(themeUpdateIn.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
+        }
+        Theme newTheme = new Theme();
+    }
+
+    public List<Theme> fetchSubjectThemes(Long subjectId) {
         Subject tempSubject = (subjectRepo.findById(subjectId)
                 .orElse(null));
         if (tempSubject == null) {
             String response = String.format("Предмета" + doesntExistById, subjectId);
-            return new ResponseEntity<>(new Message(response), HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, response);
         }
-        List<Theme> themes = themeRepo.findAllBySubjectId(subjectId);
-        return new ResponseEntity<>(themes, HttpStatus.OK);
+        return themeRepo.findAllBySubjectId(subjectId);
+    }
+
+    public void deleteThemes(List<Long> ids) {
+        ids.forEach(themeRepo::deleteById);
     }
 
 //    public ResponseEntity<?> fetchPassedThemes(UserContext userContext) {

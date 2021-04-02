@@ -1,18 +1,15 @@
 package com.example.javaserver.testing.service;
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.general.model.Message;
 import com.example.javaserver.testing.model.Question;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.QuestionIn;
 import com.example.javaserver.testing.model.dto.TestIn;
 import com.example.javaserver.testing.repo.QuestionRepo;
 import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.testing.service.model.ResultOfSomethingChecking;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,58 +34,50 @@ public class QuestionService {
     }
 
 
-    public ResponseEntity<?> createQuestions(TestIn testIn) {
+    public void createQuestions(TestIn testIn) {
         // it's need to check a subject and theme
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
-        if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
+        checkResult = checkResult.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        checkResult = checkResult.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
+        if (!checkResult.getItsOK())
+            throw checkResult.getResponseStatusException();
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
             Question newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
             newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(newQuestion));
             questionRepo.save(newQuestion);
         }
-        return new ResponseEntity<>(HttpStatus.CREATED);
+
     }
 
-    public ResponseEntity<?> updateQuestions(TestIn testIn) {
+    public void updateQuestions(TestIn testIn) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         // it's need to check a subject and theme
-        ResultOfSomethingChecking.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
-        ResultOfSomethingChecking.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
-        if (!checkResult.getItsOK()) return checkResult.getResponseEntity();
-        Question newQuestion;
+        checkResult = checkResult.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
+        checkResult = checkResult.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
+        if (!checkResult.getItsOK())
+            throw checkResult.getResponseStatusException();
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
-            ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo, checkResult);
+            checkResult = checkResult.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo, checkResult);
             if (!checkResult.getItsOK()) {
-                return checkResult.getResponseEntity();
+                throw checkResult.getResponseStatusException();
             }
-            newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
-            Question finalNewQuestion = newQuestion;
-            newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(finalNewQuestion));
+            Question newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
+            newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(newQuestion));
             questionRepo.save(newQuestion);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    public ResponseEntity<?> deleteManyQuestions(List<Long> ids) {
-        for (Long id : ids) {
-            questionRepo.deleteById(id);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public void deleteManyQuestions(List<Long> ids) {
+        ids.forEach(questionRepo::deleteById);
     }
 
-    public ResponseEntity<?> deleteAllQuestions() {
+    public void deleteAllQuestions() {
         questionRepo.deleteAll();
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    public ResponseEntity<?> fetchAllQuestions() {
-        List<Question> question = questionRepo.findAll();
-        return new ResponseEntity<>(question, HttpStatus.OK);
+    public List<Question> fetchAllQuestions(Long themeId) {
+        return questionRepo.findAllByThemeId(themeId);
     }
-
 }

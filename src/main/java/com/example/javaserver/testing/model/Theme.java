@@ -3,6 +3,7 @@ package com.example.javaserver.testing.model;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.testing.model.Question;
 import com.example.javaserver.testing.model.dto.ThemeIn;
+import com.example.javaserver.testing.model.dto.ThemeUpdateIn;
 import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.fasterxml.jackson.annotation.*;
 
@@ -27,7 +28,7 @@ public class Theme implements Serializable {
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne()
+    @ManyToOne
     private Subject subject;
 
 //    @JsonProperty("passedTestIds")
@@ -36,7 +37,8 @@ public class Theme implements Serializable {
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<PassedTest> passedTests;
-    
+
+
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Question> questions;
@@ -78,6 +80,15 @@ public class Theme implements Serializable {
         this.attemptNumberInTest = themeIn.getAttemptNumberInTest();
         this.questionQuantityInTest = themeIn.getQuestionQuantityInTest();
         this.subject = subject;
+    }
+
+    public Theme(ThemeUpdateIn themeUpdateIn, Subject subject) {
+        this.subject = subject;
+        this.name = themeUpdateIn.getName();
+        this.decryption = themeUpdateIn.getDecryption();
+        this.attemptNumberInTest = themeUpdateIn.getAttemptNumberInTest();
+        this.questionQuantityInTest = themeUpdateIn.getQuestionQuantityInTest();
+        this.id = themeUpdateIn.getId();
     }
 
     public Long getId() {

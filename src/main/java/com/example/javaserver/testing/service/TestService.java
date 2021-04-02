@@ -1,9 +1,8 @@
 package com.example.javaserver.testing.service;
 
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.testing.model.Theme;
-import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.model.Question;
+import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.AnswerInOut;
 import com.example.javaserver.testing.model.dto.QuestionOut;
 import com.example.javaserver.testing.model.saving_result.PassedQuestion;
@@ -17,8 +16,8 @@ import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -44,22 +43,19 @@ public class TestService {
         this.questionRepo = questionRepo;
     }
 
-    public ResponseEntity<?> createTest(Long themeId, Integer countOfQuestions) {
+    public List<QuestionOut> createTest(Long themeId, Integer countOfQuestions) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-        checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
+        checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK())
-            return checkResult.getResponseEntity();
+            throw checkResult.getResponseStatusException();
         if (countOfQuestions == null) {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
-                return new ResponseEntity<>(new Message("Уточните количество вопросов в запросе или в БД."),
-                        HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уточните количество вопросов в запросе или в БД.");
         }
         if (countOfQuestions < 1)
-            return new ResponseEntity<>(new Message("Количество вопросов не может быть меньше 1."),
-                    HttpStatus.BAD_REQUEST);
-
-        List<Question> questions4Test = questionRepo.findAllByTheme(checkResult.getTheme());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Количество вопросов не может быть меньше 1.");
+        List<Question> questions4Test = questionRepo.findAllByThemeId(checkResult.getTheme().getId());
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);
@@ -67,10 +63,10 @@ public class TestService {
         for (Question originalQuestion : questions4Test) {
             questionsOut.add(new QuestionOut(originalQuestion));
         }
-        return new ResponseEntity<>(questionsOut, HttpStatus.OK);
+        return questionsOut;
     }
 
-    public ResponseEntity<?> checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserContext userContext) {
+    public PassedTest checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserDetailsImp userDetails) {
         PassedTest passedTest = new PassedTest();
         List<PassedQuestion> passedQuestions = new ArrayList<>();
         List<UserAnswer> userAnswers = new ArrayList<>();
@@ -78,9 +74,9 @@ public class TestService {
         for (AnswerInOut oneAnswer : incomingQuestionsWithUserAnswer) {
             userAnswers.clear();
             ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-            checkResult = ResultOfSomethingChecking.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
+            checkResult = checkResult.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
             if (!checkResult.getItsOK()) {
-                return checkResult.getResponseEntity();
+                throw checkResult.getResponseStatusException();
             }
             PassedQuestion currentPassedQuestion = new PassedQuestion();
             Question currentCheckingQuestion = checkResult.getQuestion();
@@ -103,8 +99,8 @@ public class TestService {
             addAPassedQuestion(passedTest, passedQuestions, currentPassedQuestion, new ArrayList<>(userAnswers));
         }
         int resInPercent = (int) Math.round(totalRating * 100.0 / incomingQuestionsWithUserAnswer.size());
-        saveTest(userContext, passedTest, passedQuestions, resInPercent);
-        return new ResponseEntity<>(passedTest, HttpStatus.OK);
+        saveTest(userDetails, passedTest, passedQuestions, resInPercent);
+        return passedTest;
     }
 
     private void addAPassedQuestion(PassedTest passedTest, List<PassedQuestion> passedQuestions,
@@ -115,10 +111,10 @@ public class TestService {
         passedQuestions.add(currentPassedQuestion);
     }
 
-    private void saveTest(UserContext userContext, PassedTest passedTest,
+    private void saveTest(UserDetailsImp userDetails, PassedTest passedTest,
                           List<PassedQuestion> passedQuestions, int resInPercent) {
         passedTest.setPassedQuestions(passedQuestions);
-        passedTest.setUser(fetchUser(userContext));
+        passedTest.setUser(fetchUser(userDetails));
         passedTest.setRatingInPercent(resInPercent);
         passedTest.setPassedAt(OffsetDateTime.now());
         passedTestRepo.save(passedTest);
@@ -172,8 +168,8 @@ public class TestService {
         return rightAnswersCounter;
     }
 
-    private User fetchUser(UserContext userContext) {
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+    private User fetchUser(UserDetailsImp userDetails) {
+        Optional<User> user = userRepo.findById(userDetails.getId());
         return user.orElse(null);
     }
 }
