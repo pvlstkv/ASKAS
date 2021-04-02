@@ -5,6 +5,7 @@ import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.model.dto.PassedTestOut;
+import com.example.javaserver.testing.model.dto.PassedThemeOut;
 import com.example.javaserver.testing.model.saving_result.PassedTest;
 import com.example.javaserver.testing.repo.PassedTestRepo;
 import com.example.javaserver.testing.repo.ThemeRepo;
@@ -48,7 +49,7 @@ public class ResultService {
         return passedTestRepo.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
     }
 
-    public List<Theme> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
+    public List<PassedThemeOut> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
         // todo set up the access control
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
@@ -57,8 +58,32 @@ public class ResultService {
             throw checkResult.getResponseStatusException();
         }
         List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
-        return themeRepo.findAllById(themeIds);
+        List<Theme> themes = themeRepo.findAllById(themeIds);
+        User user = userRepo.findById(userDetails.getId()).get();
+        List<PassedThemeOut> passedThemeOuts = new ArrayList<>();
+        for (Theme theme : themes) {
+            List<PassedTest> passedTests = passedTestRepo.findAllByUserAndTheme(user, theme);
+            List<Integer> ratings = new ArrayList<>();
+            passedTests.forEach(item -> ratings.add(item.getRatingInPercent()));
+            passedThemeOuts.add(new PassedThemeOut(theme, ratings));
+        }
+        return passedThemeOuts;
     }
+
+//    public List<PassedTestOut> fetchUserPassedThemesBySubjectIdAndUserIdReduced(Integer userId, Long subjectId) {
+//        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+//        checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
+//        checkResult = checkResult.checkIfExistsInDB(new Subject(subjectId), subjectRepo, checkResult);
+//        if (!checkResult.getItsOK()) {
+//            throw checkResult.getResponseStatusException();
+//        }
+//        List<PassedTestOut> results = new ArrayList<>();
+//        List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
+//        List<Theme> themes = themeRepo.findAllById(themeIds);
+//
+//
+//    }
+
 
     public List<PassedTestOut> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {
         List<User> users = userRepo.findAllByStudyGroupId(groupId);
@@ -70,9 +95,6 @@ public class ResultService {
         Theme theme = themeOptional.get();
         for (User user : users) {
             List<PassedTest> userPassedTest = passedTestRepo.findAllByUserAndTheme(user, theme);
-            if (userPassedTest.size() == 0) {
-//                continue;
-            }
             List<Integer> ratingsPerUser = new ArrayList<>();
             userPassedTest.forEach(item -> ratingsPerUser.add(item.getRatingInPercent()));
             results.add(new PassedTestOut(user.getId(), user.getFirstName(), user.getLastName(), user.getPatronymic(),
