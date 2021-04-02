@@ -3,33 +3,25 @@ package com.example.javaserver.study.controller;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.controller.dto.WorkIn;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.service.WorkService;
-import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/work")
 public class WorkController {
-    private final RequestHandlerService requestHandlerService;
     private final WorkService workService;
 
     @Autowired
-    public WorkController(RequestHandlerService requestHandlerService, WorkService workService) {
-        this.requestHandlerService = requestHandlerService;
+    public WorkController(WorkService workService) {
         this.workService = workService;
     }
 

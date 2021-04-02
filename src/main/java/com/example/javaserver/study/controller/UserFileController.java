@@ -1,31 +1,26 @@
 package com.example.javaserver.study.controller;
 
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.study.controller.dto.UserFileOut;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.service.UserFileService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/file")
 public class UserFileController {
-    private final RequestHandlerService requestHandlerService;
     private final UserFileService userFileService;
 
     @Autowired
-    public UserFileController(RequestHandlerService requestHandlerService, UserFileService userFileService) {
-        this.requestHandlerService = requestHandlerService;
+    public UserFileController(UserFileService userFileService) {
         this.userFileService = userFileService;
     }
 

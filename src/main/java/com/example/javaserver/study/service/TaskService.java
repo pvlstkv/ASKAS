@@ -7,7 +7,6 @@ import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.study.controller.dto.TaskIn;
@@ -22,12 +21,12 @@ import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -36,14 +35,16 @@ public class TaskService {
     private final WorkRepo workRepo;
     private final SubjectSemesterRepo semesterRepo;
     private final UserRepo userRepo;
+    private final SubjectRepo subjectRepo;
 
     @Autowired
-    public TaskService(TaskRepo taskRepo, UserFileRepo userFileRepo, WorkRepo workRepo, SubjectSemesterRepo semesterRepo, UserRepo userRepo) {
+    public TaskService(TaskRepo taskRepo, UserFileRepo userFileRepo, WorkRepo workRepo, SubjectSemesterRepo semesterRepo, UserRepo userRepo, SubjectRepo subjectRepo) {
         this.taskRepo = taskRepo;
         this.userFileRepo = userFileRepo;
         this.workRepo = workRepo;
         this.semesterRepo = semesterRepo;
         this.userRepo = userRepo;
+        this.subjectRepo = subjectRepo;
     }
 
     @SuppressWarnings("Duplicates")
@@ -202,26 +203,23 @@ public class TaskService {
     }
 
     public  Collection<Task> getAll() {
-        Collection<Task> tasks = taskRepo.findAll(null);
-        return tasks;
+        return taskRepo.findAll(null);
     }
 
     public Collection<Task> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Task> specification = CommonSpecification.of(criteria);
-            Collection<Task> tasks = taskRepo.findAll(specification);
-            return tasks;
+            return taskRepo.findAll(specification);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
     public  Collection<Task> searchByIds(Set<Long> ids) {
-        Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
-        return tasks;
+        return taskRepo.findAllByIdIn(ids);
     }
 
-    public Collection<Task> searchBySubjectAndUser(Long subjectId, Integer userId, UserDetailsImp userDetails) {
+    public Collection<Task> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {
         if (userId == null) {
             userId = userDetails.getId();
         }
@@ -247,5 +245,17 @@ public class TaskService {
         }
 
         return semester.get().getTasks();
+    }
+
+    public Collection<Task> searchBySubjectAndTeacher(Long subjectId) {
+        Optional<Subject> subject = subjectRepo.findById(subjectId);
+        if (!subject.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id не существует");
+        }
+
+        return subject.get()
+                .getSemesters().stream()
+                .flatMap(sem -> sem.getTasks().stream())
+                .collect(Collectors.toSet());
     }
 }
