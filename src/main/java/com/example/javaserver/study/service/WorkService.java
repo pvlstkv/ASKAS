@@ -154,12 +154,12 @@ public class WorkService {
         return new Message("Работа была успешно изменена");
     }
 
-    public List<Work> getAll() {
-        List<Work> works = workRepo.findAll(null);
+    public Collection<Work> getAll() {
+        Collection<Work> works = workRepo.findAll(null);
         return works;
     }
 
-    public List<Work> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<Work> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Work> specification = CommonSpecification.of(criteria);
             List<Work> works = workRepo.findAll(specification);
@@ -169,8 +169,8 @@ public class WorkService {
         }
     }
 
-    public List<Work> searchByIds(Set<Long> ids) {
-        List<Work> works = (List<Work>) workRepo.getWorksByIdIn(ids);
+    public Collection<Work> searchByIds(Set<Long> ids) {
+        Collection<Work> works = (List<Work>) workRepo.getWorksByIdIn(ids);
         return works;
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -64,14 +65,14 @@ public class WorkController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public List<Work> getAll() {
+    public Collection<Work> getAll() {
         return workService.getAll();
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public List<Work> criteriaSearch(
+    public Collection<Work> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
         return workService.criteriaSearch(criteria);
@@ -80,7 +81,7 @@ public class WorkController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/search-by-ids")
-    public List<Work> searchByIds(
+    public Collection<Work> searchByIds(
             @RequestBody Set<Long> ids
     ) {
         return  workService.searchByIds(ids);

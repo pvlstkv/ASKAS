@@ -201,27 +201,27 @@ public class TaskService {
         return new Message("Задание было успешно изменено");
     }
 
-    public  List<Task> getAll() {
-        List<Task> tasks = taskRepo.findAll(null);
+    public  Collection<Task> getAll() {
+        Collection<Task> tasks = taskRepo.findAll(null);
         return tasks;
     }
 
-    public List<Task> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<Task> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Task> specification = CommonSpecification.of(criteria);
-            List<Task> tasks = taskRepo.findAll(specification);
+            Collection<Task> tasks = taskRepo.findAll(specification);
             return tasks;
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public  List<Task> searchByIds(Set<Long> ids) {
-        List<Task> tasks = (List<Task>) taskRepo.findAllByIdIn(ids);
+    public  Collection<Task> searchByIds(Set<Long> ids) {
+        Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
         return tasks;
     }
 
-    public List<Task> searchBySubjectAndUser(Long subjectId, Integer userId, UserDetailsImp userDetails) {
+    public Collection<Task> searchBySubjectAndUser(Long subjectId, Integer userId, UserDetailsImp userDetails) {
         if (userId == null) {
             userId = userDetails.getId();
         }
@@ -246,6 +246,6 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
         }
 
-        return (List<Task>) semester.get().getTasks();
+        return semester.get().getTasks();
     }
 }

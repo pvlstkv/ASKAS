@@ -15,6 +15,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -63,7 +64,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public List<Task> getAll(
+    public Collection<Task> getAll(
             @RequestHeader("token") String token
     ) {
         return taskService.getAll();
@@ -72,7 +73,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public List<Task> criteriaSearch(
+    public Collection<Task> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
         return taskService.criteriaSearch(criteria);
@@ -81,7 +82,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/search-by-ids")
-    public List<Task> searchByIds(
+    public Collection<Task> searchByIds(
             @RequestHeader("token") String token,
             @RequestBody Set<Long> ids
     ) {
@@ -91,7 +92,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
-    public List<Task> searchBySubjectAndUser(
+    public Collection<Task> searchBySubjectAndUser(
             @RequestParam("subjectId") Long subjectId,
             @RequestParam(value = "userId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
