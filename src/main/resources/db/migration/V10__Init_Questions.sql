@@ -284,3 +284,77 @@ values
         ("answer", "is_right", "question_id")
     values
         ('И', TRUE, (select id from question where question like 'Конъюнкция это логическое ...?' ));
+    /*****************/
+/*16 question*/
+ insert
+    into
+        "question"
+        ("complexity", "question", "question_type", "subject_id", "theme_id")
+    values
+        (3, 'Главная часть аппаратного обеспечения компьютера или программируемого логического контроллера это центральный ...?', 1, 1, (select id from themes where id = 4));
+
+    insert
+    into
+        "answer_choice"
+        ("answer", "is_right", "question_id")
+    values
+        ('процессор', TRUE, (select id from question where question like 'Главная часть аппаратного обеспечения компьютера или программируемого логического контроллера это центральный ...?' ));
+
+    /*17 question*/
+ insert
+    into
+        "question"
+        ("complexity", "question", "question_type", "subject_id", "theme_id")
+    values
+        (3, '16 битный аккумуляторный регистр (большими буквами)', 1, 1, (select id from themes where id = 4));
+
+    insert
+    into
+        "answer_choice"
+        ("answer", "is_right", "question_id")
+    values
+        ('AX', TRUE, (select id from question where question like '16 битный аккумуляторный регистр (большими буквами)' ));
+
+  /*18 question*/
+ insert
+    into
+        "question"
+        ("complexity", "question", "question_type", "subject_id", "theme_id")
+    values
+        (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1, 1, (select id from themes where id = 4));
+
+    insert
+    into
+        "answer_choice"
+        ("answer", "is_right", "question_id")
+    values
+        ('CX', TRUE, (select id from question where question like '16 битный аккумуляторный регистр (большими буквами)' ));
+
+/*19 question*/
+ insert
+    into
+        "question"
+        ("complexity", "question", "question_type", "subject_id", "theme_id")
+    values
+        (3, 'Когда запрашиваемые данные отсутствуют в кэше и их нужно подгружать из основного источника называется кэш ...', 1, 1, (select id from themes where id = 4));
+
+    insert
+    into
+        "answer_choice"
+        ("answer", "is_right", "question_id")
+    values
+        ('промах', TRUE, (select id from question where question like 'Когда запрашиваемые данные отсутствуют в кэше и их нужно подгружать из основного источника называется кэш ...' ));
+    /*20 question*/
+ insert
+    into
+        "question"
+        ("complexity", "question", "question_type", "subject_id", "theme_id")
+    values
+        (3, 'Английская аббревиатура центрального процессора', 1, 1, (select id from themes where id = 4));
+
+    insert
+    into
+        "answer_choice"
+        ("answer", "is_right", "question_id")
+    values
+        ('CPU', TRUE, (select id from question where question like 'Английская аббревиатура центрального процессора' ));
