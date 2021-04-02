@@ -1,15 +1,22 @@
 package com.example.javaserver.user.controller;
 
+import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.dto.UpdateUser;
+import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -24,59 +31,63 @@ public class UserController {
         this.userService = userService;
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
-    public ResponseEntity<?> getUserInfo(
-            @RequestHeader("token") String token,
-            @RequestParam(required = false) Integer id
+    public User getUserInfo(
+            @RequestParam(required = false) Integer id,
+            @AuthenticationPrincipal UserDetailsImp userDetails
             ){
-        return requestHandlerService.proceed(token,(c) -> userService.getUser(c,id), EnumSet.allOf(UserRole.class));
+        return  userService.getUser(userDetails,id);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN"})
     @GetMapping("/list")
-    public ResponseEntity<?> getUserList(
+    public List<User> getUserList(
             @RequestHeader("token") String token
     ){
-        return requestHandlerService.proceed(token,(c) -> userService.getListUser(), EnumSet.of(UserRole.ADMIN,UserRole.TEACHER));
+        return userService.getListUser();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/search-by")
-    public ResponseEntity<?> searchByIds(
-            @RequestHeader("token") String token,
+    public List<User> searchByIds(
             @RequestParam("id") Set<Integer> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> userService.searchByIds(ids),
-                EnumSet.allOf(UserRole.class)
-        );
+        return userService.searchByIds(ids);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @PutMapping
-    public ResponseEntity<?> putUser(
-            @RequestHeader("token") String token,
-            @RequestBody UpdateUser updateUser
+    public Message putUser(
+
+            @RequestBody UpdateUser updateUser,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ){
-        return requestHandlerService.proceed(token,userContext -> userService.putUser(userContext,updateUser),EnumSet.allOf(UserRole.class));
+        return userService.putUser(userDetails,updateUser);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
     @PatchMapping
-    public ResponseEntity<?> patchUser(
-            @RequestHeader("token") String token,
+    public Message patchUser(
             @RequestBody UserI userI
 
 
             ){
-        return requestHandlerService.proceed(token,(c) -> userService.updateUser(
-               userI
-        ),EnumSet.of(UserRole.ADMIN));
+        return userService.updateUser(userI);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
     @DeleteMapping
-    public ResponseEntity<?> deleteUser(
-            @RequestHeader("token") String token,
+    public Message deleteUser(
             @RequestParam Integer id
     ){
-        return requestHandlerService.proceed(token,(c) -> userService.deleteUser(id), EnumSet.of(UserRole.ADMIN));
+        return userService.deleteUser(id);
     }
 
 

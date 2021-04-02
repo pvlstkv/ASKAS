@@ -8,6 +8,7 @@ import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
@@ -23,6 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -46,36 +48,36 @@ public class TaskService {
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public ResponseEntity<?> create(TaskIn taskIn, UserContext userContext) {
+    public Message create(TaskIn taskIn, UserDetailsImp userDetails) {
         if (taskIn.title == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
         }
         if (taskIn.type == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь тип");
         }
         if (taskIn.semesterId == null) {
-            return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно быть привязано к семестру");
         }
 
         Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
         if (!semester.isPresent()) {
-            return new ResponseEntity<>(new Message("Семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с указанным id не существует");
         }
 
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+        Optional<User> user = userRepo.findById(userDetails.getId());
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("UserId токена инвалидный"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
         }
 
         Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
         for (Long id : taskIn.fileIds) {
             if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
-                return new ResponseEntity<>(new Message("Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \" + id + \" не найден");
             }
         }
         for (UserFile file : userFiles) {
             if (file.getTask() != null) {
-                return new ResponseEntity<>(new Message("Невозможно создать задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно создать задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
             }
         }
 
@@ -88,30 +90,30 @@ public class TaskService {
         userFiles.forEach(f -> f.setTask(task));
         taskRepo.save(task);
 
-        return new ResponseEntity<>(new Message("Задание успешно создано"), HttpStatus.CREATED);
+        return new Message("Задание успешно создано");
     }
 
-    public ResponseEntity<?> delete(Set<Long> ids) {
+    public Message delete(Set<Long> ids) {
         taskRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные задания были успешно удалены"), HttpStatus.OK);
+        return new Message("Найденные задания были успешно удалены");
     }
 
     @Transactional
-    public ResponseEntity<?> update(TaskIn taskIn) {
+    public Message update(TaskIn taskIn) {
         Optional<Task> taskO = taskRepo.findById(taskIn.id);
         if (!taskO.isPresent()) {
-            return new ResponseEntity<>(new Message("Задание с указанным id не существует"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
         }
         Task task = taskO.get();
 
         if (task.getTitle() == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
         } else if (!Objects.equals(task.getTitle(), taskIn.title)) {
             task.setTitle(taskIn.title);
         }
 
         if (task.getType() == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь тип");
         } else if (!Objects.equals(task.getType(), taskIn.type)) {
             task.setType(taskIn.type);
         }
@@ -121,17 +123,17 @@ public class TaskService {
         }
 
         if (task.getSemester() == null) {
-            return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно быть привязано к семестру");
         } else if (!Objects.equals(task.getSemester().getId(), taskIn.semesterId)) {
             Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
             if (!semester.isPresent()) {
-                return new ResponseEntity<>(new Message("Невозможно изменить задание: семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: семестр с указанным id не существует");
             }
             task.setSemester(semester.get());
         }
 
         if (taskIn.fileIds == null) {
-            return new ResponseEntity<>(new Message("Невозможно изменить задание: fileIds должно быть не null"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: fileIds должно быть не null");
         }
         Set<UserFile> filesToRemove = new HashSet<>();
         task.getUserFiles().forEach(f -> {
@@ -152,19 +154,19 @@ public class TaskService {
             Set<UserFile> filesToAdd = userFileRepo.getUserFilesByIdIn(fileToAddIds);
             for (Long id : fileToAddIds) {
                 if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + id + \" не найден");
                 }
             }
             for (UserFile file : filesToAdd) {
                 if (file.getTask() != null) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
-                }
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
+                    }
             }
             filesToAdd.forEach(f -> f.setTask(task));
         }
 
         if (taskIn.workIds == null) {
-            return new ResponseEntity<>(new Message("Невозможно изменить задание: workIds должно быть не null"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: workIds должно быть не null");
         }
         Set<Work> worksToRemove = new HashSet<>();
         task.getWorks().forEach(w -> {
@@ -185,65 +187,65 @@ public class TaskService {
             Set<Work> worksToAdd = workRepo.getWorksByIdIn(workToAddIds);
             for (Long id : taskIn.workIds) {
                 if (worksToAdd.stream().noneMatch(w -> w.getId().equals(id))) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + id + " не найдена"), HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Работа с id = " + id + " не найдена");
                 }
             }
             for (Work work : worksToAdd) {
                 if (work.getTask() != null) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + work.getId() + " привязана к другому заданию"), HttpStatus.BAD_REQUEST);
-                }
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Работа с id = \" + work.getId() + \" привязана к другому заданию");
+                    }
             }
             worksToAdd.forEach(f -> f.setTask(task));
         }
 
-        return new ResponseEntity<>(new Message("Задание было успешно изменено"), HttpStatus.OK);
+        return new Message("Задание было успешно изменено");
     }
 
-    public ResponseEntity<?> getAll() {
-        Collection<Task> tasks = taskRepo.findAll(null);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    public  List<Task> getAll() {
+        List<Task> tasks = taskRepo.findAll(null);
+        return tasks;
     }
 
-    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+    public List<Task> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Task> specification = CommonSpecification.of(criteria);
             List<Task> tasks = taskRepo.findAll(specification);
-            return new ResponseEntity<>(tasks, HttpStatus.OK);
+            return tasks;
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    public  List<Task> searchByIds(Set<Long> ids) {
+        List<Task> tasks = (List<Task>) taskRepo.findAllByIdIn(ids);
+        return tasks;
     }
 
-    public ResponseEntity<?> searchBySubjectAndUser(Long subjectId, Integer userId, UserContext userContext) {
+    public List<Task> searchBySubjectAndUser(Long subjectId, Integer userId, UserDetailsImp userDetails) {
         if (userId == null) {
-            userId = userContext.getUserId();
+            userId = userDetails.getId();
         }
 
         Optional<User> user = userRepo.findById(userId);
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Id пользователя инвалидный"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id пользователя инвалидный");
         }
 
         StudyGroup group = user.get().getStudyGroup();
         if (group == null) {
-            return new ResponseEntity<>(new Message("Студент не привязан к группе"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Студент не привязан к группе");
         }
 
         Set<SubjectSemester> semesters = group.getSubjectSemesters();
         if (semesters.isEmpty()) {
-            return new ResponseEntity<>(new Message("Группа, в которой состоит студент не имеет семестров"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группа, в которой состоит студент не имеет семестров");
         }
 
         Optional<SubjectSemester> semester = semesters.stream().filter(s -> subjectId.equals(s.getSubject().getId())).findFirst();
         if (!semester.isPresent()) {
-            return new ResponseEntity<>(new Message("Предмета с указанным id нет у пользователя"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
         }
 
-        return new ResponseEntity<>(semester.get().getTasks(), HttpStatus.OK);
+        return (List<Task>) semester.get().getTasks();
     }
 }

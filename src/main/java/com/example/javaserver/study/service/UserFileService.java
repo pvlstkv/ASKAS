@@ -2,6 +2,7 @@ package com.example.javaserver.study.service;
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.study.controller.dto.UserFileOut;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -33,21 +35,21 @@ public class UserFileService {
     }
 
     @Transactional
-    public ResponseEntity<?> create(MultipartFile file, UserRole accessLevel, UserContext userContext) {
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+    public UserFileOut create(MultipartFile file, UserRole accessLevel, UserDetailsImp userDetails) {
+        Optional<User> user = userRepo.findById(userDetails.getId());
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Токен инвалидный, userId не найден"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
         }
 
         if (accessLevel != null && user.get().getRole().compareTo(accessLevel) < 0) {
-            return new ResponseEntity<>(new Message("Уровень доступа к файлу превышает уровень доступа пользователя"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уровень доступа к файлу превышает уровень доступа пользователя");
         }
 
         byte[] data;
         try {
             data = file.getBytes();
         } catch (IOException e) {
-            return new ResponseEntity<>(new Message("Ошибка чтения файла"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка чтения файла");
         }
 
         UserFile userFile = new UserFile();
@@ -60,31 +62,31 @@ public class UserFileService {
         UserFileOut fileOut = new UserFileOut();
         fileOut.id = userFile.getId();
 
-        return new ResponseEntity<>(fileOut, HttpStatus.CREATED);
+        return fileOut;
     }
 
-    public ResponseEntity<?> download(Long id, UserContext userContext) {
+    public byte[] download(Long id,UserDetailsImp userDetails) {
         Optional<UserFile> file = userFileRepo.findById(id);
         if (!file.isPresent()) {
-            return new ResponseEntity<>(new Message("Файл с указанным id не найден"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не найден");
         }
 
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+        Optional<User> user = userRepo.findById(userDetails.getId());
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Токен инвалидный, userId не найден"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
         }
 
         if (user.get().getRole().compareTo(file.get().getAccessLevel()) < 0) {
-            return new ResponseEntity<>(new Message("Отказано в доступе к файлу"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Отказано в доступе к файлу");
         }
 
-        return new ResponseEntity<>(file.get().getData(), HttpStatus.OK);
+        return file.get().getData();
     }
 
-    public ResponseEntity<?> getBy(Long[] idsArr, UserContext userContext) {
+    public Set<UserFile> getBy(Long[] idsArr) {
         Set<Long> ids = Arrays.stream(idsArr).collect(Collectors.toSet());
         Set<UserFile> files = userFileRepo.getUserFilesByIdIn(ids);
 
-        return new ResponseEntity<>(files, HttpStatus.OK);
+        return files;
     }
 }

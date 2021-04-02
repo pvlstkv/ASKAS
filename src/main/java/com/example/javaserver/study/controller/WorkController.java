@@ -1,16 +1,23 @@
 package com.example.javaserver.study.controller;
 
 import com.example.javaserver.general.criteria.SearchCriteria;
+import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.controller.dto.WorkIn;
+import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.service.WorkService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -25,74 +32,57 @@ public class WorkController {
         this.workService = workService;
     }
 
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestHeader("token") String token,
+    public Message create(
+            @AuthenticationPrincipal UserDetailsImp userDetails,
             @RequestBody WorkIn workIn
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.create(workIn, c),
-                EnumSet.allOf(UserRole.class)
-        );
+        return workService.create(workIn, userDetails);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({ "TEACHER", "ADMIN"})
     @DeleteMapping
-    public ResponseEntity<?> delete(
-            @RequestHeader("token") String token,
+    public Message delete(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.delete(ids),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
-        );
+        return workService.delete(ids);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({ "TEACHER", "ADMIN"})
     @PatchMapping
-    public ResponseEntity<?> update(
-            @RequestHeader("token") String token,
+    public Message update(
             @RequestBody WorkIn workIn
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.update(workIn),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
-        );
+        return workService.update(workIn);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.getAll(),
-                EnumSet.allOf(UserRole.class)
-        );
+    public List<Work> getAll() {
+        return workService.getAll();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public ResponseEntity<?> criteriaSearch(
-            @RequestHeader("token") String token,
+    public List<Work> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.criteriaSearch(criteria),
-                EnumSet.allOf(UserRole.class)
-        );
+        return workService.criteriaSearch(criteria);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/search-by-ids")
-    public ResponseEntity<?> searchByIds(
-            @RequestHeader("token") String token,
+    public List<Work> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> workService.searchByIds(ids),
-                EnumSet.allOf(UserRole.class)
-        );
+        return  workService.searchByIds(ids);
     }
 }
