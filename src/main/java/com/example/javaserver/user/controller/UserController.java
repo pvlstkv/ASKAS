@@ -15,6 +15,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/search-by")
-    public List<User> searchByIds(
+    public Collection<User> searchByIds(
             @RequestParam("id") Set<Integer> ids
     ) {
         return userService.searchByIds(ids);
