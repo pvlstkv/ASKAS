@@ -45,6 +45,8 @@ public class UserFileController {
         return userFileService.download(id, userDetails);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/search-by")
     public Set<UserFile> getById(
             @RequestParam("id") Long[] ids

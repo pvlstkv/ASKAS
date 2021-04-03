@@ -28,9 +28,9 @@ public class ThemeService {
     }
 
     public Long createTheme(ThemeIn themeIn) {
-        if (themeRepo.existsByName(themeIn.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
-        }
+//        if (themeRepo.existsByName(themeIn.getName())) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
+//        }
         if (!subjectRepo.existsById(themeIn.getSubjectId())) {
             String response = String.format("Предмета" + doesntExistById, themeIn.getSubjectId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response);

@@ -47,8 +47,8 @@ public class UserService {
         return user.get();
     }
 
-    public List<User> searchByIds(Set<Integer> ids) {
-        List<User> users = (List<User>) userRepo.findAllByIdIn(ids);
+    public Collection<User> searchByIds(Set<Integer> ids) {
+        Collection<User> users =  userRepo.findAllByIdIn(ids);
         return users;
     }
 
