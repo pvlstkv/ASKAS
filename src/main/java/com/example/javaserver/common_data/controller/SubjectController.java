@@ -71,7 +71,7 @@ public class SubjectController {
         return subjectService.criteriaSearch(criteria);
     }
 
-    @PostMapping("/search-by-ids")
+    @PostMapping("/search-by")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     public Collection<Subject> searchByIds(
