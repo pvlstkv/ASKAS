@@ -5,7 +5,7 @@
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Какие виды автоматов Вы знаете?', 0, 2, (select id from themes where id = 1 ));
+        (3, 'Какие виды автоматов Вы знаете?', 0, 2, (select id from themes where name like 'Конечные автоматы' ));
 
     insert
     into
@@ -40,7 +40,7 @@ into
     "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
 values
-    (3, 'Какие виды переходов Вы знаете?', 0, 2, (select id from themes where id = 1 ));
+    (3, 'Какие виды переходов Вы знаете?', 0, 2, (select id from themes where name like 'Конечные автоматы' ));
 
 insert
 into
@@ -75,7 +75,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'У какого автомата состояния проставляются после операторных вершин?', 1, 2, (select id from themes where id = 1 ));
+        (3, 'У какого автомата состояния проставляются после операторных вершин?', 1, 2, (select id from themes where name like 'Конечные автоматы' ));
 
     insert
     into
@@ -90,7 +90,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Автомат, состояния которого проставляются в операторных вершинах', 1, 2, (select id from themes where id = 1 ));
+        (3, 'Автомат, состояния которого проставляются в операторных вершинах', 1, 2, (select id from themes where name like 'Конечные автоматы' ));
 
     insert
     into
@@ -105,7 +105,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Основные элементы граф-схемы автомата', 0, 2, (select id from themes where id = 1 ));
+        (3, 'Основные элементы граф-схемы автомата', 0, 2, (select id from themes where name like 'Конечные автоматы' ));
 
     insert
     into
@@ -141,7 +141,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Как называется функция, переменные которой могу принимать значения либо 0, либо 1?', 1, 2, (select id from themes where id = 2 ));
+        (3, 'Как называется функция, переменные которой могу принимать значения либо 0, либо 1?', 1, 2, (select id from themes where name like 'Логические функции' ));
 
     insert
     into
@@ -156,7 +156,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Логическая функция, которая преобразует 0 в 1 и наоборот?', 1, 2, (select id from themes where id = 2 ));
+        (3, 'Логическая функция, которая преобразует 0 в 1 и наоборот?', 1, 2, (select id from themes where name like 'Логические функции' ));
 
     insert
     into
@@ -171,7 +171,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1', 1, 2, (select id from themes where id = 2 ));
+        (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1', 1, 2, (select id from themes where name like 'Логические функции' ));
 
     insert
     into
@@ -185,7 +185,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Логическая функция, которая дает 0, когда только оба операнда 0', 1, 2, (select id from themes where id = 2 ));
+        (3, 'Логическая функция, которая дает 0, когда только оба операнда 0', 1, 2, (select id from themes where name like 'Логические функции' ));
 
     insert
     into
@@ -200,7 +200,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Логическая функция, которая дает 0, когда оба операнда одинаковые', 1, 2, (select id from themes where id = 2 ));
+        (3, 'Логическая функция, которая дает 0, когда оба операнда одинаковые', 1, 2, (select id from themes where name like 'Логические функции' ));
 
     insert
     into
@@ -216,7 +216,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Один из методов минимизации лог.функций: карты ...?', 1, 2,(select id from themes where id = 3));
+        (3, 'Один из методов минимизации лог.функций: карты ...?', 1, 2,(select id from themes where name like 'Минимизация логические функции'));
 
     insert
     into
@@ -231,7 +231,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?', 1, 2, (select id from themes where id = 3));
+        (3, 'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?', 1, 2, (select id from themes where name like 'Минимизация логические функции'));
 
     insert
     into
@@ -246,7 +246,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)', 1, 2, (select id from themes where id = 3));
+        (3, 'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)', 1, 2, (select id from themes where name like 'Минимизация логические функции'));
 
     insert
     into
@@ -261,7 +261,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)', 1, 2, (select id from themes where id = 3));
+        (3, 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)', 1, 2, (select id from themes where name like 'Минимизация логические функции'));
 
     insert
     into
@@ -276,7 +276,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Конъюнкция это логическое ...?', 1, 2, (select id from themes where id = 3));
+        (3, 'Конъюнкция это логическое ...?', 1, 2, (select id from themes where name like 'Минимизация логические функции'));
 
     insert
     into
@@ -291,7 +291,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Главная часть аппаратного обеспечения компьютера или программируемого логического контроллера это центральный ...?', 1, 1, (select id from themes where id = 4));
+        (3, 'Главная часть аппаратного обеспечения компьютера или программируемого логического контроллера это центральный ...?', 1, 1, (select id from themes where name like 'Процессоры'));
 
     insert
     into
@@ -306,7 +306,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, '16 битный аккумуляторный регистр (большими буквами)', 1, 1, (select id from themes where id = 4));
+        (3, '16 битный аккумуляторный регистр (большими буквами)', 1, 1, (select id from themes where name like 'Процессоры'));
 
     insert
     into
@@ -321,7 +321,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1, 1, (select id from themes where id = 4));
+        (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1, 1, (select id from themes where name like 'Процессоры'));
 
     insert
     into
@@ -336,7 +336,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Когда запрашиваемые данные отсутствуют в кэше и их нужно подгружать из основного источника называется кэш ...', 1, 1, (select id from themes where id = 4));
+        (3, 'Когда запрашиваемые данные отсутствуют в кэше и их нужно подгружать из основного источника называется кэш ...', 1, 1, (select id from themes where name like 'Процессоры'));
 
     insert
     into
@@ -350,7 +350,7 @@ values
         "question"
         ("complexity", "question", "question_type", "subject_id", "theme_id")
     values
-        (3, 'Английская аббревиатура центрального процессора', 1, 1, (select id from themes where id = 4));
+        (3, 'Английская аббревиатура центрального процессора', 1, 1, (select id from themes where name like 'Процессоры'));
 
     insert
     into
