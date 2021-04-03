@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                 .antMatchers(
                         "/v2/api-docs",
+                        "/api/testing/hello",
                         "/schedule",
                         "/schedule/list",
                         "/study-group/list"
