@@ -2,10 +2,7 @@ package com.example.javaserver.common_data.model;
 
 
 import com.example.javaserver.study.model.Task;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -18,6 +15,8 @@ public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @JsonIgnore
+    private String name;
     private SubjectControlType controlType;
     private Boolean hasCourseWork;
     private Boolean hasCourseProject;
@@ -34,11 +33,11 @@ public class SubjectSemester {
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
-    @JsonProperty("studentGroupIds")
+    @JsonProperty("studentGroupId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany(mappedBy = "subjectSemesters")
-    private Set<StudyGroup> studyGroups;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private StudyGroup studyGroup;
 
     private OffsetDateTime createdAt;
 
@@ -113,12 +112,12 @@ public class SubjectSemester {
         this.subject = subject;
     }
 
-    public Set<StudyGroup> getStudyGroups() {
-        return studyGroups;
+    public StudyGroup getStudyGroup() {
+        return studyGroup;
     }
 
-    public void setStudyGroups(Set<StudyGroup> studyGroups) {
-        this.studyGroups = studyGroups;
+    public void setStudyGroup(StudyGroup studyGroup) {
+        this.studyGroup = studyGroup;
     }
 
     public OffsetDateTime getCreatedAt() {
