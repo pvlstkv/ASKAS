@@ -3,12 +3,13 @@ package com.example.javaserver.study.model;
 import com.example.javaserver.testing.model.Question;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("unused")
 @Entity
@@ -19,11 +20,6 @@ public class UserFile implements Serializable {
     private Long id;
 
     private String name;
-    //private String description;
-    //private StudyFileType studyFileType;
-
-    @JsonIgnore
-    private byte[] data;
 
     private UserRole accessLevel;
 
@@ -67,14 +63,6 @@ public class UserFile implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
-        this.data = data;
     }
 
     public UserRole getAccessLevel() {
