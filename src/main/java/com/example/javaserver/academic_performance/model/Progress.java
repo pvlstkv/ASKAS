@@ -5,8 +5,14 @@ public class Progress {
     private Integer total;
 
     public Progress() {
+        this.done = 0;
+        this.total = 0;
     }
 
+    public Progress(Progress oldProgress) {
+        this.done = oldProgress.getDone();
+        this.total = oldProgress.getTotal();
+    }
     public Progress(Integer done, Integer total) {
         this.done = done;
         this.total = total;
