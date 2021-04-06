@@ -12,7 +12,9 @@ import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.service.TaskService;
 import com.example.javaserver.testing.model.dto.PassedTestOut;
 import com.example.javaserver.testing.model.dto.PassedThemeOut;
+import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.testing.service.ResultService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,9 +25,18 @@ import java.util.List;
 @Service
 public class PerformanceService {
 
-    private SubjectService subjectService;
-    private ResultService resultService;
-    private TaskService taskService;
+    private final SubjectService subjectService;
+    private final ResultService resultService;
+    private final TaskService taskService;
+    private final ThemeRepo themeRepo;
+
+    @Autowired
+    public PerformanceService(SubjectService subjectService, ResultService resultService, TaskService taskService, ThemeRepo themeRepo) {
+        this.subjectService = subjectService;
+        this.resultService = resultService;
+        this.taskService = taskService;
+        this.themeRepo = themeRepo;
+    }
 
     public Performance formUserPerformance(Integer userId, UserDetailsImp userDetails) {
         Performance performance = new Performance();
@@ -44,9 +55,9 @@ public class PerformanceService {
         int done = 0;
         int total = 0;
         for (Subject subject : subjects) {
+            total += themeRepo.findAllBySubjectId(subject.getId()).size();
             List<PassedThemeOut> passedThemeOuts = resultService.fetchUserPassedThemesBySubjectIdAndUserId(userId, subject.getId(), userDetails);
             for (PassedThemeOut passedThemeOut : passedThemeOuts) {
-                total++;
                 int border = 50;
                 if (passedThemeOut.haveOneNormalRating(border)) {
                     done++;

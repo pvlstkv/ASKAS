@@ -22,7 +22,7 @@ public class PerformanceController {
 
 
     @ResponseStatus(HttpStatus.OK)
-    @Secured({"TEACHER", "ADMIN"})
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
     public Performance formPerformance(
             @AuthenticationPrincipal UserDetailsImp userDetails
