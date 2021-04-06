@@ -31,4 +31,13 @@ public class PassedThemeOut {
     public void setRatings(List<Integer> ratings) {
         this.ratings = ratings;
     }
+
+    public boolean haveOneNormalRating(int border) {
+        for (Integer rate : this.ratings) {
+            if (rate > border){
+                return true;
+            }
+        }
+        return false;
+    }
 }

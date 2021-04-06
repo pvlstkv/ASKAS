@@ -59,7 +59,7 @@ public class ResultService {
         }
         List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
         List<Theme> themes = themeRepo.findAllById(themeIds);
-        User user = userRepo.findById(userDetails.getId()).get();
+        User user = userRepo.findById(userId).get();
         List<PassedThemeOut> passedThemeOuts = new ArrayList<>();
         for (Theme theme : themes) {
             List<PassedTest> passedTests = passedTestRepo.findAllByUserAndTheme(user, theme);
@@ -115,6 +115,11 @@ public class ResultService {
         System.out.println(themeRepo.fetchPassedThemeIdsByUserId(user.getId(), 1L));
         return passedTests;
     }
+
+//    public List<PassedTestOut> formPassedTestByUser(Integer userId){
+//        List<PassedTestOut> results = new ArrayList<>();
+//
+//    }
 
     private User fetchUser(UserDetailsImp userDetails) {
         Optional<User> user = userRepo.findById(userDetails.getId());
