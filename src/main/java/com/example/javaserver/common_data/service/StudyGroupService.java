@@ -112,7 +112,7 @@ public class StudyGroupService {
         return user
                 .getTeachingSubjects().stream()
                 .flatMap(sub -> sub.getSemesters().stream())
-                .flatMap(sem -> sem.getStudyGroups().stream())
+                .map(SubjectSemester::getStudyGroup)
                 .collect(Collectors.toSet());
     }
 }
