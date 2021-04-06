@@ -5,6 +5,9 @@ import com.example.javaserver.study.controller.dto.UserFileOut;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.service.UserFileService;
 import com.example.javaserver.user.model.UserRole;
+import com.jlefebure.spring.boot.minio.MinioService;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -27,12 +30,12 @@ public class UserFileController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping
-    public UserFileOut create(
+    public UserFileOut upload(
             @AuthenticationPrincipal UserDetailsImp userDetails,
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "accessLevel", required = false) UserRole accessLevel
     ) {
-        return userFileService.create(file, accessLevel, userDetails);
+        return userFileService.upload(file, accessLevel, userDetails);
     }
 
     @ResponseStatus(HttpStatus.OK)

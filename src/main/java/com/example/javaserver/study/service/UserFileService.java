@@ -1,7 +1,5 @@
 package com.example.javaserver.study.service;
 
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.study.controller.dto.UserFileOut;
 import com.example.javaserver.study.model.UserFile;
@@ -11,7 +9,6 @@ import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,7 +32,7 @@ public class UserFileService {
     }
 
     @Transactional
-    public UserFileOut create(MultipartFile file, UserRole accessLevel, UserDetailsImp userDetails) {
+    public UserFileOut upload(MultipartFile file, UserRole accessLevel, UserDetailsImp userDetails) {
         Optional<User> user = userRepo.findById(userDetails.getId());
         if (!user.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
@@ -85,8 +82,7 @@ public class UserFileService {
 
     public Set<UserFile> getBy(Long[] idsArr) {
         Set<Long> ids = Arrays.stream(idsArr).collect(Collectors.toSet());
-        Set<UserFile> files = userFileRepo.getUserFilesByIdIn(ids);
 
-        return files;
+        return userFileRepo.getUserFilesByIdIn(ids);
     }
 }
