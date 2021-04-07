@@ -1,7 +1,6 @@
 package com.example.javaserver.study.service;
 
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.study.model.FileType;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
@@ -12,6 +11,7 @@ import io.minio.GetObjectResponse;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -30,20 +30,23 @@ public class UserFileService {
     private final MinioClient minioClient;
     private final UserFileRepo userFileRepo;
     private final UserRepo userRepo;
+    private final String bucketName;
 
     @Autowired
     public UserFileService(
             MinioClient minioClient,
             UserFileRepo userFileRepo,
-            UserRepo userRepo
+            UserRepo userRepo,
+            @Value("${spring.minio.bucket}") String bucketName
     ) {
         this.minioClient = minioClient;
         this.userFileRepo = userFileRepo;
         this.userRepo = userRepo;
+        this.bucketName = bucketName;
     }
 
     @Transactional
-    public UserFile upload(MultipartFile multipartFile, FileType fileType, UserRole accessLevel, UserDetailsImp userDetails) {
+    public UserFile upload(MultipartFile multipartFile, UserRole accessLevel, UserDetailsImp userDetails) {
         Optional<User> user = userRepo.findById(userDetails.getId());
         if (!user.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
@@ -62,7 +65,7 @@ public class UserFileService {
         try {
             InputStream stream = multipartFile.getInputStream();
             PutObjectArgs args = PutObjectArgs.builder()
-                    .bucket(fileType.getBucketName())
+                    .bucket(bucketName)
                     .stream(stream, stream.available(), -1L)
                     .extraHeaders(Map.of("id", userFile.getId().toString()))
                     .build();
@@ -75,7 +78,7 @@ public class UserFileService {
         return userFile;
     }
 
-    public Resource download(Long id, FileType fileType, UserDetailsImp userDetails) {
+    public Resource download(Long id, UserDetailsImp userDetails) {
         Optional<UserFile> file = userFileRepo.findById(id);
         if (!file.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не найден");
@@ -91,7 +94,7 @@ public class UserFileService {
         }
 
         GetObjectArgs args = GetObjectArgs.builder()
-                .bucket(fileType.getBucketName())
+                .bucket(bucketName)
                 .extraHeaders(Map.of("id", id.toString()))
                 .build();
 
