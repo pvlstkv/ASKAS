@@ -1,4 +1,4 @@
-FROM maven:3.6.3-jdk-8-slim AS build
+FROM maven:3.8.1-jdk-11 AS build
 COPY src /home/app/src
 COPY pom.xml /home/app
 CMD rm /home/app/src/main/resources/application.properties
