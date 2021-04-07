@@ -1,5 +1,6 @@
 package com.example.javaserver.common_data.repo;
 
+import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -19,4 +20,6 @@ public interface SubjectSemesterRepo extends
     Collection<SubjectSemester> findAllByIdIn(Set<Long> ids);
     Collection<SubjectSemester> findAllBy();
     Collection<SubjectSemester> findAllBySubjectEquals(Subject subject);
+    Collection<SubjectSemester> findAllByIdIn(Collection<Long> ids);
+    Collection<SubjectSemester> findAllBySubjectEqualsAndStudyGroupIn(Subject subject, Collection<StudyGroup> studyGroups);
 }

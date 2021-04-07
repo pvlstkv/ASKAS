@@ -29,11 +29,11 @@ public class Task implements Serializable {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserFile> userFiles;
 
-    @JsonProperty("semesterId")
+    @JsonProperty("semesterIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
-    private SubjectSemester semester;
+    @ManyToMany(mappedBy = "tasks")
+    private Set<SubjectSemester> semesters;
 
     @JsonProperty("workIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -90,12 +90,12 @@ public class Task implements Serializable {
         this.userFiles = userFiles;
     }
 
-    public SubjectSemester getSemester() {
-        return semester;
+    public Set<SubjectSemester> getSemesters() {
+        return semesters;
     }
 
-    public void setSemester(SubjectSemester semester) {
-        this.semester = semester;
+    public void setSemesters(Set<SubjectSemester> semesters) {
+        this.semesters = semesters;
     }
 
     public List<Work> getWorks() {
