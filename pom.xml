@@ -38,27 +38,6 @@
         </dependency>
 
 
-        <!--<dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3.1</version>
-        </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.commons/commons-io &ndash;&gt;
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-        &lt;!&ndash; https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk &ndash;&gt;
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>6.0.8</version>
-        </dependency>-->
-
-
-
-
         <!--spring boot security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -76,12 +55,12 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        &lt;!&ndash;db migration&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.flywaydb</groupId>-->
-<!--            <artifactId>flyway-core</artifactId>-->
-<!--            <version>6.4.4</version>-->
-<!--        </dependency>-->
+        <!--db migration-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>6.4.4</version>
+        </dependency>
 
         <!--html parser-->
         <dependency>
@@ -170,8 +149,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>
