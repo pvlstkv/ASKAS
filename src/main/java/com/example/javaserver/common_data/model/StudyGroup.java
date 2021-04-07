@@ -54,11 +54,7 @@ public class StudyGroup implements Serializable {
     @JsonProperty("subjectSemesterIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany
-    @JoinTable(
-            name = "study_groups_subject_semesters",
-            joinColumns = {@JoinColumn(name = "study_group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "subject_semester_id")})
+    @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> subjectSemesters;
 
     public StudyGroup() {

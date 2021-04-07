@@ -3,9 +3,11 @@ package com.example.javaserver.common_data.service;
 import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
+import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -27,13 +29,15 @@ import java.util.stream.Collectors;
 public class StudyGroupService {
     private final StudyGroupRepo studyGroupRepo;
     private final SubjectSemesterRepo subjectSemesterRepo;
+    private final SubjectRepo subjectRepo;
     private final UserRepo userRepo;
     private final DepartmentRepo departmentRepo;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
+    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, SubjectRepo subjectRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
         this.studyGroupRepo = studyGroupRepo;
         this.subjectSemesterRepo = subjectSemesterRepo;
+        this.subjectRepo = subjectRepo;
         this.userRepo = userRepo;
         this.departmentRepo = departmentRepo;
     }
@@ -94,7 +98,7 @@ public class StudyGroupService {
         return new Message("Семестры были успешно добавлены для группы");
     }
 
-    public Collection<StudyGroup> getGroupsByUser(Integer userId, UserDetailsImp userDetails){
+    public Collection<StudyGroup> getGroupsByTeacher(Integer userId, UserDetailsImp userDetails){
         if (userId == null) {
             userId = userDetails.getId();
         }
@@ -112,7 +116,21 @@ public class StudyGroupService {
         return user
                 .getTeachingSubjects().stream()
                 .flatMap(sub -> sub.getSemesters().stream())
-                .flatMap(sem -> sem.getStudyGroups().stream())
+                .map(SubjectSemester::getStudyGroup)
+                .collect(Collectors.toSet());
+    }
+
+    public Collection<StudyGroup> getGroupsBySubject(Long subjectId){
+        Optional<Subject> subjectO = subjectRepo.findById(subjectId);
+        if (!subjectO.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет предмета с указанным id");
+        }
+        Subject subject = subjectO.get();
+
+        return subjectSemesterRepo
+                .findAllBySubjectEquals(subject)
+                .stream()
+                .map(SubjectSemester::getStudyGroup)
                 .collect(Collectors.toSet());
     }
 }
