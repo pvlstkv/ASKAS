@@ -6,10 +6,7 @@ import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -67,11 +63,12 @@ public class UserFileService {
             PutObjectArgs args = PutObjectArgs.builder()
                     .bucket(bucketName)
                     .stream(stream, stream.available(), -1L)
-                    .extraHeaders(Map.of("id", userFile.getId().toString()))
+                    .object(userFile.getId().toString())
                     .build();
             minioClient.putObject(args);
         } catch (Exception e) {
             userFileRepo.deleteById(userFile.getId());
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка загрузки файла", e);
         }
 
@@ -95,7 +92,7 @@ public class UserFileService {
 
         GetObjectArgs args = GetObjectArgs.builder()
                 .bucket(bucketName)
-                .extraHeaders(Map.of("id", id.toString()))
+                .object(id.toString())
                 .build();
 
         try {
