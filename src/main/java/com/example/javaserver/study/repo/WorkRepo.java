@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Set;
 
 public interface WorkRepo extends
@@ -14,4 +15,5 @@ public interface WorkRepo extends
     Set<Work> getWorksByIdIn(Set<Long> ids);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);
+    List<Work> findAllByUserIdAndTaskId(Integer userId, Long taskId);
 }
