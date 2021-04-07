@@ -24,9 +24,9 @@ services:
     container_name: minio-storage
     ports:
       - "9000:9000"
-    volumes:
-      - ./minio/data:/data
-      - ./minio/log:/var/log
+#    volumes:
+#      - ./minio/data:/data
+#      - ./minio/log:/var/log
     environment:
       MINIO_ACCESS_KEY: javaserver_minio_access_key
       MINIO_SECRET_KEY: javaserver_minio_super_duper_secret_key
