@@ -31,4 +31,8 @@ public class PassedThemeOut {
     public void setRatings(List<Integer> ratings) {
         this.ratings = ratings;
     }
+
+    public boolean haveOneNormalRating(int border) {
+        return this.ratings.stream().anyMatch(rate-> rate > border);
+    }
 }

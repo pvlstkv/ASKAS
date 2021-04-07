@@ -102,7 +102,7 @@ public class TaskService {
     public Message update(TaskIn taskIn) {
         Optional<Task> taskO = taskRepo.findById(taskIn.id);
         if (!taskO.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         Task task = taskO.get();
 
