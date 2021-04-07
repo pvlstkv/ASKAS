@@ -35,12 +35,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--db migration-->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-            <version>6.4.4</version>
-        </dependency>
+<!--        &lt;!&ndash;db migration&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.flywaydb</groupId>-->
+<!--            <artifactId>flyway-core</artifactId>-->
+<!--            <version>6.4.4</version>-->
+<!--        </dependency>-->
 
         <!--html parser-->
         <dependency>

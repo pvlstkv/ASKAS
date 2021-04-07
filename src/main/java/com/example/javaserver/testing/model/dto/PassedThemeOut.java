@@ -33,11 +33,6 @@ public class PassedThemeOut {
     }
 
     public boolean haveOneNormalRating(int border) {
-        for (Integer rate : this.ratings) {
-            if (rate > border){
-                return true;
-            }
-        }
-        return false;
+        return this.ratings.stream().anyMatch(rate-> rate > border);
     }
 }
