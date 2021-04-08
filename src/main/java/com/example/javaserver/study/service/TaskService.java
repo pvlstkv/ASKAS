@@ -56,13 +56,12 @@ public class TaskService {
         if (taskIn.type == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь тип");
         }
-        if (taskIn.semesterId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно быть привязано к семестру");
-        }
 
-        Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
-        if (!semester.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с указанным id не существует");
+        Collection<SubjectSemester> semesters = semesterRepo.findAllByIdIn(taskIn.semesterIds);
+        for (Long id : taskIn.semesterIds) {
+            if (semesters.stream().noneMatch(f -> f.getId().equals(id))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с id = \"" + id + "\" не найден");
+            }
         }
 
         Optional<User> user = userRepo.findById(userDetails.getId());
@@ -70,10 +69,10 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
         }
 
-        Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
+        Collection<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
         for (Long id : taskIn.fileIds) {
             if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \" + id + \" не найден");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \"" + id + "\" не найден");
             }
         }
         for (UserFile file : userFiles) {
@@ -86,8 +85,8 @@ public class TaskService {
         task.setTitle(taskIn.title);
         task.setType(taskIn.type);
         task.setDescription(taskIn.description);
-        task.setSemester(semester.get());
         task.setUser(user.get());
+        semesters.forEach(s -> s.getTasks().add(task));
         userFiles.forEach(f -> f.setTask(task));
         taskRepo.save(task);
 
@@ -123,14 +122,32 @@ public class TaskService {
             task.setDescription(taskIn.description);
         }
 
-        if (task.getSemester() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно быть привязано к семестру");
-        } else if (!Objects.equals(task.getSemester().getId(), taskIn.semesterId)) {
-            Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
-            if (!semester.isPresent()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: семестр с указанным id не существует");
+        if (taskIn.semesterIds == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: semesterIds должно быть не null");
+        }
+        Set<SubjectSemester> semestersToRemove = new HashSet<>();
+        task.getSemesters().forEach(s -> {
+            if (!taskIn.semesterIds.contains(s.getId())) {
+                semestersToRemove.add(s);
             }
-            task.setSemester(semester.get());
+        });
+        if (!semestersToRemove.isEmpty()) {
+            semestersToRemove.forEach(s -> s.getTasks().remove(task));
+        }
+        Set<Long> semesterToAddIds = new HashSet<>();
+        taskIn.semesterIds.forEach(i -> {
+            if (task.getSemesters().stream().noneMatch(s -> s.getId().equals(i))) {
+                semesterToAddIds.add(i);
+            }
+        });
+        if (!semesterToAddIds.isEmpty()) {
+            Collection<SubjectSemester> semestersToAdd = semesterRepo.findAllByIdIn(semesterToAddIds);
+            for (Long id : semesterToAddIds) {
+                if (semestersToAdd.stream().noneMatch(s -> s.getId().equals(id))) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Семестр с id = \"" + id + "\" не найден");
+                }
+            }
+            semestersToAdd.forEach(s -> s.getTasks().add(task));
         }
 
         if (taskIn.fileIds == null) {

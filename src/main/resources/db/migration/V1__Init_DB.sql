@@ -86,6 +86,12 @@ create table "semester_marks"
     "user_id"             int4,
     primary key ("id")
 );
+create table "semester_task"
+(
+    "semester_id" int8 not null,
+    "task_id"     int8 not null,
+    primary key ("semester_id", "task_id")
+);
 create table "study_groups"
 (
     "id"                  bigserial not null,
@@ -103,11 +109,11 @@ create table "study_groups"
 create table "subject_semesters"
 (
     "id"                 bigserial not null,
-    "name"               varchar(255),
     "control_type"       int4,
     "created_at"         timestamp,
     "has_course_project" boolean,
     "has_course_work"    boolean,
+    "name"               varchar(255),
     "updated_at"         timestamp,
     "study_group_id"     int8,
     "subject_id"         int8,
@@ -129,7 +135,6 @@ create table "tasks"
     "description" varchar(255),
     "title"       varchar(255),
     "type"        int4,
-    "semester_id" int8,
     "user_id"     int4,
     primary key ("id")
 );
@@ -214,6 +219,10 @@ alter table "semester_marks"
     add constraint "subject_semester_id" foreign key ("subject_semester_id") references "subject_semesters";
 alter table "semester_marks"
     add constraint "user_id" foreign key ("user_id") references "users";
+alter table "semester_task"
+    add constraint "task_id" foreign key ("task_id") references "tasks";
+alter table "semester_task"
+    add constraint "semester_id" foreign key ("semester_id") references "subject_semesters";
 alter table "study_groups"
     add constraint "department_id" foreign key ("department_id") references "departments";
 alter table "subject_semesters"
@@ -222,8 +231,6 @@ alter table "subject_semesters"
     add constraint "subject_id" foreign key ("subject_id") references "subjects";
 alter table "subjects"
     add constraint "department_id" foreign key ("department_id") references "departments";
-alter table "tasks"
-    add constraint "semester_id" foreign key ("semester_id") references "subject_semesters";
 alter table "tasks"
     add constraint "user_id" foreign key ("user_id") references "users";
 alter table "teacher_subject"

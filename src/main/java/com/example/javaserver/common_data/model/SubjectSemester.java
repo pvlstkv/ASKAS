@@ -24,7 +24,11 @@ public class SubjectSemester {
     @JsonProperty("taskIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "semester_task",
+            joinColumns = {@JoinColumn(name = "semester_id")},
+            inverseJoinColumns = {@JoinColumn(name = "task_id")})
     private Set<Task> tasks;
 
     @JsonProperty("subjectId")
@@ -142,5 +146,13 @@ public class SubjectSemester {
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
