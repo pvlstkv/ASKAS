@@ -44,7 +44,7 @@ values (111,
         now(),
         'радиотехника',
         1,
-        2,
+        5,
         'РТ',
         2020,
         (SELECT id FROM departments WHERE short_name LIKE 'РФ'));

@@ -3,7 +3,7 @@
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Какие виды автоматов Вы знаете?', 0, 2, (select id from themes where name like 'Конечные автоматы'));
+values (3, 'Какие виды автоматов Вы знаете?', 0, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Конечные автоматы'));
 
 insert
 into "answer_choice"
@@ -28,7 +28,7 @@ values ('Мира', FALSE, (select id from question where question like 'Как�
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Какие виды переходов Вы знаете?', 0, 2, (select id from themes where name like 'Конечные автоматы'));
+values (3, 'Какие виды переходов Вы знаете?', 0, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Конечные автоматы'));
 
 insert
 into "answer_choice"
@@ -53,7 +53,7 @@ values ('Сложные', FALSE, (select id from question where question like '�
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'У какого автомата состояния проставляются после операторных вершин?', 1, 2,
+values (3, 'У какого автомата состояния проставляются после операторных вершин?', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Конечные автоматы'));
 
 insert
@@ -67,7 +67,7 @@ values ('Мили', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Автомат, состояния которого проставляются в операторных вершинах', 1, 2,
+values (3, 'Автомат, состояния которого проставляются в операторных вершинах', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Конечные автоматы'));
 
 insert
@@ -81,7 +81,7 @@ values ('Мура', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Основные элементы граф-схемы автомата', 0, 2, (select id from themes where name like 'Конечные автоматы'));
+values (3, 'Основные элементы граф-схемы автомата', 0, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Конечные автоматы'));
 
 insert
 into "answer_choice"
@@ -107,7 +107,7 @@ values ('Квадратики', TRUE, (select id from question where question li
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Как называется функция, переменные которой могу принимать значения либо 0, либо 1?', 1, 2,
+values (3, 'Как называется функция, переменные которой могу принимать значения либо 0, либо 1?', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
 insert
@@ -122,7 +122,7 @@ values ('Логическая', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая преобразует 0 в 1 и наоборот?', 1, 2,
+values (3, 'Логическая функция, которая преобразует 0 в 1 и наоборот?', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
 insert
@@ -135,7 +135,7 @@ values ('Отриацание', TRUE,
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1', 1, 2,
+values (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
 insert
@@ -148,7 +148,7 @@ values ('И', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая дает 0, когда только оба операнда 0', 1, 2,
+values (3, 'Логическая функция, которая дает 0, когда только оба операнда 0', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
 insert
@@ -162,7 +162,7 @@ values ('Или', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая дает 0, когда оба операнда одинаковые', 1, 2,
+values (3, 'Логическая функция, которая дает 0, когда оба операнда одинаковые', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
 insert
@@ -178,7 +178,7 @@ values ('Исключающее или', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Один из методов минимизации лог.функций: карты ...?', 1, 2,
+values (3, 'Один из методов минимизации лог.функций: карты ...?', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Минимизация логические функции'));
 
 insert
@@ -193,7 +193,7 @@ into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
 values (3,
         'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?',
-        1, 2, (select id from themes where name like 'Минимизация логические функции'));
+        1, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
 
 insert
 into "answer_choice"
@@ -209,7 +209,7 @@ into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
 values (3,
         'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)',
-        1, 2, (select id from themes where name like 'Минимизация логические функции'));
+        1, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
 
 insert
 into "answer_choice"
@@ -223,7 +223,7 @@ values ('Квайна', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)', 1, 2,
+values (3, 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Минимизация логические функции'));
 
 insert
@@ -237,7 +237,7 @@ values ('1', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Конъюнкция это логическое ...?', 1, 2,
+values (3, 'Конъюнкция это логическое ...?', 1, (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Минимизация логические функции'));
 
 insert
@@ -251,7 +251,7 @@ into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
 values (3,
         'Главная часть аппаратного обеспечения компьютера или программируемого логического контроллера это центральный ...?',
-        1, 1, (select id from themes where name like 'Процессоры'));
+        1,  (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
 
 insert
 into "answer_choice"
@@ -265,7 +265,7 @@ values ('процессор', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, '16 битный аккумуляторный регистр (большими буквами)', 1, 1,
+values (3, '16 битный аккумуляторный регистр (большими буквами)', 1,  (select id from subjects where name like 'Архитектура процессоров'),
         (select id from themes where name like 'Процессоры'));
 
 insert
@@ -278,7 +278,7 @@ values ('AX', TRUE,
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1, 1,
+values (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1,  (select id from subjects where name like 'Архитектура процессоров'),
         (select id from themes where name like 'Процессоры'));
 
 insert
@@ -293,7 +293,7 @@ into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
 values (3,
         'Когда запрашиваемые данные отсутствуют в кэше и их нужно подгружать из основного источника называется кэш ...',
-        1, 1, (select id from themes where name like 'Процессоры'));
+        1,  (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
 
 insert
 into "answer_choice"
@@ -306,7 +306,7 @@ values ('промах', TRUE, (select id
 insert
 into "question"
     ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Английская аббревиатура центрального процессора', 1, 1,
+values (3, 'Английская аббревиатура центрального процессора', 1,  (select id from subjects where name like 'Архитектура процессоров'),
         (select id from themes where name like 'Процессоры'));
 
 insert
