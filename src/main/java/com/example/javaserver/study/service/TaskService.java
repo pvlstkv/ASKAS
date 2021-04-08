@@ -11,6 +11,7 @@ import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
+import com.example.javaserver.study.model.TaskType;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
@@ -50,6 +51,9 @@ public class TaskService {
     @SuppressWarnings("Duplicates")
     @Transactional
     public Message create(TaskIn taskIn, UserDetailsImp userDetails) {
+        if(taskIn.type.equals(TaskType.LITERATURE)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
+        }
         if (taskIn.title == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
         }
@@ -101,6 +105,9 @@ public class TaskService {
     @Transactional
     public Message update(TaskIn taskIn) {
         Optional<Task> taskO = taskRepo.findById(taskIn.id);
+        if(taskIn.type.equals(TaskType.LITERATURE)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
+        }
         if (!taskO.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -211,7 +218,7 @@ public class TaskService {
             for (Work work : worksToAdd) {
                 if (work.getTask() != null) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Работа с id = \" + work.getId() + \" привязана к другому заданию");
-                    }
+                }
             }
             worksToAdd.forEach(f -> f.setTask(task));
         }
@@ -220,7 +227,9 @@ public class TaskService {
     }
 
     public  Collection<Task> getAll() {
-        return taskRepo.findAll(null);
+        Collection<Task> tasks = taskRepo.findAll(null);
+        tasks = tasks.stream().filter(task -> task.getType() != TaskType.LITERATURE).collect(Collectors.toList());
+        return tasks;
     }
 
     public Collection<Task> criteriaSearch(Set<SearchCriteria> criteria) {
@@ -237,6 +246,7 @@ public class TaskService {
     }
 
     public Collection<Task> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {
+
         if (userId == null) {
             userId = userDetails.getId();
         }
@@ -261,7 +271,10 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
         }
 
-        return semester.get().getTasks();
+        //фильтр чтобы литература не возвращалась
+        Collection<Task> tasks = semester.get().getTasks();
+        tasks = tasks.stream().filter(task -> task.getType() != TaskType.LITERATURE).collect(Collectors.toList());
+        return tasks;
     }
 
     public Collection<Task> searchBySubjectAndTeacher(Long subjectId) {
