@@ -57,7 +57,11 @@ public class SubjectSemester {
     // int countOfLecture;
     // int countOfLabWork;
 
-    public SubjectSemester() {
+    public SubjectSemester() { }
+
+    @PreRemove
+    private void removeHandler() {
+        tasks.forEach(t -> t.getSemesters().remove(this));
     }
 
     public Set<SemesterMark> getSemesterMark() {

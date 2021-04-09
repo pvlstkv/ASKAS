@@ -9,7 +9,7 @@ import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
-import com.example.javaserver.study.controller.dto.TaskIn;
+import com.example.javaserver.study.controller.dto.LiteratureIn;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.TaskType;
 import com.example.javaserver.study.model.UserFile;
@@ -30,7 +30,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class TaskService {
+public class LiteratureService {
+
     private final TaskRepo taskRepo;
     private final UserFileRepo userFileRepo;
     private final WorkRepo workRepo;
@@ -39,7 +40,7 @@ public class TaskService {
     private final SubjectRepo subjectRepo;
 
     @Autowired
-    public TaskService(TaskRepo taskRepo, UserFileRepo userFileRepo, WorkRepo workRepo, SubjectSemesterRepo semesterRepo, UserRepo userRepo, SubjectRepo subjectRepo) {
+    public LiteratureService(TaskRepo taskRepo, UserFileRepo userFileRepo, WorkRepo workRepo, SubjectSemesterRepo semesterRepo, UserRepo userRepo, SubjectRepo subjectRepo) {
         this.taskRepo = taskRepo;
         this.userFileRepo = userFileRepo;
         this.workRepo = workRepo;
@@ -50,19 +51,19 @@ public class TaskService {
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public Message create(TaskIn taskIn, UserDetailsImp userDetails) {
-        if(taskIn.type.equals(TaskType.LITERATURE)){
+    public Message create(LiteratureIn literatureIn, UserDetailsImp userDetails) {
+        if(literatureIn.type != TaskType.LITERATURE){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
         }
-        if (taskIn.title == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
+        if (literatureIn.title == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература должна иметь заголовок");
         }
-        if (taskIn.type == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь тип");
+        if (literatureIn.type == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература должна иметь тип");
         }
 
-        Collection<SubjectSemester> semesters = semesterRepo.findAllByIdIn(taskIn.semesterIds);
-        for (Long id : taskIn.semesterIds) {
+        Collection<SubjectSemester> semesters = semesterRepo.findAllByIdIn(literatureIn.semesterIds);
+        for (Long id : literatureIn.semesterIds) {
             if (semesters.stream().noneMatch(f -> f.getId().equals(id))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с id = \"" + id + "\" не найден");
             }
@@ -73,40 +74,40 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
         }
 
-        Collection<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
-        for (Long id : taskIn.fileIds) {
+        Collection<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(literatureIn.fileIds);
+        for (Long id : literatureIn.fileIds) {
             if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \"" + id + "\" не найден");
             }
         }
         for (UserFile file : userFiles) {
             if (file.getTask() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно создать задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно создать Литературу: Файл с id = \" + file.getId() + \" привязан к другому заданию");
             }
         }
 
         Task task = new Task();
-        task.setTitle(taskIn.title);
-        task.setType(taskIn.type);
-        task.setDescription(taskIn.description);
+        task.setTitle(literatureIn.title);
+        task.setType(literatureIn.type);
+        task.setDescription(literatureIn.description);
         task.setUser(user.get());
         semesters.forEach(s -> s.getTasks().add(task));
         userFiles.forEach(f -> f.setTask(task));
         taskRepo.save(task);
 
-        return new Message("Задание успешно создано");
+        return new Message("Литература успешна создано");
     }
 
     public Message delete(Set<Long> ids) {
         taskRepo.deleteAllByIdIn(ids);
-        return new Message("Найденные задания были успешно удалены");
+        return new Message("Найденная литература была успешно удалены");
     }
 
     @Transactional
-    public Message update(TaskIn taskIn) {
-        Optional<Task> taskO = taskRepo.findById(taskIn.id);
-        if(taskIn.type.equals(TaskType.LITERATURE)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
+    public Message update(LiteratureIn literatureIn) {
+        Optional<Task> taskO = taskRepo.findById(literatureIn.id);
+        if(literatureIn.type != TaskType.LITERATURE){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип литературу");
         }
         if (!taskO.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -114,27 +115,27 @@ public class TaskService {
         Task task = taskO.get();
 
         if (task.getTitle() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
-        } else if (!Objects.equals(task.getTitle(), taskIn.title)) {
-            task.setTitle(taskIn.title);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература должна иметь заголовок");
+        } else if (!Objects.equals(task.getTitle(), literatureIn.title)) {
+            task.setTitle(literatureIn.title);
         }
 
         if (task.getType() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь тип");
-        } else if (!Objects.equals(task.getType(), taskIn.type)) {
-            task.setType(taskIn.type);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература должна иметь тип");
+        } else if (!Objects.equals(task.getType(), literatureIn.type)) {
+            task.setType(literatureIn.type);
         }
 
-        if (!Objects.deepEquals(task.getDescription(), taskIn.description)) {
-            task.setDescription(taskIn.description);
+        if (!Objects.deepEquals(task.getDescription(), literatureIn.description)) {
+            task.setDescription(literatureIn.description);
         }
 
-        if (taskIn.semesterIds == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: semesterIds должно быть не null");
+        if (literatureIn.semesterIds == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить литературу: semesterIds должно быть не null");
         }
         Set<SubjectSemester> semestersToRemove = new HashSet<>();
         task.getSemesters().forEach(s -> {
-            if (!taskIn.semesterIds.contains(s.getId())) {
+            if (!literatureIn.semesterIds.contains(s.getId())) {
                 semestersToRemove.add(s);
             }
         });
@@ -142,7 +143,7 @@ public class TaskService {
             semestersToRemove.forEach(s -> s.getTasks().remove(task));
         }
         Set<Long> semesterToAddIds = new HashSet<>();
-        taskIn.semesterIds.forEach(i -> {
+        literatureIn.semesterIds.forEach(i -> {
             if (task.getSemesters().stream().noneMatch(s -> s.getId().equals(i))) {
                 semesterToAddIds.add(i);
             }
@@ -151,18 +152,18 @@ public class TaskService {
             Collection<SubjectSemester> semestersToAdd = semesterRepo.findAllByIdIn(semesterToAddIds);
             for (Long id : semesterToAddIds) {
                 if (semestersToAdd.stream().noneMatch(s -> s.getId().equals(id))) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Семестр с id = \"" + id + "\" не найден");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить литературу: Семестр с id = \"" + id + "\" не найден");
                 }
             }
             semestersToAdd.forEach(s -> s.getTasks().add(task));
         }
 
-        if (taskIn.fileIds == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: fileIds должно быть не null");
+        if (literatureIn.fileIds == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить литературу: fileIds должно быть не null");
         }
         Set<UserFile> filesToRemove = new HashSet<>();
         task.getUserFiles().forEach(f -> {
-            if (!taskIn.fileIds.contains(f.getId())) {
+            if (!literatureIn.fileIds.contains(f.getId())) {
                 filesToRemove.add(f);
             }
         });
@@ -170,7 +171,7 @@ public class TaskService {
             filesToRemove.forEach(f -> f.setTask(null));
         }
         Set<Long> fileToAddIds = new HashSet<>();
-        taskIn.fileIds.forEach(i -> {
+        literatureIn.fileIds.forEach(i -> {
             if (task.getUserFiles().stream().noneMatch(f -> f.getId().equals(i))) {
                 fileToAddIds.add(i);
             }
@@ -179,48 +180,15 @@ public class TaskService {
             Set<UserFile> filesToAdd = userFileRepo.getUserFilesByIdIn(fileToAddIds);
             for (Long id : fileToAddIds) {
                 if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + id + \" не найден");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить литературу: Файл с id = \" + id + \" не найден");
                 }
             }
             for (UserFile file : filesToAdd) {
                 if (file.getTask() != null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
-                    }
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить литературу: Файл с id = \" + file.getId() + \" привязан к другому заданию");
+                }
             }
             filesToAdd.forEach(f -> f.setTask(task));
-        }
-
-        if (taskIn.workIds == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: workIds должно быть не null");
-        }
-        Set<Work> worksToRemove = new HashSet<>();
-        task.getWorks().forEach(w -> {
-            if (!taskIn.workIds.contains(w.getId())) {
-                worksToRemove.add(w);
-            }
-        });
-        if (!worksToRemove.isEmpty()) {
-            worksToRemove.forEach(f -> f.setTask(null));
-        }
-        Set<Long> workToAddIds = new HashSet<>();
-        taskIn.workIds.forEach(i -> {
-            if (task.getWorks().stream().noneMatch(w -> w.getId().equals(i))) {
-                workToAddIds.add(i);
-            }
-        });
-        if (!workToAddIds.isEmpty()) {
-            Set<Work> worksToAdd = workRepo.getWorksByIdIn(workToAddIds);
-            for (Long id : taskIn.workIds) {
-                if (worksToAdd.stream().noneMatch(w -> w.getId().equals(id))) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Работа с id = " + id + " не найдена");
-                }
-            }
-            for (Work work : worksToAdd) {
-                if (work.getTask() != null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Работа с id = \" + work.getId() + \" привязана к другому заданию");
-                }
-            }
-            worksToAdd.forEach(f -> f.setTask(task));
         }
 
         return new Message("Задание было успешно изменено");
@@ -228,7 +196,7 @@ public class TaskService {
 
     public  Collection<Task> getAll() {
         Collection<Task> tasks = taskRepo.findAll(null);
-        tasks = tasks.stream().filter(task -> task.getType() != TaskType.LITERATURE).collect(Collectors.toList());
+        tasks = tasks.stream().filter(task -> task.getType().equals(TaskType.LITERATURE)).collect(Collectors.toList());
         return tasks;
     }
 
@@ -280,14 +248,14 @@ public class TaskService {
     public Collection<Task> searchBySubjectAndTeacher(Long subjectId) {
         Optional<Subject> subject = subjectRepo.findById(subjectId);
         if (!subject.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id не существует");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литературы с указанным id не существует");
         }
 
         //фильтр чтобы литература не возвращалась
         return subject.get()
                 .getSemesters().stream()
                 .flatMap(sem -> sem.getTasks().stream())
-                .filter(task -> task.getType() != TaskType.LITERATURE)
+                .filter(task -> task.getType().equals(TaskType.LITERATURE))
                 .collect(Collectors.toSet());
     }
 }
