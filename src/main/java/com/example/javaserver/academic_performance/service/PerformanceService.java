@@ -137,10 +137,11 @@ public class PerformanceService {
         for (Subject subject : subjects) {
             Collection<Task> tasks = taskService.searchBySubjectAndStudent(subject.getId(), userId, userDetails);
             for (Task task : tasks) {
+                List<Work> works = workRepo.findAllByUserIdAndTaskId(userId, task.getId());
                 if (task.getType() == TaskType.LAB) {
-                    labProgress = treat(task.getWorks(), labProgress);
+                    labProgress = treat(works, labProgress);
                 } else if (task.getType() == TaskType.PRACTICE) {
-                    practiceProgress = treat(task.getWorks(), practiceProgress);
+                    practiceProgress = treat(works, practiceProgress);
 //                    if  (task.getType() == TaskType.ESSAY)
                 } else {
                     essayProgress = treat(task.getWorks(), essayProgress);
