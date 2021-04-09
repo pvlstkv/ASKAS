@@ -5,8 +5,10 @@ import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.service.UserFileService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +37,10 @@ public class UserFileController {
         return userFileService.upload(file, accessLevel, userDetails);
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    //@ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
-    public Resource download(
+    public ResponseEntity<ByteArrayResource> download(
             @RequestParam("id") Long id,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {

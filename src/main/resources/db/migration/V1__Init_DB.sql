@@ -41,6 +41,7 @@ create table "files"
     "access_level" int4,
     "data"         bytea,
     "name"         varchar(255),
+    "content_type" varchar(255),
     "question_id"  int8,
     "task_id"      int8,
     "user_id"      int4,
