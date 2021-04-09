@@ -47,7 +47,11 @@ public class Task implements Serializable {
     @ManyToOne
     private User user;
 
-    public Task() {
+    public Task() { }
+
+    @PreRemove
+    private void removeHandler() {
+        semesters.forEach(s -> s.getTasks().remove(this));
     }
 
     public Long getId() {

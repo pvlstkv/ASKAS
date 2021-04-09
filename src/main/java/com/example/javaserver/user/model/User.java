@@ -118,6 +118,11 @@ public class User implements Serializable {
         this.role = role;
     }
 
+    @PreRemove
+    private void removeHandler() {
+        teachingSubjects.forEach(s -> s.getTeachers().remove(this));
+    }
+
     public Department getDepartment() {
         return department;
     }
