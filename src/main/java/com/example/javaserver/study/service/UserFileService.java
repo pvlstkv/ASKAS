@@ -61,6 +61,7 @@ public class UserFileService {
         userFile.setAccessLevel(accessLevel == null ? UserRole.USER : accessLevel);
         userFile.setName(multipartFile.getOriginalFilename());
         userFile.setContentType(multipartFile.getContentType());
+        userFile.setContentLength(multipartFile.getSize());
         userFile = userFileRepo.save(userFile);
 
         try {
@@ -81,17 +82,18 @@ public class UserFileService {
     }
 
     public ResponseEntity<ByteArrayResource> download(Long id, UserDetailsImp userDetails) {
-        Optional<UserFile> file = userFileRepo.findById(id);
-        if (file.isEmpty()) {
+        Optional<UserFile> fileO = userFileRepo.findById(id);
+        if (fileO.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не найден");
         }
+        UserFile file = fileO.get();
 
         Optional<User> user = userRepo.findById(userDetails.getId());
         if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
         }
 
-        if (user.get().getRole().compareTo(file.get().getAccessLevel()) < 0) {
+        if (user.get().getRole().compareTo(file.getAccessLevel()) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Отказано в доступе к файлу");
         }
 
@@ -102,13 +104,11 @@ public class UserFileService {
 
         try {
             GetObjectResponse response = minioClient.getObject(args);
-            //return new ByteArrayResource(response.readAllBytes());
-            //return response.readAllBytes();
-
-            ByteArrayResource resource = new ByteArrayResource(response.readAllBytes());
+            byte[] content = response.readAllBytes();
+            ByteArrayResource resource = new ByteArrayResource(content);
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Type", file.get().getContentType());
-            headers.add("Content-Length", String.valueOf(resource.contentLength()));
+            headers.add("Content-Type", file.getContentType());
+            headers.add("Content-Length", file.getContentLength().toString());
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка скачивания файла", e);

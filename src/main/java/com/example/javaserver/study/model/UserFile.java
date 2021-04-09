@@ -23,6 +23,8 @@ public class UserFile implements Serializable {
 
     private String contentType;
 
+    private Long contentLength;
+
     private UserRole accessLevel;
 
     @JsonProperty("userId")
@@ -73,6 +75,14 @@ public class UserFile implements Serializable {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
     }
 
     public UserRole getAccessLevel() {
