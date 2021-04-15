@@ -22,4 +22,5 @@ public interface SubjectSemesterRepo extends
     Set<SubjectSemester> findAllBySubjectEquals(Subject subject);
     Set<SubjectSemester> findAllByIdIn(Collection<Long> ids);
     Set<SubjectSemester> findAllBySubjectEqualsAndStudyGroupIn(Subject subject, Collection<StudyGroup> studyGroups);
+    Collection<SubjectSemester> findAllByStudyGroupId(Long studyGroupId);
 }

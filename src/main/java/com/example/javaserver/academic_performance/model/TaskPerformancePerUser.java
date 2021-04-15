@@ -3,30 +3,32 @@ package com.example.javaserver.academic_performance.model;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.user.model.User;
 
+import java.util.List;
+
 public class TaskPerformancePerUser {
     private String firstName;
     private String lastName;
     private String patronymic;
     private Integer userId;
-    private Work work;
+    private List<Work> works;
 
     public TaskPerformancePerUser() {
     }
 
-    public TaskPerformancePerUser(String firstName, String lastName, String patronymic, Integer userId, Work work) {
+    public TaskPerformancePerUser(String firstName, String lastName, String patronymic, Integer userId, List<Work> works) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.patronymic = patronymic;
         this.userId = userId;
-        this.work = work;
+        this.works = works;
     }
 
-    public TaskPerformancePerUser(User user, Work work) {
+    public TaskPerformancePerUser(User user, List<Work> works) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
         this.userId = user.getId();
-        this.work = work;
+        this.works = works;
     }
 
     public TaskPerformancePerUser(User user) {
@@ -68,11 +70,11 @@ public class TaskPerformancePerUser {
         this.userId = userId;
     }
 
-    public Work getWork() {
-        return work;
+    public List<Work> getWorks() {
+        return works;
     }
 
-    public void setWork(Work work) {
-        this.work = work;
+    public void setWorks(List<Work> works) {
+        this.works = works;
     }
 }

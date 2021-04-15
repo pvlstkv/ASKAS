@@ -1,7 +1,7 @@
 package com.example.javaserver.academic_performance.service;
 
-import com.example.javaserver.academic_performance.model.Performance;
-import com.example.javaserver.academic_performance.model.Progress;
+import com.example.javaserver.academic_performance.model.main_page.Performance;
+import com.example.javaserver.academic_performance.model.main_page.Progress;
 import com.example.javaserver.academic_performance.model.TaskPerformance;
 import com.example.javaserver.academic_performance.model.TaskPerformancePerUser;
 import com.example.javaserver.common_data.model.Mark;
@@ -16,7 +16,6 @@ import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.study.service.TaskService;
-import com.example.javaserver.testing.model.dto.PassedTestOut;
 import com.example.javaserver.testing.model.dto.PassedThemeOut;
 import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.testing.service.ResultService;
@@ -56,11 +55,25 @@ public class PerformanceService {
         this.workRepo = workRepo;
     }
 
+    public List<TaskPerformancePerUser> formStudyLogPerGroup(Long groupId) {
+        List<User> users = retrieveLastnameSortedUsersByGroupId(groupId);
+        Collection<SubjectSemester> semesters = subjectSemesterRepo.findAllByStudyGroupId(groupId);
+        Collection<Task> tasks = taskRepo.findAllBySemesters(semesters);
+        List<TaskPerformancePerUser> allGroupPerformance = new ArrayList<>();
+        for (User user : users) {
+            TaskPerformancePerUser performancePerUser = new TaskPerformancePerUser(user);
+            for (Task task : tasks) {
+                List<Work> works = workRepo.findAllByUserIdAndTaskId(user.getId(), task.getId());
+                performancePerUser.setWorks(works);
+            }
+            allGroupPerformance.add(performancePerUser);
+        }
+        return allGroupPerformance;
+    }
+
     public TaskPerformance formTaskPerformanceByGroup(Long groupId, Long taskId) {
         //todo check teacher access by userdetails (if other teacher makes request, who doesn't made this task (doesn't teach this subject))
-        List<User> users = userRepo.findAllByStudyGroupId(groupId);
-        users = users.stream().sorted(Comparator.comparing(User::getLastName).thenComparing(User::getFirstName))
-                .collect(Collectors.toList());
+        List<User> users = retrieveLastnameSortedUsersByGroupId(groupId);
         Optional<Task> task = taskRepo.findById(taskId);
         if (!task.isPresent()) {
             String response = String.format("Задание" + doesntExistById, taskId);
@@ -76,10 +89,10 @@ public class PerformanceService {
                     .filter(it -> (it.getMark().getValue() != Mark.NOT_PASSED.getValue()))
                     .reduce((first, second) -> second);
             if (!bestWork.isPresent()) {
-                performancePerUser.setWork(null);
+                performancePerUser.setWorks(null);
                 continue;
             }
-            performancePerUser.setWork(bestWork.get());
+            performancePerUser.setWorks(Collections.singletonList(bestWork.get()));
             if (bestWork.get().getMark().getValue() == Mark.NOT_PASSED.getValue()) {
                 continue;
             }
@@ -96,8 +109,10 @@ public class PerformanceService {
         return new TaskPerformance(performances, countOfPassedTasks, averageMark);
     }
 
-    private void treatOneUser() {
-
+    private List<User> retrieveLastnameSortedUsersByGroupId(Long groupId) {
+        List<User> users = userRepo.findAllByStudyGroupId(groupId);
+        return users.stream().sorted(Comparator.comparing(User::getLastName).thenComparing(User::getFirstName))
+                .collect(Collectors.toList());
     }
 
     public Performance formUserPerformance(Integer userId, UserDetailsImp userDetails) {
