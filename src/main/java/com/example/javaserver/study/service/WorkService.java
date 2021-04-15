@@ -70,7 +70,7 @@ public class WorkService {
         work.setTask(task.get());
         work.setUser(user.get());
         work.setStudentComment(workIn.studentComment);
-        work.getUserFiles().addAll(userFiles);
+        work.setUserFiles(userFiles);
         userFiles.forEach(UserFile::incLinkCount);
         workRepo.save(work);
 

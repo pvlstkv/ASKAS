@@ -62,6 +62,7 @@ public class UserFileService {
         userFile.setName(multipartFile.getOriginalFilename());
         userFile.setContentType(multipartFile.getContentType());
         userFile.setContentLength(multipartFile.getSize());
+        userFile.setLinkCount(0);
         userFile = userFileRepo.save(userFile);
 
         try {

@@ -70,7 +70,7 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
         }
 
-        Collection<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
+        Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
         for (Long id : taskIn.fileIds) {
             if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \"" + id + "\" не найден");
@@ -83,7 +83,7 @@ public class TaskService {
         task.setDescription(taskIn.description);
         task.setUser(user.get());
         semesters.forEach(s -> s.getTasks().add(task));
-        task.getUserFiles().addAll(userFiles);
+        task.setUserFiles(userFiles);
         userFiles.forEach(UserFile::incLinkCount);
 
         taskRepo.save(task);

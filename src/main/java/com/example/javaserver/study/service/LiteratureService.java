@@ -49,7 +49,7 @@ public class LiteratureService {
 
     @Transactional
     public Message create(LiteratureIn literatureIn, UserDetailsImp userDetails) {
-        Collection<SubjectSemester> semesters = semesterRepo.findAllByIdIn(literatureIn.semesterIds);
+        Set<SubjectSemester> semesters = semesterRepo.findAllByIdIn(literatureIn.semesterIds);
         Collection<Long> notFoundLiteratureIds = literatureIn
                 .semesterIds.stream()
                 .filter(i -> semesters.stream()
@@ -60,7 +60,7 @@ public class LiteratureService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестры с id: " + notFoundLiteratureIds + " не найдены");
         }
 
-        Collection<UserFile> files = userFileRepo.findAllByIdIn(literatureIn.fileIds);
+        Set<UserFile> files = userFileRepo.findAllByIdIn(literatureIn.fileIds);
         Collection<Long> notFoundFileIds = literatureIn
                 .fileIds.stream()
                 .filter(i -> files.stream()
@@ -82,8 +82,8 @@ public class LiteratureService {
         literature.setDescription(literatureIn.description);
         literature.setType(literatureIn.type);
         literature.setUser(user.get());
-        literature.getSemesters().addAll(semesters);
-        literature.getFiles().addAll(files);
+        literature.setSemesters(semesters);
+        literature.setFiles(files);
         files.forEach(UserFile::incLinkCount);
 
         literatureRepo.save(literature);
@@ -126,6 +126,28 @@ public class LiteratureService {
             }
         }
 
+        Set<SubjectSemester> semestersToRemove = literature
+                .getSemesters().stream()
+                .filter(s -> !literatureIn.semesterIds.contains(s.getId()))
+                .collect(Collectors.toSet());
+
+        Set<SubjectSemester> semestersToAdd = new HashSet<>();
+        Set<Long> semesterToAddIds = literatureIn
+                .semesterIds.stream()
+                .filter(i -> literature.getSemesters().stream().noneMatch(s -> s.getId().equals(i)))
+                .collect(Collectors.toSet());
+        if (!semesterToAddIds.isEmpty()) {
+            semestersToAdd.addAll(semesterRepo.findAllByIdIn(semesterToAddIds));
+            Collection<Long> notFoundSemesterIds = semesterToAddIds.stream()
+                    .filter(i -> semestersToAdd.stream()
+                            .map(SubjectSemester::getId)
+                            .noneMatch(si -> si.equals(i)))
+                    .collect(Collectors.toSet());
+            if (!notFoundSemesterIds.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестры с id: " + notFoundSemesterIds + " не найдены");
+            }
+        }
+
         literature.setTitle(literatureIn.title);
         literature.setAuthors(literatureIn.authors);
         literature.setDescription(literatureIn.description);
@@ -136,6 +158,10 @@ public class LiteratureService {
 
         literature.getFiles().addAll(filesToAdd);
         filesToAdd.forEach(UserFile::incLinkCount);
+
+        literature.getSemesters().removeAll(semestersToRemove);
+
+        literature.getSemesters().addAll(semestersToAdd);
 
         return new Message("Литература была успешно изменена");
     }
