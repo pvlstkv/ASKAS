@@ -50,7 +50,7 @@ public class LiteratureController {
     @PatchMapping
     public Message update(
             @RequestParam("id") Long id,
-            @RequestBody LiteratureIn literatureIn
+            @RequestBody @Valid LiteratureIn literatureIn
     ) {
         return literatureService.update(id, literatureIn);
     }
