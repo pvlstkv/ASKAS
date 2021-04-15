@@ -1,15 +1,15 @@
-package com.example.javaserver.schedule.controller.model;
+package com.example.javaserver.schedule.controller.dto;
 
-public class Couple {
+public class CoupleTeacher {
     private Integer pair_number;
-    private String teacher;
+    private String nameGroup;
     private String subject;
     private Integer subgroup;
     private String place;
     private Integer typeSubject;
     private String info;
 
-    public Couple() {
+    public CoupleTeacher() {
     }
 
     public Integer getPair_number() {
@@ -20,13 +20,12 @@ public class Couple {
         this.pair_number = pair_number;
     }
 
-
-    public String getTeacher() {
-        return teacher;
+    public String getNameGroup() {
+        return nameGroup;
     }
 
-    public void setTeacher(String teacher) {
-        this.teacher = teacher;
+    public void setNameGroup(String nameGroup) {
+        this.nameGroup = nameGroup;
     }
 
     public String getSubject() {
@@ -60,7 +59,6 @@ public class Couple {
     public void setTypeSubject(Integer typeSubject) {
         this.typeSubject = typeSubject;
     }
-
 
     public String getInfo() {
         return info;

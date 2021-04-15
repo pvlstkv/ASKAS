@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
 
+import com.example.javaserver.study.model.Literature;
 import com.example.javaserver.study.model.Task;
 import com.fasterxml.jackson.annotation.*;
 
@@ -24,12 +25,14 @@ public class SubjectSemester {
     @JsonProperty("taskIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany
-    @JoinTable(
-            name = "semester_task",
-            joinColumns = {@JoinColumn(name = "semester_id")},
-            inverseJoinColumns = {@JoinColumn(name = "task_id")})
+    @ManyToMany(mappedBy = "semesters")
     private Set<Task> tasks;
+
+    @JsonProperty("literatureIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany(mappedBy = "semesters")
+    private Set<Literature> literature;
 
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -57,8 +60,7 @@ public class SubjectSemester {
     // int countOfLecture;
     // int countOfLabWork;
 
-    public SubjectSemester() {
-    }
+    public SubjectSemester() { }
 
     public Set<SemesterMark> getSemesterMark() {
         return semesterMarks;
@@ -154,5 +156,13 @@ public class SubjectSemester {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Literature> getLiterature() {
+        return literature;
+    }
+
+    public void setLiterature(Set<Literature> literature) {
+        this.literature = literature;
     }
 }

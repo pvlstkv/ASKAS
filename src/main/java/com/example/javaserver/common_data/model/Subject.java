@@ -68,7 +68,11 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> question = new ArrayList<>();
 
-    public Subject() {
+    public Subject() { }
+
+    @PreRemove
+    private void removeHandler() {
+        teachers.forEach(u -> u.getTeachingSubjects().remove(this));
     }
 
     public Subject(String name) {

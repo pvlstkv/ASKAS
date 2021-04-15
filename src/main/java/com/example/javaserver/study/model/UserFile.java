@@ -1,6 +1,5 @@
 package com.example.javaserver.study.model;
 
-import com.example.javaserver.testing.model.Question;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -21,7 +20,13 @@ public class UserFile implements Serializable {
 
     private String name;
 
+    private String contentType;
+
+    private Long contentLength;
+
     private UserRole accessLevel;
+
+    private Integer linkCount;
 
     @JsonProperty("userId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -29,25 +34,18 @@ public class UserFile implements Serializable {
     @ManyToOne
     private User user;
 
-    @JsonProperty("taskId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
-    private Task task;
-
-    @JsonProperty("workId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
-    private Work work;
-
-    @JsonProperty("questionId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
-    private Question question;
-
     public UserFile() { }
+
+    public void incLinkCount() {
+        linkCount++;
+    }
+
+    public void decLinkCount() {
+        if (linkCount <= 0) {
+            throw new RuntimeException("Negative file link count");
+        }
+        linkCount--;
+    }
 
     public Long getId() {
         return id;
@@ -63,6 +61,22 @@ public class UserFile implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Long getContentLength() {
+        return contentLength;
+    }
+
+    public void setContentLength(Long contentLength) {
+        this.contentLength = contentLength;
     }
 
     public UserRole getAccessLevel() {
@@ -81,28 +95,11 @@ public class UserFile implements Serializable {
         this.user = user;
     }
 
-    public Task getTask() {
-        return task;
+    public Integer getLinkCount() {
+        return linkCount;
     }
 
-    public void setTask(Task task) {
-        this.task = task;
+    public void setLinkCount(Integer linkCount) {
+        this.linkCount = linkCount;
     }
-
-    public Work getWork() {
-        return work;
-    }
-
-    public void setWork(Work work) {
-        this.work = work;
-    }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
-
 }
