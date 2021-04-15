@@ -11,7 +11,6 @@ import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
-import com.example.javaserver.study.model.TaskType;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
@@ -29,6 +28,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class TaskService {
     private final TaskRepo taskRepo;
@@ -51,9 +51,6 @@ public class TaskService {
     @SuppressWarnings("Duplicates")
     @Transactional
     public Message create(TaskIn taskIn, UserDetailsImp userDetails) {
-        if(taskIn.type.equals(TaskType.LITERATURE)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
-        }
         if (taskIn.title == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание должно иметь заголовок");
         }
@@ -69,19 +66,14 @@ public class TaskService {
         }
 
         Optional<User> user = userRepo.findById(userDetails.getId());
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
         }
 
-        Collection<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
+        Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
         for (Long id : taskIn.fileIds) {
             if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \"" + id + "\" не найден");
-            }
-        }
-        for (UserFile file : userFiles) {
-            if (file.getTask() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно создать задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
             }
         }
 
@@ -91,7 +83,9 @@ public class TaskService {
         task.setDescription(taskIn.description);
         task.setUser(user.get());
         semesters.forEach(s -> s.getTasks().add(task));
-        userFiles.forEach(f -> f.setTask(task));
+        task.setUserFiles(userFiles);
+        userFiles.forEach(UserFile::incLinkCount);
+
         taskRepo.save(task);
 
         return new Message("Задание успешно создано");
@@ -105,11 +99,8 @@ public class TaskService {
     @Transactional
     public Message update(TaskIn taskIn) {
         Optional<Task> taskO = taskRepo.findById(taskIn.id);
-        if(taskIn.type.equals(TaskType.LITERATURE)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный тип задания");
-        }
-        if (!taskO.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (taskO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не найдено");
         }
         Task task = taskO.get();
 
@@ -167,7 +158,8 @@ public class TaskService {
             }
         });
         if (!filesToRemove.isEmpty()) {
-            filesToRemove.forEach(f -> f.setTask(null));
+            task.getUserFiles().removeAll(filesToRemove);
+            filesToRemove.forEach(UserFile::decLinkCount);
         }
         Set<Long> fileToAddIds = new HashSet<>();
         taskIn.fileIds.forEach(i -> {
@@ -182,12 +174,8 @@ public class TaskService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + id + \" не найден");
                 }
             }
-            for (UserFile file : filesToAdd) {
-                if (file.getTask() != null) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: Файл с id = \" + file.getId() + \" привязан к другому заданию");
-                    }
-            }
-            filesToAdd.forEach(f -> f.setTask(task));
+            task.getUserFiles().addAll(filesToAdd);
+            filesToAdd.forEach(UserFile::incLinkCount);
         }
 
         if (taskIn.workIds == null) {
@@ -227,9 +215,7 @@ public class TaskService {
     }
 
     public  Collection<Task> getAll() {
-        Collection<Task> tasks = taskRepo.findAll(null);
-        tasks = tasks.stream().filter(task -> task.getType() != TaskType.LITERATURE).collect(Collectors.toList());
-        return tasks;
+        return taskRepo.findAll(null);
     }
 
     public Collection<Task> criteriaSearch(Set<SearchCriteria> criteria) {
@@ -246,13 +232,12 @@ public class TaskService {
     }
 
     public Collection<Task> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {
-
         if (userId == null) {
             userId = userDetails.getId();
         }
 
         Optional<User> user = userRepo.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id пользователя инвалидный");
         }
 
@@ -267,27 +252,22 @@ public class TaskService {
         }
 
         Optional<SubjectSemester> semester = semesters.stream().filter(s -> subjectId.equals(s.getSubject().getId())).findFirst();
-        if (!semester.isPresent()) {
+        if (semester.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
         }
 
-        //фильтр чтобы литература не возвращалась
-        Collection<Task> tasks = semester.get().getTasks();
-        tasks = tasks.stream().filter(task -> task.getType() != TaskType.LITERATURE).collect(Collectors.toList());
-        return tasks;
+        return semester.get().getTasks();
     }
 
     public Collection<Task> searchBySubjectAndTeacher(Long subjectId) {
         Optional<Subject> subject = subjectRepo.findById(subjectId);
-        if (!subject.isPresent()) {
+        if (subject.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id не существует");
         }
 
-        //фильтр чтобы литература не возвращалась
         return subject.get()
                 .getSemesters().stream()
                 .flatMap(sem -> sem.getTasks().stream())
-                .filter(task -> task.getType() != TaskType.LITERATURE)
                 .collect(Collectors.toSet());
     }
 }

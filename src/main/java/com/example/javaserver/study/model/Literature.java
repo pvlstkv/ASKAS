@@ -9,18 +9,18 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "tasks")
-public class Task implements Serializable {
+@Table(name = "literature")
+public class Literature implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private TaskType type;
+    private LiteratureType type;
     private String title;
+    private String authors;
     private String description;
 
     @JsonProperty("fileIds")
@@ -28,26 +28,10 @@ public class Task implements Serializable {
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
-            name = "file_task",
-            joinColumns = {@JoinColumn(name = "task_id")},
+            name = "file_literature",
+            joinColumns = {@JoinColumn(name = "literature_id")},
             inverseJoinColumns = {@JoinColumn(name = "file_id")})
-    private Set<UserFile> userFiles;
-
-    @JsonProperty("semesterIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany
-    @JoinTable(
-            name = "task_semester",
-            joinColumns = {@JoinColumn(name = "task_id")},
-            inverseJoinColumns = {@JoinColumn(name = "semester_id")})
-    private Set<SubjectSemester> semesters;
-
-    @JsonProperty("workIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Work> works;
+    private Set<UserFile> files;
 
     @JsonProperty("userId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -55,12 +39,23 @@ public class Task implements Serializable {
     @ManyToOne
     private User user;
 
-    public Task() { }
+    @JsonProperty("semesterIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany
+    @JoinTable(
+            name = "literature_semester",
+            joinColumns = {@JoinColumn(name = "literature_id")},
+            inverseJoinColumns = {@JoinColumn(name = "semester_id")})
+    private Set<SubjectSemester> semesters;
+
+    public Literature() {
+    }
 
     @PreRemove
     private void removeHandler() {
-        userFiles.forEach(UserFile::decLinkCount);
-        userFiles.clear();
+        files.forEach(UserFile::decLinkCount);
+        files.clear();
         semesters.clear();
     }
 
@@ -72,11 +67,11 @@ public class Task implements Serializable {
         this.id = id;
     }
 
-    public TaskType getType() {
+    public LiteratureType getType() {
         return type;
     }
 
-    public void setType(TaskType type) {
+    public void setType(LiteratureType type) {
         this.type = type;
     }
 
@@ -88,6 +83,14 @@ public class Task implements Serializable {
         this.title = title;
     }
 
+    public String getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -96,28 +99,12 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Set<UserFile> getUserFiles() {
-        return userFiles;
+    public Set<UserFile> getFiles() {
+        return files;
     }
 
-    public void setUserFiles(Set<UserFile> userFiles) {
-        this.userFiles = userFiles;
-    }
-
-    public Set<SubjectSemester> getSemesters() {
-        return semesters;
-    }
-
-    public void setSemesters(Set<SubjectSemester> semesters) {
-        this.semesters = semesters;
-    }
-
-    public List<Work> getWorks() {
-        return works;
-    }
-
-    public void setWorks(List<Work> works) {
-        this.works = works;
+    public void setFiles(Set<UserFile> files) {
+        this.files = files;
     }
 
     public User getUser() {
@@ -126,5 +113,13 @@ public class Task implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<SubjectSemester> getSemesters() {
+        return semesters;
+    }
+
+    public void setSemesters(Set<SubjectSemester> semesters) {
+        this.semesters = semesters;
     }
 }
