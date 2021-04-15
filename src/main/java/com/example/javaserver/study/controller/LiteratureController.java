@@ -32,7 +32,7 @@ public class LiteratureController {
             @AuthenticationPrincipal UserDetailsImp userDetails,
             @RequestBody LiteratureIn literatureIn
     ) {
-        return literatureService.create(literatureIn, userDetails);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -41,21 +41,21 @@ public class LiteratureController {
     public Message delete(
             @RequestBody Set<Long> ids
     ) {
-        return literatureService.delete(ids);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     @PatchMapping
     public Message update(@RequestBody LiteratureIn literatureIn) {
-        return literatureService.update(literatureIn);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
     public Collection<Task> getAll() {
-        return literatureService.getAll();
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -64,7 +64,7 @@ public class LiteratureController {
     public Collection<Task> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return literatureService.criteriaSearch(criteria);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -73,7 +73,7 @@ public class LiteratureController {
     public Collection<Task> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return literatureService.searchByIds(ids);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -84,7 +84,7 @@ public class LiteratureController {
             @RequestParam(value = "userId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return literatureService.searchBySubjectAndStudent(subjectId, userId, userDetails);
+        return null;
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -93,6 +93,6 @@ public class LiteratureController {
     public Collection<Task> searchBySubjectAndTeacher(
             @RequestParam("subjectId") Long subjectId
     ) {
-        return literatureService.searchBySubjectAndTeacher(subjectId);
+        return null;
     }
 }
