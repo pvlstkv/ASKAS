@@ -1,22 +1,18 @@
-package com.example.javaserver.schedule.controller.model;
+package com.example.javaserver.schedule.controller.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day {
+public class DayTeacher {
     private Integer number_day;
     private Integer numberWeek;
 
-    private List<Couple> coupels = new ArrayList<>();
+    private List<CoupleTeacher> coupels = new ArrayList<>();
 
-    public Day(List<Couple> coupels) {
-        this.coupels = coupels;
+    public DayTeacher() {
     }
 
-    public Day() {
-    }
-
-    public Day(Integer number_day, Integer numberWeek) {
+    public DayTeacher(Integer number_day, Integer numberWeek) {
         this.number_day = number_day;
         this.numberWeek = numberWeek;
     }
@@ -37,11 +33,11 @@ public class Day {
         this.numberWeek = numberWeek;
     }
 
-    public List<Couple> getCoupels() {
+    public List<CoupleTeacher> getCoupels() {
         return coupels;
     }
 
-    public void setCoupels(List<Couple> coupels) {
+    public void setCoupels(List<CoupleTeacher> coupels) {
         this.coupels = coupels;
     }
 }

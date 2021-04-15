@@ -38,7 +38,8 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
     public Message updateAllGroup(){
-        return scheduleService.iteratingThroughGroups();
+        scheduleService.iteratingThroughGroups();
+        return new Message("Парсинг расписания запущено");
     }
 
 }
