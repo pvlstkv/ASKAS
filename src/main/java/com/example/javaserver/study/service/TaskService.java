@@ -85,6 +85,7 @@ public class TaskService {
         semesters.forEach(s -> s.getTasks().add(task));
         task.getUserFiles().addAll(userFiles);
         userFiles.forEach(UserFile::incLinkCount);
+
         taskRepo.save(task);
 
         return new Message("Задание успешно создано");

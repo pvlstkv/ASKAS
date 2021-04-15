@@ -157,4 +157,12 @@ public class SubjectSemester {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Set<Literature> getLiterature() {
+        return literature;
+    }
+
+    public void setLiterature(Set<Literature> literature) {
+        this.literature = literature;
+    }
 }

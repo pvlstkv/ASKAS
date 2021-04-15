@@ -4,15 +4,19 @@ import com.example.javaserver.study.model.LiteratureType;
 import com.example.javaserver.study.model.TaskType;
 import com.example.javaserver.study.model.UserFile;
 
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 public class LiteratureIn {
-    public Long id;
-    private LiteratureType type;
-    private String title;
-    private String authors;
-    private String description;
-    private Set<UserFile> files;
+    @NotNull
+    public LiteratureType type;
+    public String title;
+    public String authors;
+    public String description;
+    @NotNull
+    public Set<Long> semesterIds;
+    @NotNull
+    public Set<Long> fileIds;
 
     public LiteratureIn() { }
 }

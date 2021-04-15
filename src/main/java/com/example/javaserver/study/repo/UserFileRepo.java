@@ -11,4 +11,5 @@ public interface UserFileRepo extends
         JpaSpecificationExecutor<UserFile>
 {
     Set<UserFile> getUserFilesByIdIn(Set<Long> ids);
+    Set<UserFile> findAllByIdIn(Set<Long> ids);
 }
