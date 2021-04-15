@@ -1,5 +1,6 @@
 package com.example.javaserver.study.model;
 
+import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -38,6 +39,16 @@ public class Literature implements Serializable {
     @ManyToOne
     private User user;
 
+    @JsonProperty("semesterIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany
+    @JoinTable(
+            name = "literature_semester",
+            joinColumns = {@JoinColumn(name = "literature_id")},
+            inverseJoinColumns = {@JoinColumn(name = "semester_id")})
+    private Set<SubjectSemester> semesters;
+
     public Literature() {
     }
 
@@ -45,6 +56,7 @@ public class Literature implements Serializable {
     private void removeHandler() {
         files.forEach(UserFile::decLinkCount);
         files.clear();
+        semesters.clear();
     }
 
     public Long getId() {
@@ -101,5 +113,13 @@ public class Literature implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<SubjectSemester> getSemesters() {
+        return semesters;
+    }
+
+    public void setSemesters(Set<SubjectSemester> semesters) {
+        this.semesters = semesters;
     }
 }

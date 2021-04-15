@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
 
+import com.example.javaserver.study.model.Literature;
 import com.example.javaserver.study.model.Task;
 import com.fasterxml.jackson.annotation.*;
 
@@ -24,12 +25,14 @@ public class SubjectSemester {
     @JsonProperty("taskIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany
-    @JoinTable(
-            name = "semester_task",
-            joinColumns = {@JoinColumn(name = "semester_id")},
-            inverseJoinColumns = {@JoinColumn(name = "task_id")})
+    @ManyToMany(mappedBy = "semesters")
     private Set<Task> tasks;
+
+    @JsonProperty("literatureIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany(mappedBy = "semesters")
+    private Set<Literature> literature;
 
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -58,11 +61,6 @@ public class SubjectSemester {
     // int countOfLabWork;
 
     public SubjectSemester() { }
-
-    @PreRemove
-    private void removeHandler() {
-        tasks.forEach(t -> t.getSemesters().remove(this));
-    }
 
     public Set<SemesterMark> getSemesterMark() {
         return semesterMarks;

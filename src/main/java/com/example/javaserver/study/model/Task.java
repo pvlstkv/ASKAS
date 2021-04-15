@@ -36,7 +36,11 @@ public class Task implements Serializable {
     @JsonProperty("semesterIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany(mappedBy = "tasks")
+    @ManyToMany
+    @JoinTable(
+            name = "task_semester",
+            joinColumns = {@JoinColumn(name = "task_id")},
+            inverseJoinColumns = {@JoinColumn(name = "semester_id")})
     private Set<SubjectSemester> semesters;
 
     @JsonProperty("workIds")
@@ -55,9 +59,9 @@ public class Task implements Serializable {
 
     @PreRemove
     private void removeHandler() {
-        semesters.forEach(s -> s.getTasks().remove(this));
         userFiles.forEach(UserFile::decLinkCount);
         userFiles.clear();
+        semesters.clear();
     }
 
     public Long getId() {
