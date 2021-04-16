@@ -57,14 +57,16 @@ public class PerformanceService {
 
     public List<TaskPerformancePerUser> formStudyLogPerGroup(Long groupId) {
         List<User> users = retrieveLastnameSortedUsersByGroupId(groupId);
-        Collection<SubjectSemester> semesters = subjectSemesterRepo.findAllByStudyGroupId(groupId);
-        Collection<Task> tasks = taskRepo.findAllBySemesters(semesters);
+        Set<SubjectSemester> semesters = subjectSemesterRepo.findAllByStudyGroupId(groupId);
+        Collection<Long> semesterIds = new ArrayList<>();
+        semesters.forEach(subjectSemester -> semesterIds.add(subjectSemester.getId()));
+        Collection<Task> tasks = taskRepo.findAllBySemestersIdIn(semesterIds);
         List<TaskPerformancePerUser> allGroupPerformance = new ArrayList<>();
         for (User user : users) {
             TaskPerformancePerUser performancePerUser = new TaskPerformancePerUser(user);
             for (Task task : tasks) {
                 List<Work> works = workRepo.findAllByUserIdAndTaskId(user.getId(), task.getId());
-                performancePerUser.setWorks(works);
+                performancePerUser.addWorks(works);
             }
             allGroupPerformance.add(performancePerUser);
         }

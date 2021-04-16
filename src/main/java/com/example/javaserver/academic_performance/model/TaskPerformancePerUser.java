@@ -3,6 +3,7 @@ package com.example.javaserver.academic_performance.model;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.user.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskPerformancePerUser {
@@ -10,9 +11,10 @@ public class TaskPerformancePerUser {
     private String lastName;
     private String patronymic;
     private Integer userId;
-    private List<Work> works;
+    private List<Work> works = new ArrayList<>();
 
     public TaskPerformancePerUser() {
+
     }
 
     public TaskPerformancePerUser(String firstName, String lastName, String patronymic, Integer userId, List<Work> works) {
@@ -76,5 +78,11 @@ public class TaskPerformancePerUser {
 
     public void setWorks(List<Work> works) {
         this.works = works;
+    }
+
+    public void addWorks(List<Work> works) {
+        if (works != null) {
+            this.works.addAll(works);
+        }
     }
 }

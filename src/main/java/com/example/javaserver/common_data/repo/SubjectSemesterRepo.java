@@ -8,6 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public interface SubjectSemesterRepo extends
@@ -22,5 +23,5 @@ public interface SubjectSemesterRepo extends
     Set<SubjectSemester> findAllBySubjectEquals(Subject subject);
     Set<SubjectSemester> findAllByIdIn(Collection<Long> ids);
     Set<SubjectSemester> findAllBySubjectEqualsAndStudyGroupIn(Subject subject, Collection<StudyGroup> studyGroups);
-    Collection<SubjectSemester> findAllByStudyGroupId(Long studyGroupId);
+    Set<SubjectSemester> findAllByStudyGroupId(Long studyGroupId);
 }

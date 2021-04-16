@@ -5,6 +5,7 @@ import com.example.javaserver.academic_performance.model.main_page.Performance;
 import com.example.javaserver.academic_performance.model.TaskPerformance;
 import com.example.javaserver.academic_performance.service.PerformanceService;
 import com.example.javaserver.general.model.UserDetailsImp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import java.util.List;
 public class PerformanceController {
     private final PerformanceService performanceService;
 
+    @Autowired
     public PerformanceController(PerformanceService performanceService) {
         this.performanceService = performanceService;
     }
@@ -45,7 +47,8 @@ public class PerformanceController {
     @Secured({"TEACHER", "ADMIN"})
     @GetMapping("/by-group")
     public List<TaskPerformancePerUser> formStudyLogPerGroup(
-            @RequestParam(value = "group_id") Long groupId) {
+            @RequestParam(value = "group_id") Long groupId
+    ) {
         return performanceService.formStudyLogPerGroup(groupId);
     }
 

@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public interface TaskRepo extends
@@ -17,5 +18,6 @@ public interface TaskRepo extends
 
     Set<Task> findAllByIdIn(Set<Long> ids);
 
-    Collection<Task> findAllBySemesters(Collection<SubjectSemester> subjectSemesters);
+    Set<Task> findAllBySemestersIdIn(Collection<Long> semesterIds);
 }
+
