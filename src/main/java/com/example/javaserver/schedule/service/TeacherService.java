@@ -1,14 +1,14 @@
 package com.example.javaserver.schedule.service;
 
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.schedule.controller.dto.*;
 import com.example.javaserver.schedule.model.Schedule;
 import com.example.javaserver.schedule.repo.ScheduleRepo;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,10 +22,18 @@ public class TeacherService {
     public Collection<String> getListTeacher(){
         Collection<Schedule> schedules = (Collection<Schedule>) scheduleRepo.findAll();
         List<String> listTeacher = schedules.stream().distinct().map(schedule -> schedule.getTeacher()).collect(Collectors.toList());
-        return  listTeacher;
+        Set<String> setTeacher = new HashSet<>();
+        for (String s : listTeacher){
+            setTeacher.add(s);
+        }
+
+        return  setTeacher;
     }
 
     public GroupTeacher getScheduleTeacher(String nameTeacher){
+        if(!scheduleRepo.existsByTeacher(nameTeacher)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"такого преподователя не сущевсвует");
+        }
         GroupTeacher teacher = new GroupTeacher(nameTeacher);
         List<DayTeacher> days = new ArrayList<>();
         fillListDays(nameTeacher,days,1);
