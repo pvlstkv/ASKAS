@@ -78,4 +78,15 @@ public class WorkController {
     ) {
         return  workService.searchByIds(ids);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    @GetMapping("/teaching")
+    public Collection<Work> searchByGroupsAndTeacher(
+            @RequestParam(value = "userId", required = false) Integer userId,
+            @RequestParam("groupId") Long groupId,
+            @AuthenticationPrincipal UserDetailsImp userDetails
+    ) {
+        return  workService.searchByGroupsAndTeacher(userId, groupId, userDetails);
+    }
 }

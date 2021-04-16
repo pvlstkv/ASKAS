@@ -1,5 +1,7 @@
 package com.example.javaserver.study.service;
 
+import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -12,6 +14,7 @@ import com.example.javaserver.study.repo.TaskRepo;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
 @Service
@@ -28,13 +32,15 @@ public class WorkService {
     private final WorkRepo workRepo;
     private final TaskRepo taskRepo;
     private final UserRepo userRepo;
+    private final StudyGroupRepo studyGroupRepo;
     private final UserFileRepo userFileRepo;
 
     @Autowired
-    public WorkService(WorkRepo workRepo, TaskRepo taskRepo, UserRepo userRepo, UserFileRepo userFileRepo) {
+    public WorkService(WorkRepo workRepo, TaskRepo taskRepo, UserRepo userRepo, StudyGroupRepo studyGroupRepo, UserFileRepo userFileRepo) {
         this.workRepo = workRepo;
         this.taskRepo = taskRepo;
         this.userRepo = userRepo;
+        this.studyGroupRepo = studyGroupRepo;
         this.userFileRepo = userFileRepo;
     }
 
@@ -160,5 +166,33 @@ public class WorkService {
 
     public Collection<Work> searchByIds(Set<Long> ids) {
         return workRepo.getWorksByIdIn(ids);
+    }
+
+    public Collection<Work> searchByGroupsAndTeacher(Integer userId, Long groupId, UserDetailsImp userDetails) {
+        if (userId == null) {
+            userId = userDetails.getId();
+        }
+
+        Optional<User> userO = userRepo.findById(userId);
+        if (userO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id пользователя инвалидный");
+        }
+        User user = userO.get();
+        if (user.getRole() != UserRole.TEACHER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
+        }
+
+        Optional<StudyGroup> groupO = studyGroupRepo.findById(groupId);
+        if (groupO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группа с указанным id не существует");
+        }
+        StudyGroup group = groupO.get();
+
+        return group
+                .getSubjectSemesters().stream()
+                .filter(sem -> sem.getSubject().getTeachers().contains(user))
+                .flatMap(sem -> sem.getTasks().stream())
+                .flatMap(t -> t.getWorks().stream())
+                .collect(Collectors.toSet());
     }
 }
