@@ -1,44 +1,45 @@
-package com.example.javaserver.study.model;
+package com.example.javaserver.study.controller.dto;
 
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+/*@JsonIgnoreProperties(value={
+        "id", "contentType", "contentLength", "linkCount", "userId"
+}, allowGetters=true)*/
 @SuppressWarnings("unused")
-@Entity
-@Table(name = "files")
-public class UserFile implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserFileDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    @Column(length = 50)
+    @NotBlank
+    @Size(min = 1, max = 50)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String contentType;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long contentLength;
 
+    @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private UserRole accessLevel;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer linkCount;
 
-    @ManyToOne
-    private User user;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer userId;
 
-    public UserFile() { }
-
-    public void incLinkCount() {
-        linkCount++;
-    }
-
-    public void decLinkCount() {
-        if (linkCount <= 0) {
-            throw new RuntimeException("Negative file link count");
-        }
-        linkCount--;
+    public UserFileDto() {
     }
 
     public Long getId() {
@@ -81,19 +82,19 @@ public class UserFile implements Serializable {
         this.accessLevel = accessLevel;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public Integer getLinkCount() {
         return linkCount;
     }
 
     public void setLinkCount(Integer linkCount) {
         this.linkCount = linkCount;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 }
