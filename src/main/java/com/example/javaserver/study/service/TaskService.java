@@ -3,7 +3,7 @@ package com.example.javaserver.study.service;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
-import com.example.javaserver.common_data.repo.SubjectRepo;
+import com.example.javaserver.common_data.service.SubjectService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -13,7 +13,7 @@ import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.TaskRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -31,20 +31,20 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService {
     private final TaskRepo taskRepo;
-    private final UserRepo userRepo;
-    private final SubjectRepo subjectRepo;
+    private final UserService userService;
+    private final SubjectService subjectService;
 
     @Autowired
-    public TaskService(TaskRepo taskRepo, UserRepo userRepo, SubjectRepo subjectRepo) {
+    public TaskService(TaskRepo taskRepo, UserService userService, SubjectService subjectService) {
         this.taskRepo = taskRepo;
-        this.userRepo = userRepo;
-        this.subjectRepo = subjectRepo;
+        this.userService = userService;
+        this.subjectService = subjectService;
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
     public Task create(Task task, UserDetailsImp userDetails) {
-        User user = userRepo.getOne(userDetails.getId());
+        User user = userService.getById(userDetails.getId());
 
         task.getUserFiles().forEach(UserFile::incLinkCount);
 
@@ -122,15 +122,12 @@ public class TaskService {
             userId = userDetails.getId();
         }
 
-        Optional<User> user = userRepo.findById(userId);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id пользователя инвалидный");
-        }
-        if (!user.get().getRole().equals(UserRole.USER)) {
+        User user = userService.getById(userId);
+        if (!user.getRole().equals(UserRole.USER)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является студентом");
         }
 
-        StudyGroup group = user.get().getStudyGroup();
+        StudyGroup group = user.getStudyGroup();
         if (group == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Студент не привязан к группе");
         }
@@ -149,12 +146,9 @@ public class TaskService {
     }
 
     public Collection<Task> searchBySubject(Long subjectId) {
-        Optional<Subject> subject = subjectRepo.findById(subjectId);
-        if (subject.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id не существует");
-        }
+        Subject subject = subjectService.getById(subjectId);
 
-        return subject.get()
+        return subject
                 .getSemesters().stream()
                 .flatMap(sem -> sem.getTasks().stream())
                 .collect(Collectors.toSet());

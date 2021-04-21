@@ -34,7 +34,7 @@ public class StudyGroupController {
     public StudyGroup getGroup(
             @RequestParam(required = false) Long id
     ){
-        return studyGroupService.get(id);
+        return studyGroupService.getById(id);
     }
 
     @GetMapping("/list")
@@ -49,7 +49,7 @@ public class StudyGroupController {
     public Collection<StudyGroup> searchByIds(
             @RequestParam("id") Set<Long> ids
     ) {
-        return studyGroupService.searchByIds(ids);
+        return studyGroupService.getByIds(ids);
     }
 
     @PostMapping

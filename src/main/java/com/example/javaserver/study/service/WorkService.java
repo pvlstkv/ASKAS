@@ -1,7 +1,6 @@
 package com.example.javaserver.study.service;
 
-import com.example.javaserver.common_data.model.StudyGroup;
-import com.example.javaserver.common_data.repo.StudyGroupRepo;
+import com.example.javaserver.common_data.service.StudyGroupService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -12,7 +11,7 @@ import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -30,14 +29,14 @@ import java.util.stream.Collectors;
 @Service
 public class WorkService {
     private final WorkRepo workRepo;
-    private final UserRepo userRepo;
-    private final StudyGroupRepo studyGroupRepo;
+    private final UserService userService;
+    private final StudyGroupService groupService;
 
     @Autowired
-    public WorkService(WorkRepo workRepo, UserRepo userRepo, StudyGroupRepo studyGroupRepo) {
+    public WorkService(WorkRepo workRepo, UserService userService, StudyGroupService groupService) {
         this.workRepo = workRepo;
-        this.userRepo = userRepo;
-        this.studyGroupRepo = studyGroupRepo;
+        this.userService = userService;
+        this.groupService = groupService;
     }
 
     @SuppressWarnings("Duplicates")
@@ -47,7 +46,7 @@ public class WorkService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя добавлять работу без файлов и комментариев");
         }
 
-        User user = userRepo.getOne(userDetails.getId());
+        User user = userService.getById(userDetails.getId());
 
         work.setUser(user);
         if (user.getRole().equals(UserRole.USER)) {
@@ -135,18 +134,12 @@ public class WorkService {
             userId = userDetails.getId();
         }
 
-        User user = userRepo.getOne(userId);
+        User user = userService.getById(userId);
         if (user.getRole() != UserRole.TEACHER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
         }
 
-        Optional<StudyGroup> groupO = studyGroupRepo.findById(groupId);
-        if (groupO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группа с указанным id не существует");
-        }
-        StudyGroup group = groupO.get();
-
-        return group
+        return groupService.getById(groupId)
                 .getSubjectSemesters().stream()
                 .filter(sem -> sem.getSubject().getTeachers().contains(user))
                 .flatMap(sem -> sem.getTasks().stream())

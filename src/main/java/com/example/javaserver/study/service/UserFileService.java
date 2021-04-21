@@ -5,7 +5,7 @@ import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserService;
 import io.minio.*;
 import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,35 +30,32 @@ import java.util.stream.Collectors;
 public class UserFileService {
     private final MinioClient minioClient;
     private final UserFileRepo userFileRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
     private final String bucketName;
 
     @Autowired
     public UserFileService(
             MinioClient minioClient,
             UserFileRepo userFileRepo,
-            UserRepo userRepo,
+            UserService userService,
             @Value("${spring.minio.bucket}") String bucketName
     ) {
         this.minioClient = minioClient;
         this.userFileRepo = userFileRepo;
-        this.userRepo = userRepo;
+        this.userService = userService;
         this.bucketName = bucketName;
     }
 
     @Transactional
     public UserFile upload(MultipartFile multipartFile, UserRole accessLevel, UserDetailsImp userDetails) {
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
-        }
+        User user = userService.getById(userDetails.getId());
 
-        if (accessLevel != null && user.get().getRole().compareTo(accessLevel) < 0) {
+        if (accessLevel != null && user.getRole().compareTo(accessLevel) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уровень доступа к файлу превышает уровень доступа пользователя");
         }
 
         UserFile userFile = new UserFile();
-        userFile.setUser(user.get());
+        userFile.setUser(user);
         userFile.setAccessLevel(accessLevel == null ? UserRole.USER : accessLevel);
         userFile.setName(multipartFile.getOriginalFilename());
         userFile.setContentType(multipartFile.getContentType());
@@ -107,12 +104,9 @@ public class UserFileService {
         }
         UserFile file = fileO.get();
 
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
-        }
+        User user = userService.getById(userDetails.getId());
 
-        if (user.get().getRole().compareTo(file.getAccessLevel()) < 0) {
+        if (user.getRole().compareTo(file.getAccessLevel()) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Отказано в доступе к файлу");
         }
 
