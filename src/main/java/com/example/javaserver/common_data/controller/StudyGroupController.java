@@ -84,10 +84,19 @@ public class StudyGroupController {
     @GetMapping("/teaching")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<StudyGroup> getGroupsByUser(
+    public Collection<StudyGroup> getGroupsByTeacher(
             @RequestParam(value = "userId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ){
-        return studyGroupService.getGroupsByUser(userId, userDetails);
+        return studyGroupService.getGroupsByTeacher(userId, userDetails);
+    }
+
+    @GetMapping("/learning")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<StudyGroup> getGroupsByTeacher(
+            @RequestParam("subjectId") Long subjectId
+    ){
+        return studyGroupService.getGroupsBySubject(subjectId);
     }
 }

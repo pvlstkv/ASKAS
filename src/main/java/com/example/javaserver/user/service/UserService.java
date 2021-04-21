@@ -4,6 +4,7 @@ import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
@@ -11,7 +12,9 @@ import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
@@ -31,28 +34,30 @@ public class UserService {
         this.studyGroupRepo = studyGroupRepo;
     }
 
-    public ResponseEntity<?> getUser(UserContext userContext, Integer id){
+    public User getUser(UserDetailsImp userDetails, Integer id){
         Optional<User> user;
         if(id != null){
            user = userRepo.findById(id);
         }else {
-            user = userRepo.findById(userContext.getUserId());
+            user = userRepo.findById(userDetails.getId());
         }
         if(!user.isPresent()){
-            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка при попытке получить информацию о пользователе");
         }
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return user.get();
     }
 
-    public ResponseEntity<?> searchByIds(Set<Integer> ids) {
-        Collection<User> users = userRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public Collection<User> searchByIds(Set<Integer> ids) {
+        Collection<User> users =  userRepo.findAllByIdIn(ids);
+        return users;
     }
 
-    public ResponseEntity<?> putUser(UserContext userContext, UpdateUser updateUser){
-        Optional<User> user = userRepo.findById(userContext.getUserId());
+
+    @Transactional
+    public Message putUser(UserDetailsImp userDetails, UpdateUser updateUser){
+        Optional<User> user = userRepo.findById(userDetails.getId());
         if(!user.isPresent()){
-            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка при попытке получить информацию о пользователе");
         }
         if(updateUser.getLogin() != null)
             user.get().setLogin(updateUser.getLogin());
@@ -63,16 +68,17 @@ public class UserService {
         if(updateUser.getPhone() != null)
             user.get().setPhone(updateUser.getPhone());
         userRepo.save(user.get());
-        return new ResponseEntity<>(new Message("Информация обновлена"), HttpStatus.OK);
+        return new Message("Информация обновлена");
 
     }
 
-    public ResponseEntity<?> getListUser( ){
+
+    public List<User> getListUser( ){
         List<User> userList = userRepo.findAll();
-        return new ResponseEntity<>(userList,HttpStatus.OK);
+        return userList;
     }
 
-    public ResponseEntity<?> updateUser(
+    public Message updateUser(
           UserI userI
     )
     {
@@ -100,28 +106,28 @@ public class UserService {
                 if(studyGroupRepo.existsById(userI.getStudyGroupId())){
                     user.get().setStudyGroup(studyGroupRepo.findById(userI.getStudyGroupId()).get());
                 }else {
-                    return new ResponseEntity<>(new Message("Такой группы не существует"),HttpStatus.BAD_REQUEST);
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Такой группы не существует");
                 }
             }
             try {
                 userRepo.save(user.get());
-                return new ResponseEntity<>(new Message("информация о пользователи изменена"),HttpStatus.OK);
+                return new Message("информация о пользователи изменена");
             }catch (Exception e){
                 e.printStackTrace();
-                return new ResponseEntity<>(new Message("ошибка сервера"),HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка сервера");
             }
         }else {
-            return new ResponseEntity<>(new Message("ошибка при попытке получить информацию о пользователе"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка при попытке получить информацию о пользователе");
         }
     }
 
-    public ResponseEntity<?> deleteUser(Integer id){
+    public Message deleteUser(Integer id){
         Optional<User> user =  userRepo.findById(id);
         if(user.isPresent()){
             userRepo.delete(user.get());
-            return new ResponseEntity<>(new Message("Пользователь удален"), HttpStatus.OK);
+            return new Message("Пользователь удален");
         }else {
-            return new ResponseEntity<>(new Message("ошибка такой пользователь не найден"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "шибка такой пользователь не найден");
         }
     }
 

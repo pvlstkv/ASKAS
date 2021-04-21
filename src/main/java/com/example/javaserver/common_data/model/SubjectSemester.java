@@ -1,11 +1,9 @@
 package com.example.javaserver.common_data.model;
 
 
+import com.example.javaserver.study.model.Literature;
 import com.example.javaserver.study.model.Task;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -18,7 +16,8 @@ public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer numberOfSemester;
+    @JsonIgnore
+    private String name;
     private SubjectControlType controlType;
     private Boolean hasCourseWork;
     private Boolean hasCourseProject;
@@ -26,8 +25,14 @@ public class SubjectSemester {
     @JsonProperty("taskIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "semesters")
     private Set<Task> tasks;
+
+    @JsonProperty("literatureIds")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @ManyToMany(mappedBy = "semesters")
+    private Set<Literature> literature;
 
     @JsonProperty("subjectId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -35,11 +40,11 @@ public class SubjectSemester {
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
-    @JsonProperty("studentGroupIds")
+    @JsonProperty("studentGroupId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToMany(mappedBy = "subjectSemesters")
-    private Set<StudyGroup> studyGroups;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private StudyGroup studyGroup;
 
     private OffsetDateTime createdAt;
 
@@ -55,8 +60,7 @@ public class SubjectSemester {
     // int countOfLecture;
     // int countOfLabWork;
 
-    public SubjectSemester() {
-    }
+    public SubjectSemester() { }
 
     public Set<SemesterMark> getSemesterMark() {
         return semesterMarks;
@@ -80,14 +84,6 @@ public class SubjectSemester {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Integer getNumberOfSemester() {
-        return numberOfSemester;
-    }
-
-    public void setNumberOfSemester(Integer numberOfSemester) {
-        this.numberOfSemester = numberOfSemester;
     }
 
     public SubjectControlType getControlType() {
@@ -122,12 +118,12 @@ public class SubjectSemester {
         this.subject = subject;
     }
 
-    public Set<StudyGroup> getStudyGroups() {
-        return studyGroups;
+    public StudyGroup getStudyGroup() {
+        return studyGroup;
     }
 
-    public void setStudyGroups(Set<StudyGroup> studyGroups) {
-        this.studyGroups = studyGroups;
+    public void setStudyGroup(StudyGroup studyGroup) {
+        this.studyGroup = studyGroup;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -152,5 +148,21 @@ public class SubjectSemester {
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<Literature> getLiterature() {
+        return literature;
+    }
+
+    public void setLiterature(Set<Literature> literature) {
+        this.literature = literature;
     }
 }

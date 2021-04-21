@@ -9,7 +9,7 @@ public class TaskIn {
     public TaskType type;
     public String title;
     public String description;
-    public Long semesterId;
+    public Set<Long> semesterIds;
     public Set<Long> fileIds;
     public Set<Long> workIds;
 

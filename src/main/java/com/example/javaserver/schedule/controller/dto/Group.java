@@ -1,4 +1,4 @@
-package com.example.javaserver.schedule.controller.model;
+package com.example.javaserver.schedule.controller.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,11 @@ public class Group {
     private String nameGroup;
     private List<Day> Days = new ArrayList<>();
 
-    public Group(String nameGroup, List<Day> days) {
-        this.nameGroup = nameGroup;
-        Days = days;
+    public Group() {
     }
+
+
+
 
     public Group(String nameGroup) {
         this.nameGroup = nameGroup;

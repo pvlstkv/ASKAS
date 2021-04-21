@@ -33,7 +33,11 @@ public class Work {
     @JsonProperty("fileIds")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "file_work",
+            joinColumns = {@JoinColumn(name = "work_id")},
+            inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private Set<UserFile> userFiles;
 
     private OffsetDateTime createdAt;
@@ -42,8 +46,13 @@ public class Work {
     private String studentComment;
     private Mark mark;
 
-
     public Work() {
+    }
+
+    @PreRemove
+    private void removeHandler() {
+        userFiles.forEach(UserFile::decLinkCount);
+        userFiles.clear();
     }
 
     public Long getId() {

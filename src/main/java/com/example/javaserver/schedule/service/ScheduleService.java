@@ -1,15 +1,17 @@
 package com.example.javaserver.schedule.service;
 
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.schedule.controller.model.Couple;
-import com.example.javaserver.schedule.controller.model.Day;
-import com.example.javaserver.schedule.controller.model.Group;
+import com.example.javaserver.schedule.controller.dto.Couple;
+import com.example.javaserver.schedule.controller.dto.Day;
+import com.example.javaserver.schedule.controller.dto.Group;
 import com.example.javaserver.schedule.model.Schedule;
 import com.example.javaserver.schedule.repo.ScheduleRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -22,7 +24,8 @@ public class ScheduleService {
         this.parserService = parserService;
     }
 
-    public Message iteratingThroughGroups() {
+    @Async("processExecutor")
+    public void iteratingThroughGroups() {
         int part;
         int numberGroup;
         String baseUrl;
@@ -33,12 +36,12 @@ public class ScheduleService {
                 baseUrl = "https://www.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
                 try {
                     parserService.parserGroup(baseUrl);
-                } catch (Exception e){
+                } catch (IOException e){
                     e.printStackTrace();
+                    break;
                 }
             }
         }
-        return new Message("Всё ок");
     }
 
     public ResponseEntity<?> getScheduleGroup(String nameGroup){
@@ -56,6 +59,7 @@ public class ScheduleService {
         for (Schedule schedule : scheduleList) {
             res.add(schedule.getNameGroup());
         }
+        res.add(String.valueOf(res.size()));
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 

@@ -41,35 +41,32 @@ public class ParserService {
         typeSubject.put("Лаб", 3);
     }
 
-    public void parserGroup(String urlGroup) {
-        try {
-            //При наличие доступа к станици с расписанием парсим все элементы тега р
-            listHtmlPage = new ArrayList<>();
-            Document document = Jsoup.connect(urlGroup).get();
-            document.outputSettings(new Document.OutputSettings().prettyPrint(false));//makes html() preserve linebreaks and spacing
-            document.select("br").append("\\n");
-            //document.select("p").prepend("\\n\\n");
-            ArrayList<String> A = new ArrayList<>();
-            Elements paragraphs = document.getElementsByTag("p");
-            String check;
-            String keyWord = "Расписание занятий учебной группы:";
-            boolean extractNamesGroups = true;
-            for (Element paragraph : paragraphs) {
-                check = paragraph.text();
-                if(check.contains(keyWord) && extractNamesGroups){
-                    extractNamesGroups = false;
-                    int start = check.indexOf(keyWord) + keyWord.length();
-                    check = check.substring(start) ;
-                    extractNamesGroups(check);
-                }
-                check = check.trim().replace('.',' ').replace('-',' ');
-                listHtmlPage.add(check);
+    public void parserGroup(String urlGroup) throws IOException {
+        //При наличие доступа к станици с расписанием парсим все элементы тега р
+        listHtmlPage = new ArrayList<>();
+        Document document = Jsoup.connect(urlGroup).get();
+        document.outputSettings(new Document.OutputSettings().prettyPrint(false));//makes html() preserve linebreaks and spacing
+        document.select("br").append("\\n");
+        //document.select("p").prepend("\\n\\n");
+        ArrayList<String> A = new ArrayList<>();
+        Elements paragraphs = document.getElementsByTag("p");
+        String check;
+        String keyWord = "Расписание занятий учебной группы:";
+        boolean extractNamesGroups = true;
+        for (Element paragraph : paragraphs) {
+            check = paragraph.text();
+            if(check.contains(keyWord) && extractNamesGroups){
+                extractNamesGroups = false;
+                int start = check.indexOf(keyWord) + keyWord.length();
+                check = check.substring(start) ;
+                extractNamesGroups(check);
             }
-            scheduleForDay();
-            saveAll();
-        } catch (IOException e) {
-            e.printStackTrace();
+            check = check.trim().replace('.',' ').replace('-',' ');
+            listHtmlPage.add(check);
         }
+        scheduleForDay();
+        saveAll();
+
     }
 
     public void scheduleForDay(){
