@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -105,8 +106,28 @@ public class WorkService {
         }
     }
 
-    public Collection<Work> searchByIds(Set<Long> ids) {
-        return workRepo.getWorksByIdIn(ids);
+    public Work getById(Long id) {
+        Optional<Work> workO = workRepo.findByIdEquals(id);
+        if (workO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Работа с указанным id не существует");
+        }
+        return workO.get();
+    }
+
+    public Set<Work> getByIds(Set<Long> ids) {
+        Set<Work> works = workRepo.getWorksByIdIn(ids);
+        if (works.size() == ids.size()) {
+            return works;
+        } else {
+            Collection<Long> foundIds = works.stream()
+                    .map(Work::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Работы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 
     public Collection<Work> searchByGroupsAndTeacher(Integer userId, Long groupId, UserDetailsImp userDetails) {

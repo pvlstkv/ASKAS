@@ -94,7 +94,7 @@ public class WorkController {
             @RequestParam("ids") Set<Long> ids
     ) {
         return workMapper.toDto(
-                workService.searchByIds(ids)
+                workService.getByIds(ids)
         );
     }
 

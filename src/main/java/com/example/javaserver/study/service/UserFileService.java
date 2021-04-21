@@ -7,7 +7,6 @@ import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import io.minio.*;
-import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -134,7 +134,27 @@ public class UserFileService {
         }
     }
 
-    public Set<UserFile> getBy(Set<Long> ids) {
-        return userFileRepo.getUserFilesByIdIn(ids);
+    public UserFile getById(Long id) {
+        Optional<UserFile> userFileO = userFileRepo.findByIdEquals(id);
+        if (userFileO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не существует");
+        }
+        return userFileO.get();
+    }
+
+    public Set<UserFile> getByIds(Set<Long> ids) {
+        Set<UserFile> userFiles = userFileRepo.findAllByIdIn(ids);
+        if (userFiles.size() == ids.size()) {
+            return userFiles;
+        } else {
+            Collection<Long> foundIds = userFiles.stream()
+                    .map(UserFile::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Файлы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 }

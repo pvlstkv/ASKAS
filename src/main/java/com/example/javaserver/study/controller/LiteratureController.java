@@ -94,7 +94,7 @@ public class LiteratureController {
             @RequestParam("ids") Set<Long> ids
     ) {
         return literatureMapper.toDto(
-                literatureService.searchByIds(ids)
+                literatureService.getByIds(ids)
         );
     }
 

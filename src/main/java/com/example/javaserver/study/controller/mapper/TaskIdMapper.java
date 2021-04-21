@@ -2,33 +2,27 @@ package com.example.javaserver.study.controller.mapper;
 
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.repo.TaskRepo;
+import com.example.javaserver.study.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @Component
 public class TaskIdMapper {
-    private final TaskRepo repo;
+    private final TaskService service;
 
     @Autowired
-    public TaskIdMapper(TaskRepo repo) {
-        this.repo = repo;
+    public TaskIdMapper(TaskService service) {
+        this.service = service;
     }
 
     public Task getById(Long id) {
-        Optional<Task> taskO = repo.findByIdEquals(id);
-        if (taskO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
-        }
-        return taskO.get();
+        return id == null
+                ? null
+                : service.getById(id);
     }
 
     public Long getId(Task task) {
@@ -38,19 +32,9 @@ public class TaskIdMapper {
     }
 
     public Set<Task> getByIds(Set<Long> ids) {
-        Set<Task> tasks = repo.findAllByIdIn(ids);
-        if (tasks.size() == ids.size()) {
-            return tasks;
-        } else {
-            Collection<Long> foundIds = tasks.stream()
-                    .map(Task::getId)
-                    .collect(Collectors.toSet());
-            Collection<Long> notFoundIds = ids.stream()
-                    .filter(i -> !foundIds.contains(i))
-                    .collect(Collectors.toSet());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Задания с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
-        }
+        return ids == null
+                ? null
+                : service.getByIds(ids);
     }
 
     public Set<Long> getIds(Set<Task> tasks) {

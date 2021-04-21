@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -92,8 +93,28 @@ public class LiteratureService {
         }
     }
 
-    public  Collection<Literature> searchByIds(Set<Long> ids) {
-        return literatureRepo.findAllByIdIn(ids);
+    public Literature getById(Long id) {
+        Optional<Literature> literatureO = literatureRepo.findByIdEquals(id);
+        if (literatureO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература с указанным id не существует");
+        }
+        return literatureO.get();
+    }
+
+    public Set<Literature> getByIds(Set<Long> ids) {
+        Set<Literature> literature = literatureRepo.findAllByIdIn(ids);
+        if (literature.size() == ids.size()) {
+            return literature;
+        } else {
+            Collection<Long> foundIds = literature.stream()
+                    .map(Literature::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Литература с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 
     public Collection<Literature> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {

@@ -73,7 +73,7 @@ public class UserFileController {
             @RequestParam("ids") Set<Long> ids
     ) {
         return userFileMapper.toDto(
-                userFileService.getBy(ids)
+                userFileService.getByIds(ids)
         );
     }
 }

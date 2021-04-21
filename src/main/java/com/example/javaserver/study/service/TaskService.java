@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -92,8 +93,28 @@ public class TaskService {
         }
     }
 
-    public  Collection<Task> searchByIds(Set<Long> ids) {
-        return taskRepo.findAllByIdIn(ids);
+    public Task getById(Long id) {
+        Optional<Task> taskO = taskRepo.findByIdEquals(id);
+        if (taskO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
+        }
+        return taskO.get();
+    }
+
+    public Set<Task> getByIds(Set<Long> ids) {
+        Set<Task> tasks = taskRepo.findAllByIdIn(ids);
+        if (tasks.size() == ids.size()) {
+            return tasks;
+        } else {
+            Collection<Long> foundIds = tasks.stream()
+                    .map(Task::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Задания с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 
     public Collection<Task> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {

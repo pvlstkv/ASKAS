@@ -1,35 +1,27 @@
 package com.example.javaserver.study.controller.mapper;
 
 import com.example.javaserver.study.model.Work;
-import com.example.javaserver.study.repo.WorkRepo;
+import com.example.javaserver.study.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @SuppressWarnings("unused")
 @Component
 public class WorkIdMapper {
-    private final WorkRepo repo;
+    private final WorkService service;
 
     @Autowired
-    public WorkIdMapper(WorkRepo repo) {
-        this.repo = repo;
+    public WorkIdMapper(WorkService service) {
+        this.service = service;
     }
 
     public Work getById(Long id) {
-        Optional<Work> workO = repo.findByIdEquals(id);
-        if (workO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Работа с указанным id не существует");
-        }
-        return workO.get();
+        return id == null
+                ? null
+                : service.getById(id);
     }
 
     public Long getId(Work work) {
@@ -39,19 +31,9 @@ public class WorkIdMapper {
     }
 
     public Set<Work> getByIds(Set<Long> ids) {
-        Set<Work> works = repo.getWorksByIdIn(ids);
-        if (works.size() == ids.size()) {
-            return works;
-        } else {
-            Collection<Long> foundIds = works.stream()
-                    .map(Work::getId)
-                    .collect(Collectors.toSet());
-            Collection<Long> notFoundIds = ids.stream()
-                    .filter(i -> !foundIds.contains(i))
-                    .collect(Collectors.toSet());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Работы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
-        }
+        return ids == null
+                ? null
+                : service.getByIds(ids);
     }
 
     public Set<Long> getIds(Set<Work> works) {

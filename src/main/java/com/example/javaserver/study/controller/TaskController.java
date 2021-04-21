@@ -94,7 +94,7 @@ public class TaskController {
             @RequestParam("ids") Set<Long> ids
     ) {
         return taskMapper.toDto(
-                taskService.searchByIds(ids)
+                taskService.getByIds(ids)
         );
     }
 
