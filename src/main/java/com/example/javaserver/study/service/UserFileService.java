@@ -6,10 +6,9 @@ import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import io.minio.*;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -22,8 +21,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserFileService {
@@ -76,10 +77,27 @@ public class UserFileService {
         } catch (Exception e) {
             userFileRepo.deleteById(userFile.getId());
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка загрузки файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка загрузки файла", e);
         }
 
         return userFile;
+    }
+
+    @Transactional
+    public Collection<UserFile> deleteOrphan() {
+        Set<UserFile> files = userFileRepo.findAllByLinkCountEquals(0);
+
+        Collection<DeleteObject> objects = files.stream()
+                .map(f -> new DeleteObject(f.getId().toString()))
+                .collect(Collectors.toSet());
+        RemoveObjectsArgs args = RemoveObjectsArgs.builder()
+                .bucket(bucketName)
+                .objects(objects).build();
+
+        minioClient.removeObjects(args);
+        //userFileRepo.deleteAll(files);
+
+        return files;
     }
 
     public ResponseEntity<ByteArrayResource> download(Long id, UserDetailsImp userDetails) {
@@ -112,7 +130,7 @@ public class UserFileService {
             headers.add("Content-Length", file.getContentLength().toString());
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка скачивания файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка скачивания файла", e);
         }
     }
 

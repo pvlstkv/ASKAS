@@ -3,8 +3,8 @@ package com.example.javaserver.study.controller;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.study.controller.dto.LiteratureIn;
-import com.example.javaserver.study.model.Literature;
+import com.example.javaserver.study.controller.dto.LiteratureDto;
+import com.example.javaserver.study.controller.mapper.LiteratureMapper;
 import com.example.javaserver.study.service.LiteratureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,20 +20,27 @@ import java.util.Set;
 @RequestMapping("/literature")
 public class LiteratureController {
     private final LiteratureService literatureService;
+    private final LiteratureMapper literatureMapper;
 
     @Autowired
-    public LiteratureController(LiteratureService literatureService) {
+    public LiteratureController(LiteratureService literatureService, LiteratureMapper literatureMapper) {
         this.literatureService = literatureService;
+        this.literatureMapper = literatureMapper;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     @PostMapping
-    public Message create(
-            @RequestBody @Valid LiteratureIn literatureIn,
+    public LiteratureDto create(
+            @RequestBody @Valid LiteratureDto literatureDto,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return literatureService.create(literatureIn, userDetails);
+        return literatureMapper.toDto(
+                literatureService.create(
+                        literatureMapper.toEntity(literatureDto),
+                        userDetails
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -47,56 +54,75 @@ public class LiteratureController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    @PatchMapping
-    public Message update(
+    @PutMapping
+    public LiteratureDto update(
             @RequestParam("id") Long id,
-            @RequestBody @Valid LiteratureIn literatureIn
+            @RequestBody @Valid LiteratureDto literatureDto
     ) {
-        return literatureService.update(id, literatureIn);
+        return literatureMapper.toDto(
+                literatureService.update(
+                        id,
+                        literatureMapper.toEntity(literatureDto)
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public Collection<Literature> getAll() {
-        return literatureService.getAll();
+    public Collection<LiteratureDto> getAll() {
+        return literatureMapper.toDto(
+                literatureService.getAll()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public Collection<Literature> criteriaSearch(
+    public Collection<LiteratureDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return literatureService.criteriaSearch(criteria);
+        return literatureMapper.toDto(
+                literatureService.criteriaSearch(criteria)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @PostMapping("/search-by-ids")
-    public Collection<Literature> searchByIds(
-            @RequestBody Set<Long> ids
+    @GetMapping("/search-by-ids")
+    public Collection<LiteratureDto> searchByIds(
+            @RequestParam("ids") Set<Long> ids
     ) {
-        return literatureService.searchByIds(ids);
+        return literatureMapper.toDto(
+                literatureService.searchByIds(ids)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/learning")
-    public Collection<Literature> searchBySubjectAndStudent(
+    public Collection<LiteratureDto> searchBySubjectAndStudent(
             @RequestParam("subjectId") Long subjectId,
-            @RequestParam(value = "userId", required = false) Integer userId,
+            @RequestParam(value = "studentId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return literatureService.searchBySubjectAndStudent(subjectId, userId, userDetails);
+        return literatureMapper.toDto(
+                literatureService.searchBySubjectAndStudent(
+                        subjectId,
+                        userId,
+                        userDetails
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
-    public Collection<Literature> searchBySubject(
+    public Collection<LiteratureDto> searchBySubject(
             @RequestParam("subjectId") Long subjectId
     ) {
-        return literatureService.searchBySubject(subjectId);
+        return literatureMapper.toDto(
+                literatureService.searchBySubject(subjectId)
+        );
     }
 }

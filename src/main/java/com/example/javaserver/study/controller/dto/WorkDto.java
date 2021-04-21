@@ -1,56 +1,47 @@
-package com.example.javaserver.study.model;
+package com.example.javaserver.study.controller.dto;
 
 import com.example.javaserver.common_data.model.Mark;
-import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@Entity
-@Table(name = "works")
-public class Work {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+@SuppressWarnings("unused")
+public class WorkDto {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
-    @ManyToOne
-    private Task task;
+    @NotNull(message = "Работа должна быть прикреплена к заданию")
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private Long taskId;
 
-    @ManyToOne
-    private User user;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer userId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "file_work",
-            joinColumns = {@JoinColumn(name = "work_id")},
-            inverseJoinColumns = {@JoinColumn(name = "file_id")})
-    private Set<UserFile> userFiles;
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private Set<Long> fileIds;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OffsetDateTime createdAt;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private OffsetDateTime updatedAt;
 
-    @Column(length = 1_000_000)
+    @Size(max = 1_000_000)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String teacherComment;
 
-    @Column(length = 1_000_000)
+    @Size(max = 1_000_000)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String studentComment;
 
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private Mark mark;
 
-    public Work() {
-    }
-
-    @PreRemove
-    private void removeHandler() {
-        userFiles.forEach(UserFile::decLinkCount);
-        userFiles.clear();
+    public WorkDto() {
     }
 
     public Long getId() {
@@ -61,28 +52,28 @@ public class Work {
         this.id = id;
     }
 
-    public Task getTask() {
-        return task;
+    public Long getTaskId() {
+        return taskId;
     }
 
-    public void setTask(Task task) {
-        this.task = task;
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
-    public User getUser() {
-        return user;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public Set<UserFile> getUserFiles() {
-        return userFiles;
+    public Set<Long> getFileIds() {
+        return fileIds;
     }
 
-    public void setUserFiles(Set<UserFile> userFiles) {
-        this.userFiles = userFiles;
+    public void setFileIds(Set<Long> fileIds) {
+        this.fileIds = fileIds;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -125,4 +116,3 @@ public class Work {
         this.mark = mark;
     }
 }
-
