@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public class TaskController {
     @Secured({"TEACHER", "ADMIN"})
     @PostMapping
     public TaskDto create(
-            @RequestBody TaskDto taskDto,
+            @RequestBody @Valid TaskDto taskDto,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
         return taskMapper.toDto(
@@ -56,7 +57,7 @@ public class TaskController {
     @PutMapping
     public TaskDto update(
             @RequestParam("id") Long id,
-            @RequestBody TaskDto taskDto
+            @RequestBody @Valid TaskDto taskDto
     ) {
         return taskMapper.toDto(
                 taskService.update(
@@ -88,9 +89,9 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     public Collection<TaskDto> searchByIds(
-            @RequestBody Set<Long> ids
+            @RequestParam("ids") Set<Long> ids
     ) {
         return taskMapper.toDto(
                 taskService.searchByIds(ids)

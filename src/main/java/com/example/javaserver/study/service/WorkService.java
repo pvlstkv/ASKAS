@@ -67,7 +67,7 @@ public class WorkService {
 
     @Transactional
     public Work update(Long id, Work workToPut) {
-        Work work = workRepo.getWorkByIdEquals(id);
+        Work work = workRepo.getOne(id);
 
         if (workToPut.getStudentComment() == null && (workToPut.getUserFiles() == null || workToPut.getUserFiles().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя сделать работу без файлов и комментариев");

@@ -89,9 +89,9 @@ public class WorkController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     public Collection<WorkDto> searchByIds(
-            @RequestBody Set<Long> ids
+            @RequestParam("ids") Set<Long> ids
     ) {
         return workMapper.toDto(
                 workService.searchByIds(ids)
