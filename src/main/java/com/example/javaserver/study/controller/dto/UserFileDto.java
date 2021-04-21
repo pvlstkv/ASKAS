@@ -1,18 +1,13 @@
 package com.example.javaserver.study.controller.dto;
 
-import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-/*@JsonIgnoreProperties(value={
-        "id", "contentType", "contentLength", "linkCount", "userId"
-}, allowGetters=true)*/
+
 @SuppressWarnings("unused")
 public class UserFileDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

@@ -8,6 +8,8 @@ import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.Set;
 
+
+@SuppressWarnings("unused")
 public class WorkDto {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
