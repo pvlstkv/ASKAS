@@ -1,10 +1,9 @@
 package com.example.javaserver.testing.model;
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.testing.model.Question;
 import com.example.javaserver.testing.model.dto.ThemeIn;
 import com.example.javaserver.testing.model.dto.ThemeUpdateIn;
-import com.example.javaserver.testing.model.saving_result.PassedTest;
+import com.example.javaserver.testing.model.new_.QuestionNew;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
@@ -34,14 +33,14 @@ public class Theme implements Serializable {
 //    @JsonProperty("passedTestIds")
 //    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
 //    @JsonIdentityReference(alwaysAsId=true)
-    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<PassedTest> passedTests;
+//    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private Set<PassedTest> passedTests;
 
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<Question> questions;
+    private Set<QuestionNew> questions;
 
     private Integer questionQuantityInTest;
 
@@ -62,7 +61,7 @@ public class Theme implements Serializable {
         this.id = id;
     }
 
-    public Theme(Long id, String name, String decryption, Subject subject, Set<Question> questions, Integer questionQuantityInTest, Integer attemptNumberInTest, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+    public Theme(Long id, String name, String decryption, Subject subject, Set<QuestionNew> questions, Integer questionQuantityInTest, Integer attemptNumberInTest, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.decryption = decryption;
@@ -123,11 +122,11 @@ public class Theme implements Serializable {
         this.subject = subject;
     }
 
-    public Set<Question> getQuestions() {
+    public Set<QuestionNew> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(Set<Question> questions) {
+    public void setQuestions(Set<QuestionNew> questions) {
         this.questions = questions;
     }
 

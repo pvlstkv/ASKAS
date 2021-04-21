@@ -11,12 +11,13 @@
 //import java.io.Serializable;
 //import java.util.ArrayList;
 //import java.util.List;
+//import java.util.Map;
 //import java.util.Set;
 //import java.util.stream.Collectors;
 //
 //@Entity
 ////@Table(name = "questions")
-//public class Question implements Serializable {
+//public class QuestionMatch implements Serializable {
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    private Long id;
@@ -25,8 +26,9 @@
 //    // todo like the required annotation like the question field
 //    private QuestionType questionType;
 //    //    @JsonIgnore
-//    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<AnswerChoice> answerChoiceList = new ArrayList<>();
+////    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OneToMany
+//    private List<Match> matchingList;
 //    private Double complexity;
 //    // todo how to do
 //
@@ -44,28 +46,44 @@
 //    @JsonIgnore
 //    private Subject subject;
 //
-//    public Question(QuestionIn questionIn, Subject subject, Theme theme) {
-//        this.id = questionIn.getId();
-//        this.subject = subject;
-//        this.question = questionIn.getQuestion();
-//        this.complexity = questionIn.getComplexity();
-//        this.theme = theme;
-//        this.questionType = questionIn.getQuestionType();
-//        this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
-//                new AnswerChoice(strAns, false)).collect(Collectors.toList());
-//        if (this.answerChoiceList.size() == 0) {
-//            this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
-//            return;
-//        }
-//        this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))
-//                .forEach(answerChoice -> answerChoice.setRight(true));
+////    public QuestionMatch(QuestionIn questionIn, Subject subject, Theme theme) {
+////        this.id = questionIn.getId();
+////        this.subject = subject;
+////        this.question = questionIn.getQuestion();
+////        this.complexity = questionIn.getComplexity();
+////        this.theme = theme;
+////        this.questionType = questionIn.getQuestionType();
+////        this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
+////                new AnswerChoice(strAns, false)).collect(Collectors.toList());
+////        if (this.answerChoiceList.size() == 0) {
+////            this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
+////            return;
+////        }
+////        this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))
+////                .forEach(answerChoice -> answerChoice.setRight(true));
+////    }
+//
+//    public QuestionMatch() {
 //    }
 //
-//    public Question() {
-//    }
-//
-//    public Question(Long id) {
+//    public QuestionMatch(Long id) {
 //        this.id = id;
+//    }
+//
+//    public List<Match> getMatchingList() {
+//        return matchingList;
+//    }
+//
+//    public void setMatchingList(List<Match> matchingList) {
+//        this.matchingList = matchingList;
+//    }
+//
+//    public QuestionMatch(Long id, String question, QuestionType questionType, List<Match> matchingList, Double complexity) {
+//        this.id = id;
+//        this.question = question;
+//        this.questionType = questionType;
+//        this.matchingList = matchingList;
+//        this.complexity = complexity;
 //    }
 //
 //    public Set<UserFile> getUserFiles() {
@@ -76,13 +94,13 @@
 //        this.userFiles = userFiles;
 //    }
 //
-//    public List<AnswerChoice> getAnswerChoiceList() {
-//        return answerChoiceList;
-//    }
-//
-//    public void setAnswerChoiceList(List<AnswerChoice> answerChoiceList) {
-//        this.answerChoiceList = answerChoiceList;
-//    }
+////    public List<AnswerChoice> getAnswerChoiceList() {
+////        return answerChoiceList;
+////    }
+////
+////    public void setAnswerChoiceList(List<AnswerChoice> answerChoiceList) {
+////        this.answerChoiceList = answerChoiceList;
+////    }
 //
 //    public Subject getSubject() {
 //        return subject;
@@ -133,14 +151,14 @@
 //        this.complexity = complexity;
 //    }
 //
-//    public List<String> fetchRightAnswers() {
-//        return this.answerChoiceList.stream().filter(AnswerChoice::getRight)
-//                .map(AnswerChoice::getAnswer).collect(Collectors.toList());
-//    }
-//
-//    public List<String> fetchValuesOfAnswerChoice() {
-//        return this.answerChoiceList.stream().map(AnswerChoice::getAnswer).collect(Collectors.toList());
-//    }
+////    public List<String> fetchRightAnswers() {
+////        return this.answerChoiceList.stream().filter(AnswerChoice::getRight)
+////                .map(AnswerChoice::getAnswer).collect(Collectors.toList());
+////    }
+////
+////    public List<String> fetchValuesOfAnswerChoice() {
+////        return this.answerChoiceList.stream().map(AnswerChoice::getAnswer).collect(Collectors.toList());
+////    }
 //
 //
 //    public List<Long> fetchUserFilesIds() {
