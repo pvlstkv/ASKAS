@@ -7,6 +7,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+
 @Component
 @Mapper(componentModel = "spring"/*, uses = { UserRepo.class }*/)
 public interface UserFileMapper {
@@ -15,8 +17,12 @@ public interface UserFileMapper {
     })
     UserFileDto toDto(final UserFile userFile);
 
+    Collection<UserFileDto> toDto(final Collection<UserFile> userFiles);
+
     /*@Mappings({
             @Mapping(source = "userId", target = "user", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     })*/
     UserFile toEntity(final UserFileDto userFileDto);
+
+    Collection<UserFile> toEntity(final Collection<UserFileDto> userFileDtos);
 }

@@ -76,7 +76,7 @@ public class UserFileService {
         } catch (Exception e) {
             userFileRepo.deleteById(userFile.getId());
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка загрузки файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка загрузки файла", e);
         }
 
         return userFile;
@@ -112,7 +112,7 @@ public class UserFileService {
             headers.add("Content-Length", file.getContentLength().toString());
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка скачивания файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка скачивания файла", e);
         }
     }
 

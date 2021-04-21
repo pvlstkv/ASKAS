@@ -3,7 +3,6 @@ package com.example.javaserver.study.controller;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.study.controller.dto.UserFileDto;
 import com.example.javaserver.study.controller.mapper.UserFileMapper;
-import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.service.UserFileService;
 import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
+import java.util.Collection;
 import java.util.Set;
 
 @RestController
@@ -34,15 +33,20 @@ public class UserFileController {
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping
     public UserFileDto upload(
-            @AuthenticationPrincipal UserDetailsImp userDetails,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "accessLevel", required = false) UserRole accessLevel
+            @RequestParam(value = "accessLevel", required = false) UserRole accessLevel,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        UserFile userFile = userFileService.upload(file, accessLevel, userDetails);
-        return userFileMapper.toDto(userFile);
+        return userFileMapper.toDto(
+                userFileService.upload(
+                        file,
+                        accessLevel,
+                        userDetails
+                )
+        );
     }
 
-    //@ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
     public ResponseEntity<ByteArrayResource> download(
@@ -55,20 +59,11 @@ public class UserFileController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/search-by")
-    public Set<UserFile> getByIds(
+    public Collection<UserFileDto> getByIds(
             @RequestParam("ids") Set<Long> ids
     ) {
-        return userFileService.getBy(ids);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @Secured({"USER", "TEACHER", "ADMIN"})
-    @PostMapping("/dummy")
-    public UserFileDto getByIds(
-            @RequestBody @Valid UserFileDto userFileDto
-    ) {
-        UserFile userFile = userFileMapper.toEntity(userFileDto);
-        //UserRole role = userFile.getUser().getRole();
-        return userFileMapper.toDto(userFile);
+        return userFileMapper.toDto(
+                userFileService.getBy(ids)
+        );
     }
 }
