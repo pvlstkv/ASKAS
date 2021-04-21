@@ -1,8 +1,6 @@
 package com.example.javaserver.study.service;
 
-import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.study.controller.dto.UserFileDto;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
@@ -24,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.transaction.Transactional;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,9 +94,7 @@ public class UserFileService {
                 .bucket(bucketName)
                 .objects(objects).build();
 
-        Iterable<Result<DeleteError>> results = minioClient.removeObjects(args);
-
-        Result<DeleteError> result = results.iterator().next();
+        minioClient.removeObjects(args);
         //userFileRepo.deleteAll(files);
 
         return files;
