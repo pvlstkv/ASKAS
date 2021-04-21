@@ -1,5 +1,6 @@
 package com.example.javaserver.study.controller;
 
+import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.study.controller.dto.UserFileDto;
 import com.example.javaserver.study.controller.mapper.UserFileMapper;
@@ -47,6 +48,15 @@ public class UserFileController {
     }
 
     @ResponseStatus(HttpStatus.OK)
+    @Secured({"ADMIN"})
+    @DeleteMapping("/orphan")
+    public Collection<UserFileDto> deleteOrphan() {
+        return userFileMapper.toDto(
+                userFileService.deleteOrphan()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
     public ResponseEntity<ByteArrayResource> download(
@@ -58,7 +68,7 @@ public class UserFileController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @GetMapping("/search-by")
+    @GetMapping("/search-by-ids")
     public Collection<UserFileDto> getByIds(
             @RequestParam("ids") Set<Long> ids
     ) {
