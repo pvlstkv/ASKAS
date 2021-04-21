@@ -3,8 +3,8 @@ package com.example.javaserver.study.controller;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.study.controller.dto.TaskIn;
-import com.example.javaserver.study.model.Task;
+import com.example.javaserver.study.controller.dto.TaskDto;
+import com.example.javaserver.study.controller.mapper.TaskMapper;
 import com.example.javaserver.study.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,20 +19,27 @@ import java.util.Set;
 @RequestMapping("/task")
 public class TaskController {
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
     @Autowired
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     @PostMapping
-    public Message create(
-            @AuthenticationPrincipal UserDetailsImp userDetails,
-            @RequestBody TaskIn taskIn
+    public TaskDto create(
+            @RequestBody TaskDto taskDto,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return taskService.create(taskIn, userDetails);
+        return taskMapper.toDto(
+                taskService.create(
+                        taskMapper.toEntity(taskDto),
+                        userDetails
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -46,53 +53,75 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    @PatchMapping
-    public Message update(@RequestBody TaskIn taskIn) {
-        return taskService.update(taskIn);
+    @PutMapping
+    public TaskDto update(
+            @RequestParam("id") Long id,
+            @RequestBody TaskDto taskDto
+    ) {
+        return taskMapper.toDto(
+                taskService.update(
+                        id,
+                        taskMapper.toEntity(taskDto)
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public Collection<Task> getAll() {
-        return taskService.getAll();
+    public Collection<TaskDto> getAll() {
+        return taskMapper.toDto(
+                taskService.getAll()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public Collection<Task> criteriaSearch(
+    public Collection<TaskDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return taskService.criteriaSearch(criteria);
+        return taskMapper.toDto(
+                taskService.criteriaSearch(criteria)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/search-by-ids")
-    public Collection<Task> searchByIds(
+    public Collection<TaskDto> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return taskService.searchByIds(ids);
+        return taskMapper.toDto(
+                taskService.searchByIds(ids)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/learning")
-    public Collection<Task> searchBySubjectAndStudent(
+    public Collection<TaskDto> searchBySubjectAndStudent(
             @RequestParam("subjectId") Long subjectId,
-            @RequestParam(value = "userId", required = false) Integer userId,
+            @RequestParam(value = "studentId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return taskService.searchBySubjectAndStudent(subjectId, userId, userDetails);
+        return taskMapper.toDto(
+                taskService.searchBySubjectAndStudent(
+                        subjectId,
+                        userId,
+                        userDetails
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @GetMapping
-    public Collection<Task> searchBySubjectAndTeacher(
+    @GetMapping("/teaching")
+    public Collection<TaskDto> searchBySubject(
             @RequestParam("subjectId") Long subjectId
     ) {
-        return taskService.searchBySubjectAndTeacher(subjectId);
+        return taskMapper.toDto(
+                taskService.searchBySubject(subjectId)
+        );
     }
 }

@@ -6,12 +6,14 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface WorkRepo extends
         CrudRepository<Work, Long>,
         JpaSpecificationExecutor<Work>
 {
+    Optional<Work> findByIdEquals(Long id);
     Work getWorkByIdEquals(Long id);
     Set<Work> getWorksByIdIn(Set<Long> ids);
     @Transactional

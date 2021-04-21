@@ -76,6 +76,9 @@ public class WorkService {
         Task task = workToPut.getTask();
         Set<UserFile> userFiles = workToPut.getUserFiles();
 
+        work.getUserFiles().forEach(UserFile::decLinkCount);
+        userFiles.forEach(UserFile::incLinkCount);
+
         work.setTask(task);
         work.setUserFiles(userFiles);
         work.setStudentComment(workToPut.getStudentComment());
@@ -107,11 +110,7 @@ public class WorkService {
             userId = userDetails.getId();
         }
 
-        Optional<User> userO = userRepo.findById(userId);
-        if (userO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id пользователя инвалидный");
-        }
-        User user = userO.get();
+        User user = userRepo.getOne(userId);
         if (user.getRole() != UserRole.TEACHER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
         }

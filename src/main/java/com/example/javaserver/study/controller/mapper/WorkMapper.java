@@ -29,7 +29,7 @@ public interface WorkMapper {
 
     @Mappings({
             @Mapping(source = "taskId", target = "task", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS),
-            @Mapping(source = "fileIds", target = "userFiles")
+            @Mapping(source = "fileIds", target = "userFiles", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     })
     Work toEntity(final WorkDto workDto);
 

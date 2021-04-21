@@ -20,7 +20,7 @@ public interface UserFileMapper {
 
     Collection<UserFileDto> toDto(final Collection<UserFile> userFiles);
 
-    //UserFile toEntity(final UserFileDto userFileDto);
+    UserFile toEntity(final UserFileDto userFileDto);
 
-    //Collection<UserFile> toEntity(final Collection<UserFileDto> userFileDtos);
+    Collection<UserFile> toEntity(final Collection<UserFileDto> userFileDtos);
 }
