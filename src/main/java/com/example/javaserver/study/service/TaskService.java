@@ -58,7 +58,11 @@ public class TaskService {
 
     @Transactional
     public Task update(Long id, Task taskToPut) {
-        Task task = taskRepo.getOne(id);
+        Optional<Task> taskO = taskRepo.findByIdEquals(id);
+        if (taskO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не найдено");
+        }
+        Task task = taskO.get();
 
         Set<UserFile> userFiles = taskToPut.getUserFiles();
         Set<SubjectSemester> semesters = taskToPut.getSemesters();

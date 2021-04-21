@@ -13,7 +13,6 @@ public interface LiteratureRepo extends
         JpaSpecificationExecutor<Literature>
 {
     Optional<Literature> findByIdEquals(Long id);
-    Literature getOne(Long id);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);
     Set<Literature> findAllByIdIn(Set<Long> ids);

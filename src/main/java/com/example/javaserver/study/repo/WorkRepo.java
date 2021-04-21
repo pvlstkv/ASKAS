@@ -14,7 +14,6 @@ public interface WorkRepo extends
         JpaSpecificationExecutor<Work>
 {
     Optional<Work> findByIdEquals(Long id);
-    Work getOne(Long id);
     Set<Work> getWorksByIdIn(Set<Long> ids);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);

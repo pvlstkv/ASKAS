@@ -28,7 +28,7 @@ public interface WorkMapper {
     Collection<WorkDto> toDto(final Collection<Work> works);
 
     @Mappings({
-            @Mapping(source = "taskId", target = "task", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS),
+            @Mapping(source = "taskId", target = "task"),
             @Mapping(source = "fileIds", target = "userFiles", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     })
     Work toEntity(final WorkDto workDto);

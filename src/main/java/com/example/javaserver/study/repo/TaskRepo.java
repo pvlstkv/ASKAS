@@ -12,7 +12,6 @@ public interface TaskRepo extends
         CrudRepository<Task, Long>,
         JpaSpecificationExecutor<Task>
 {
-    Task getOne(Long id);
     Optional<Task> findByIdEquals(Long id);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);
