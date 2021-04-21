@@ -8,7 +8,6 @@ public class AnswerOptionWriteNew {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String answer;
-    private Boolean isRight;
     private Boolean isStrict;
 
     @ManyToOne
@@ -17,10 +16,10 @@ public class AnswerOptionWriteNew {
     public AnswerOptionWriteNew() {
     }
 
-    public AnswerOptionWriteNew(Integer id, String answer, Boolean isRight, Boolean isStrict) {
+    public AnswerOptionWriteNew(Integer id, String answer, Boolean isStrict) {
         this.id = id;
         this.answer = answer;
-        this.isRight = isRight;
+
         this.isStrict = isStrict;
     }
 
@@ -38,14 +37,6 @@ public class AnswerOptionWriteNew {
 
     public void setAnswer(String answer) {
         this.answer = answer;
-    }
-
-    public Boolean getRight() {
-        return isRight;
-    }
-
-    public void setRight(Boolean right) {
-        isRight = right;
     }
 
     public Boolean getStrict() {
