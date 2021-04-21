@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "works")
@@ -41,9 +42,15 @@ public class Work {
     private Set<UserFile> userFiles;
 
     private OffsetDateTime createdAt;
+
     private OffsetDateTime updatedAt;
+
+    @Column(length = 1_000_000)
     private String teacherComment;
+
+    @Column(length = 1_000_000)
     private String studentComment;
+
     private Mark mark;
 
     public Work() {

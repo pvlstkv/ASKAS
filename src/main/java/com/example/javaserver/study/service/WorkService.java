@@ -6,12 +6,9 @@ import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
-import com.example.javaserver.study.controller.dto.WorkIn;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.model.Work;
-import com.example.javaserver.study.repo.TaskRepo;
-import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
@@ -23,64 +20,44 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("Duplicates")
 @Service
 public class WorkService {
     private final WorkRepo workRepo;
-    private final TaskRepo taskRepo;
     private final UserRepo userRepo;
     private final StudyGroupRepo studyGroupRepo;
-    private final UserFileRepo userFileRepo;
 
     @Autowired
-    public WorkService(WorkRepo workRepo, TaskRepo taskRepo, UserRepo userRepo, StudyGroupRepo studyGroupRepo, UserFileRepo userFileRepo) {
+    public WorkService(WorkRepo workRepo, UserRepo userRepo, StudyGroupRepo studyGroupRepo) {
         this.workRepo = workRepo;
-        this.taskRepo = taskRepo;
         this.userRepo = userRepo;
         this.studyGroupRepo = studyGroupRepo;
-        this.userFileRepo = userFileRepo;
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public Message create(WorkIn workIn, UserDetailsImp userDetails) {
-        if (workIn.taskId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "TaskId должен быть не null");
-        }
-
-        if (workIn.studentComment == null && workIn.fileIds == null) {
+    public Work create(Work work, UserDetailsImp userDetails) {
+        if (work.getStudentComment() == null && (work.getUserFiles() == null || work.getUserFiles().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя добавлять работу без файлов и комментариев");
         }
 
-        Optional<Task> task = taskRepo.findById(workIn.taskId);
-        if (task.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
+        User user = userRepo.getOne(userDetails.getId());
+
+        work.setUser(user);
+        if (user.getRole().equals(UserRole.USER)) {
+            work.setTeacherComment(null);
+            work.setMark(null);
         }
 
-        Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(workIn.fileIds);
-        for (Long id : workIn.fileIds) {
-            if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с id = \" + id + \" не найден");
-            }
-        }
-
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserId токена инвалидный");
-        }
-
-        Work work = new Work();
-        work.setTask(task.get());
-        work.setUser(user.get());
-        work.setStudentComment(workIn.studentComment);
-        work.setUserFiles(userFiles);
+        Set<UserFile> userFiles = work.getUserFiles();
         userFiles.forEach(UserFile::incLinkCount);
-        workRepo.save(work);
 
-        return new Message("Работа успешно создана");
+        return workRepo.save(work);
     }
 
     public Message delete(Set<Long> ids) {
@@ -89,66 +66,23 @@ public class WorkService {
     }
 
     @Transactional
-    public Message update(WorkIn workIn) {
-        Optional<Work> workO = workRepo.findById(workIn.id);
-        if (workO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Работа с указанным id не существует");
-        }
-        Work work = workO.get();
+    public Work update(Long id, Work workToPut) {
+        Work work = workRepo.getWorkByIdEquals(id);
 
-        if (workIn.studentComment == null && workIn.fileIds == null) {
+        if (workToPut.getStudentComment() == null && (workToPut.getUserFiles() == null || workToPut.getUserFiles().isEmpty())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя сделать работу без файлов и комментариев");
         }
 
-        if (workIn.taskId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Работа должна быть привязана к заданию");
-        } else if (!Objects.equals(work.getTask().getId(), workIn.taskId)) {
-            Optional<Task> task = taskRepo.findById(workIn.taskId);
-            if (task.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить задание: задание с указанным id не существует");
-            }
-            work.setTask(task.get());
-        }
+        Task task = workToPut.getTask();
+        Set<UserFile> userFiles = workToPut.getUserFiles();
 
-        if (!Objects.deepEquals(work.getStudentComment(), workIn.studentComment)) {
-            work.setStudentComment(workIn.studentComment);
-        }
+        work.setTask(task);
+        work.setUserFiles(userFiles);
+        work.setStudentComment(workToPut.getStudentComment());
+        work.setTeacherComment(workToPut.getTeacherComment());
+        work.setMark(workToPut.getMark());
 
-        if (!Objects.deepEquals(work.getTeacherComment(), workIn.teacherComment)) {
-            work.setTeacherComment(workIn.teacherComment);
-        }
-
-        if (!Objects.deepEquals(work.getMark(), workIn.mark)) {
-            work.setMark(workIn.mark);
-        }
-
-        Set<UserFile> filesToRemove = new HashSet<>();
-        work.getUserFiles().forEach(f -> {
-            if (!workIn.fileIds.contains(f.getId())) {
-                filesToRemove.add(f);
-            }
-        });
-        if (!filesToRemove.isEmpty()) {
-            filesToRemove.forEach(UserFile::decLinkCount);
-            work.getUserFiles().removeAll(filesToRemove);
-        }
-        Set<Long> fileToAddIds = new HashSet<>();
-        workIn.fileIds.forEach(i -> {
-            if (work.getUserFiles().stream().noneMatch(f -> f.getId().equals(i))) {
-                fileToAddIds.add(i);
-            }
-        });
-        if (!fileToAddIds.isEmpty()) {
-            Set<UserFile> filesToAdd = userFileRepo.getUserFilesByIdIn(fileToAddIds);
-            for (Long id : fileToAddIds) {
-                if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Невозможно изменить работу: Файл с id = \" + id + \" не найден");
-                }
-            }
-            filesToAdd.forEach(UserFile::incLinkCount);
-            work.getUserFiles().addAll(filesToAdd);
-        }
-        return new Message("Работа была успешно изменена");
+        return work;
     }
 
     public Collection<Work> getAll() {

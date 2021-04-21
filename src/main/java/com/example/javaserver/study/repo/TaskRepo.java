@@ -5,12 +5,14 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TaskRepo extends
         CrudRepository<Task, Long>,
         JpaSpecificationExecutor<Task>
 {
+    Optional<Task> findByIdEquals(Long id);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);
     Set<Task> findAllByIdIn(Set<Long> ids);

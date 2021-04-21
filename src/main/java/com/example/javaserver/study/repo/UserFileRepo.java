@@ -11,7 +11,7 @@ public interface UserFileRepo extends
         CrudRepository<UserFile, Long>,
         JpaSpecificationExecutor<UserFile>
 {
-    UserFile findByIdEquals(Long id);
+    Optional<UserFile> findByIdEquals(Long id);
     Set<UserFile> getUserFilesByIdIn(Set<Long> ids);
     Set<UserFile> findAllByIdIn(Set<Long> ids);
 }

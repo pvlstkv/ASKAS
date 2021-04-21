@@ -12,6 +12,7 @@ public interface WorkRepo extends
         CrudRepository<Work, Long>,
         JpaSpecificationExecutor<Work>
 {
+    Work getWorkByIdEquals(Long id);
     Set<Work> getWorksByIdIn(Set<Long> ids);
     @Transactional
     void deleteAllByIdIn(Set<Long> ids);
