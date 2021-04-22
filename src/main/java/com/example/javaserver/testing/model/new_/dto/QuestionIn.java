@@ -6,5 +6,5 @@ public class QuestionIn {
     String question;
     QuestionType questionType;
     Double complexity;
-
+    Object answers;
 }
