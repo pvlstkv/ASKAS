@@ -1,4 +1,4 @@
-package com.example.javaserver.user.dto;
+package com.example.javaserver.user.controller.dto;
 
 public class UpdateUser {
     private String login;

@@ -6,14 +6,13 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.config.JwtUtil;
-import com.example.javaserver.user.client_model.TokenIO;
-import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.controller.dto.TokenIO;
+import com.example.javaserver.user.controller.dto.UserI;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
