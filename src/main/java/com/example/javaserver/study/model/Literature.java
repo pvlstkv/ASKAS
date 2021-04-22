@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
@@ -18,14 +19,18 @@ public class Literature implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LiteratureType type;
+
+    @Column(length = 50)
     private String title;
+
+    @Column(length = 50)
     private String authors;
+
+    @Column(length = 1_000_000)
     private String description;
 
-    @JsonProperty("fileIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "file_literature",
@@ -33,15 +38,9 @@ public class Literature implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private Set<UserFile> files;
 
-    @JsonProperty("userId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private User user;
 
-    @JsonProperty("semesterIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "literature_semester",

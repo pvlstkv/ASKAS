@@ -8,12 +8,14 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 public interface SubjectSemesterRepo extends
         CrudRepository<SubjectSemester, Long>,
         JpaSpecificationExecutor<SubjectSemester>
 {
+    Optional<SubjectSemester> findByIdEquals(Long id);
     Set<SubjectSemester> findSubjectSemestersByIdIn(Set<Long> ids);
     @Transactional
     void deleteAllByIdIn(Collection<Long> ids);

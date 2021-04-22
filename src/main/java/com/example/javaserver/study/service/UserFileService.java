@@ -5,11 +5,9 @@ import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
-import io.minio.GetObjectArgs;
-import io.minio.GetObjectResponse;
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
+import com.example.javaserver.user.service.UserService;
+import io.minio.*;
+import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -22,42 +20,42 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserFileService {
     private final MinioClient minioClient;
     private final UserFileRepo userFileRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
     private final String bucketName;
 
     @Autowired
     public UserFileService(
             MinioClient minioClient,
             UserFileRepo userFileRepo,
-            UserRepo userRepo,
+            UserService userService,
             @Value("${spring.minio.bucket}") String bucketName
     ) {
         this.minioClient = minioClient;
         this.userFileRepo = userFileRepo;
-        this.userRepo = userRepo;
+        this.userService = userService;
         this.bucketName = bucketName;
     }
 
     @Transactional
     public UserFile upload(MultipartFile multipartFile, UserRole accessLevel, UserDetailsImp userDetails) {
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
-        }
+        User user = userService.getById(userDetails.getId());
 
-        if (accessLevel != null && user.get().getRole().compareTo(accessLevel) < 0) {
+        if (accessLevel != null && user.getRole().compareTo(accessLevel) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уровень доступа к файлу превышает уровень доступа пользователя");
         }
 
         UserFile userFile = new UserFile();
-        userFile.setUser(user.get());
+        userFile.setUser(user);
         userFile.setAccessLevel(accessLevel == null ? UserRole.USER : accessLevel);
         userFile.setName(multipartFile.getOriginalFilename());
         userFile.setContentType(multipartFile.getContentType());
@@ -76,10 +74,27 @@ public class UserFileService {
         } catch (Exception e) {
             userFileRepo.deleteById(userFile.getId());
             e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка загрузки файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка загрузки файла", e);
         }
 
         return userFile;
+    }
+
+    @Transactional
+    public Collection<UserFile> deleteOrphan() {
+        Set<UserFile> files = userFileRepo.findAllByLinkCountEquals(0);
+
+        Collection<DeleteObject> objects = files.stream()
+                .map(f -> new DeleteObject(f.getId().toString()))
+                .collect(Collectors.toSet());
+        RemoveObjectsArgs args = RemoveObjectsArgs.builder()
+                .bucket(bucketName)
+                .objects(objects).build();
+
+        minioClient.removeObjects(args);
+        //userFileRepo.deleteAll(files);
+
+        return files;
     }
 
     public ResponseEntity<ByteArrayResource> download(Long id, UserDetailsImp userDetails) {
@@ -89,12 +104,9 @@ public class UserFileService {
         }
         UserFile file = fileO.get();
 
-        Optional<User> user = userRepo.findById(userDetails.getId());
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Токен инвалидный, userId не найден");
-        }
+        User user = userService.getById(userDetails.getId());
 
-        if (user.get().getRole().compareTo(file.getAccessLevel()) < 0) {
+        if (user.getRole().compareTo(file.getAccessLevel()) < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Отказано в доступе к файлу");
         }
 
@@ -112,11 +124,31 @@ public class UserFileService {
             headers.add("Content-Length", file.getContentLength().toString());
             return new ResponseEntity<>(resource, headers, HttpStatus.OK);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка скачивания файла", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка скачивания файла", e);
         }
     }
 
-    public Set<UserFile> getBy(Set<Long> ids) {
-        return userFileRepo.getUserFilesByIdIn(ids);
+    public UserFile getById(Long id) {
+        Optional<UserFile> userFileO = userFileRepo.findByIdEquals(id);
+        if (userFileO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не существует");
+        }
+        return userFileO.get();
+    }
+
+    public Set<UserFile> getByIds(Set<Long> ids) {
+        Set<UserFile> userFiles = userFileRepo.findAllByIdIn(ids);
+        if (userFiles.size() == ids.size()) {
+            return userFiles;
+        } else {
+            Collection<Long> foundIds = userFiles.stream()
+                    .map(UserFile::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Файлы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 }

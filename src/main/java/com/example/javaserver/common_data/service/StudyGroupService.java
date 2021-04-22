@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -58,26 +59,34 @@ public class StudyGroupService {
         return new Message("Учебная группа успешно создана");
     }
 
-    public Collection<StudyGroup> searchByIds(Set<Long> ids) {
-        return studyGroupRepo.findAllByIdIn(ids);
+    public StudyGroup getById(Long id) {
+        Optional<StudyGroup> groupO = studyGroupRepo.findByIdEquals(id);
+        if (groupO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группы с указанным id не существует");
+        }
+        return groupO.get();
     }
 
-    public StudyGroup get(Long id){
-        if(id != null){
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
-            if(!studyGroup.isPresent()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
-            }
-            return studyGroup.get();
+    public Set<StudyGroup> getByIds(Set<Long> ids) {
+        Set<StudyGroup> groups = studyGroupRepo.findAllByIdIn(ids);
+        if (groups.size() == ids.size()) {
+            return groups;
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
+            Collection<Long> foundIds = groups.stream()
+                    .map(StudyGroup::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Группы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
         }
     }
 
     @Transactional
     public Message enroll(Long studyGroupId, Set<Integer> userIds) {
         Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
+        if (group.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
         }
 
@@ -89,7 +98,7 @@ public class StudyGroupService {
     @Transactional
     public Message addSubjectSemesters(Long studyGroupId, Set<Long> subjectSemesterIds) {
         Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
+        if (group.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
         }
 
@@ -104,7 +113,7 @@ public class StudyGroupService {
         }
 
         Optional<User> userO = userRepo.findById(userId);
-        if (!userO.isPresent()) {
+        if (userO.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет пользователя с указанным (явно или по токену) id");
         }
         User user = userO.get();
@@ -122,7 +131,7 @@ public class StudyGroupService {
 
     public Collection<StudyGroup> getGroupsBySubject(Long subjectId){
         Optional<Subject> subjectO = subjectRepo.findById(subjectId);
-        if (!subjectO.isPresent()) {
+        if (subjectO.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет предмета с указанным id");
         }
         Subject subject = subjectO.get();

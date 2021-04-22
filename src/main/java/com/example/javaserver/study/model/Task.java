@@ -2,10 +2,6 @@ package com.example.javaserver.study.model;
 
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,12 +16,13 @@ public class Task implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private TaskType type;
+
+    @Column(length = 50)
     private String title;
+
+    @Column(length = 1_000_000)
     private String description;
 
-    @JsonProperty("fileIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "file_task",
@@ -33,9 +30,6 @@ public class Task implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private Set<UserFile> userFiles;
 
-    @JsonProperty("semesterIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "task_semester",
@@ -43,15 +37,9 @@ public class Task implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "semester_id")})
     private Set<SubjectSemester> semesters;
 
-    @JsonProperty("workIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Work> works;
 
-    @JsonProperty("userId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private User user;
 

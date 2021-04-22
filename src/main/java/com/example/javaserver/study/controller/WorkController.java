@@ -3,8 +3,8 @@ package com.example.javaserver.study.controller;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.study.controller.dto.WorkIn;
-import com.example.javaserver.study.model.Work;
+import com.example.javaserver.study.controller.dto.WorkDto;
+import com.example.javaserver.study.controller.mapper.WorkMapper;
 import com.example.javaserver.study.service.WorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Set;
 
@@ -19,21 +20,27 @@ import java.util.Set;
 @RequestMapping("/work")
 public class WorkController {
     private final WorkService workService;
+    private final WorkMapper workMapper;
 
     @Autowired
-    public WorkController(WorkService workService) {
+    public WorkController(WorkService workService, WorkMapper workMapper) {
         this.workService = workService;
+        this.workMapper = workMapper;
     }
-
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping
-    public Message create(
-            @AuthenticationPrincipal UserDetailsImp userDetails,
-            @RequestBody WorkIn workIn
+    public WorkDto create(
+            @RequestBody @Valid WorkDto workDto,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return workService.create(workIn, userDetails);
+        return workMapper.toDto(
+                workService.create(
+                        workMapper.toEntity(workDto),
+                        userDetails
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -47,46 +54,64 @@ public class WorkController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({ "TEACHER", "ADMIN"})
-    @PatchMapping
-    public Message update(
-            @RequestBody WorkIn workIn
+    @PutMapping
+    public WorkDto update(
+            @RequestParam("id") Long id,
+            @RequestBody @Valid WorkDto workDto
     ) {
-        return workService.update(workIn);
+        return workMapper.toDto(
+                workService.update(
+                        id,
+                        workMapper.toEntity(workDto)
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public Collection<Work> getAll() {
-        return workService.getAll();
+    public Collection<WorkDto> getAll() {
+        return workMapper.toDto(
+                workService.getAll()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public Collection<Work> criteriaSearch(
+    public Collection<WorkDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return workService.criteriaSearch(criteria);
+        return workMapper.toDto(
+                workService.criteriaSearch(criteria)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @PostMapping("/search-by-ids")
-    public Collection<Work> searchByIds(
-            @RequestBody Set<Long> ids
+    @GetMapping("/search-by-ids")
+    public Collection<WorkDto> searchByIds(
+            @RequestParam("ids") Set<Long> ids
     ) {
-        return  workService.searchByIds(ids);
+        return workMapper.toDto(
+                workService.getByIds(ids)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/teaching")
-    public Collection<Work> searchByGroupsAndTeacher(
+    public Collection<WorkDto> searchByGroupsAndTeacher(
             @RequestParam(value = "userId", required = false) Integer userId,
             @RequestParam("groupId") Long groupId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return  workService.searchByGroupsAndTeacher(userId, groupId, userDetails);
+        return workMapper.toDto(
+                workService.searchByGroupsAndTeacher(
+                        userId,
+                        groupId,
+                        userDetails
+                )
+        );
     }
 }

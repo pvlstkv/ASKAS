@@ -23,12 +23,10 @@ import java.util.Set;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    private final RequestHandlerService requestHandlerService;
     private final UserService userService;
 
     @Autowired
-    public UserController(RequestHandlerService requestHandlerService, UserService userService) {
-        this.requestHandlerService = requestHandlerService;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -56,7 +54,7 @@ public class UserController {
     public Collection<User> searchByIds(
             @RequestParam("id") Set<Integer> ids
     ) {
-        return userService.searchByIds(ids);
+        return userService.getByIds(ids);
     }
 
     @ResponseStatus(HttpStatus.OK)

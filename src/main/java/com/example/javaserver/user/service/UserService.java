@@ -1,9 +1,7 @@
 package com.example.javaserver.user.service;
 
-import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.user.client_model.UserI;
 import com.example.javaserver.user.dto.UpdateUser;
@@ -11,16 +9,12 @@ import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,22 +35,40 @@ public class UserService {
         }else {
             user = userRepo.findById(userDetails.getId());
         }
-        if(!user.isPresent()){
+        if(user.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка при попытке получить информацию о пользователе");
         }
         return user.get();
     }
 
-    public Collection<User> searchByIds(Set<Integer> ids) {
-        Collection<User> users =  userRepo.findAllByIdIn(ids);
-        return users;
+    public User getById(Integer id) {
+        Optional<User> userO = userRepo.findByIdEquals(id);
+        if (userO.isEmpty()) {
+            throw new EntityNotFoundException("Пользователь с указанным id не существует");
+        }
+        return userO.get();
     }
 
+    public Set<User> getByIds(Set<Integer> ids) {
+        Set<User> users = userRepo.findAllByIdIn(ids);
+        if (users.size() == ids.size()) {
+            return users;
+        } else {
+            Collection<Integer> foundIds = users.stream()
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+            Collection<Integer> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Пользователи с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
+    }
 
     @Transactional
     public Message putUser(UserDetailsImp userDetails, UpdateUser updateUser){
         Optional<User> user = userRepo.findById(userDetails.getId());
-        if(!user.isPresent()){
+        if(user.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ошибка при попытке получить информацию о пользователе");
         }
         if(updateUser.getLogin() != null)
@@ -74,8 +86,7 @@ public class UserService {
 
 
     public List<User> getListUser( ){
-        List<User> userList = userRepo.findAll();
-        return userList;
+        return userRepo.findAll();
     }
 
     public Message updateUser(

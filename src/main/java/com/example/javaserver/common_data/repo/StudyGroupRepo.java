@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface StudyGroupRepo  extends CrudRepository<StudyGroup, Long> {
+    Optional<StudyGroup> findByIdEquals(Long id);
     Optional<StudyGroup> findByShortName(String name);
     Set<StudyGroup> findAllByIdIn(Set<Long> ids);
     boolean existsByShortName(String name);

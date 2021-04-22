@@ -10,8 +10,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.concurrent.Executor;
-
 @SpringBootApplication
 @EnableSwagger2
 @EnableAsync

@@ -77,7 +77,7 @@ public class SubjectController {
     public Collection<Subject> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return subjectService.searchByIds(ids);
+        return subjectService.getByIds(ids);
     }
 
     @GetMapping("/learning")

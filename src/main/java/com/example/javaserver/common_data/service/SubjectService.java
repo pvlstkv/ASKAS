@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class SubjectService {
 
         if (subjectIn.departmentId != null) {
             Optional<Department> department = departmentRepo.findById(subjectIn.departmentId);
-            if (!department.isPresent()) {
+            if (department.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Кафедра с указанным id не существует");
             }
             subject.setDepartment(department.get());
@@ -71,7 +72,7 @@ public class SubjectService {
             String departmentId
     ) {
         Optional<Subject> subjectOptional = subjectRepo.findById(id);
-        if (!subjectOptional.isPresent()) {
+        if (subjectOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
         }
         Subject subject = subjectOptional.get();
@@ -101,7 +102,7 @@ public class SubjectService {
                 } catch (Exception e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения предмета. Недопустимый id кафедры");
                 }
-                if (!departmentOptional.isPresent()) {
+                if (departmentOptional.isEmpty()) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка изменения предмета. Кафедра с указанным id не существует");
                 }
                 department = departmentOptional.get();
@@ -125,8 +126,28 @@ public class SubjectService {
         }
     }
 
-    public Collection<Subject> searchByIds(Set<Long> ids) {
-        return subjectRepo.findAllByIdIn(ids);
+    public Subject getById(Long id) {
+        Optional<Subject> subjectO = subjectRepo.findByIdEquals(id);
+        if (subjectO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
+        }
+        return subjectO.get();
+    }
+
+    public Set<Subject> getByIds(Set<Long> ids) {
+        Set<Subject> subjects = subjectRepo.findAllByIdIn(ids);
+        if (subjects.size() == ids.size()) {
+            return subjects;
+        } else {
+            Collection<Long> foundIds = subjects.stream()
+                    .map(Subject::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Предметы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 
     public Collection<Subject> searchByStudentId(Integer userId, UserDetailsImp userDetails) {
@@ -135,7 +156,7 @@ public class SubjectService {
         }
 
         Optional<User> user = userRepo.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
         }
 
@@ -157,7 +178,7 @@ public class SubjectService {
         }
 
         Optional<User> user = userRepo.findById(userId);
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
         }
 
@@ -174,7 +195,7 @@ public class SubjectService {
            Set<Integer> userIds
     ){
         Optional<Subject> subject = subjectRepo.findById(subjectId);
-        if(!subject.isPresent()){
+        if(subject.isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "нет такого предмета");
         }
         Set<User> userSet = userRepo.getUsersByIdInAndRoleEquals(userIds,UserRole.TEACHER);
