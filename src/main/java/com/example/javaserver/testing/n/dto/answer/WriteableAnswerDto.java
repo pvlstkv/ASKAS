@@ -1,10 +1,10 @@
 package com.example.javaserver.testing.n.dto.answer;
 
-public class WriteableAnswer {
+public class WriteableAnswerDto {
    private String answer;
     private Boolean isStrict;
 
-    public WriteableAnswer(String answer, Boolean isStrict) {
+    public WriteableAnswerDto(String answer, Boolean isStrict) {
         this.answer = answer;
         this.isStrict = isStrict;
     }

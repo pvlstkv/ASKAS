@@ -1,11 +1,11 @@
 package com.example.javaserver.testing.n.model.answer;
 
-import com.example.javaserver.testing.n.model.WriteQuestion;
+import com.example.javaserver.testing.n.model.WriteableQuestion;
 
 import javax.persistence.*;
 
 @Entity
-public class WriteAnswerOption {
+public class WriteableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -13,15 +13,14 @@ public class WriteAnswerOption {
     private Boolean isStrict;
 
     @ManyToOne
-    private WriteQuestion writeQuestion;
+    private WriteableQuestion writeableQuestion;
 
-    public WriteAnswerOption() {
+    public WriteableAnswerOption() {
     }
 
-    public WriteAnswerOption(Integer id, String answer, Boolean isStrict) {
+    public WriteableAnswerOption(Integer id, String answer, Boolean isStrict) {
         this.id = id;
         this.answer = answer;
-
         this.isStrict = isStrict;
     }
 

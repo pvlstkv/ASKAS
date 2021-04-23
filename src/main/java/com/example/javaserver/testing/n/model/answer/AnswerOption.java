@@ -1,6 +1,7 @@
-package com.example.javaserver.testing.n.model;
+package com.example.javaserver.testing.n.model.answer;
 
 import com.example.javaserver.study.model.UserFile;
+import com.example.javaserver.testing.n.model.SelectableQuestion;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,7 +26,7 @@ public class AnswerOption {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    private QuestionChooseAndSeq questionChooseAndSeq;
+    private SelectableQuestion chooseableQuestion;
 
     public AnswerOption() {
     }

@@ -1,11 +1,11 @@
 package com.example.javaserver.testing.n.model.answer;
 
-import com.example.javaserver.testing.n.model.MatchQuestion;
+import com.example.javaserver.testing.n.model.MatchableQuestion;
 
 import javax.persistence.*;
 
 @Entity
-public class MatchAnswerOption {
+public class MatchableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -14,12 +14,12 @@ public class MatchAnswerOption {
     @OneToOne
     private AnswerOption value;
     @ManyToOne
-    private MatchQuestion matchQuestion;
+    private MatchableQuestion matchableQuestion;
 
-    public MatchAnswerOption() {
+    public MatchableAnswerOption() {
     }
 
-    public MatchAnswerOption(Integer id, AnswerOption key, AnswerOption value) {
+    public MatchableAnswerOption(Integer id, AnswerOption key, AnswerOption value) {
         this.id = id;
         this.key = key;
         this.value = value;
@@ -49,11 +49,11 @@ public class MatchAnswerOption {
         this.value = value;
     }
 
-    public MatchQuestion getQuestionMatch() {
-        return matchQuestion;
+    public MatchableQuestion getQuestionMatch() {
+        return matchableQuestion;
     }
 
-    public void setQuestionMatch(MatchQuestion matchQuestion) {
-        this.matchQuestion = matchQuestion;
+    public void setQuestionMatch(MatchableQuestion matchableQuestion) {
+        this.matchableQuestion = matchableQuestion;
     }
 }
