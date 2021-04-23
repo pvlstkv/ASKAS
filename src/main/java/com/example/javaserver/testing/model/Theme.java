@@ -3,7 +3,8 @@ package com.example.javaserver.testing.model;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.testing.model.dto.ThemeIn;
 import com.example.javaserver.testing.model.dto.ThemeUpdateIn;
-import com.example.javaserver.testing.model.new_.QuestionNew;
+
+import com.example.javaserver.testing.n.model.QuestionData;
 import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
@@ -40,7 +41,7 @@ public class Theme implements Serializable {
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<QuestionNew> questions;
+    private Set<QuestionData> questions;
 
     private Integer questionQuantityInTest;
 
@@ -61,7 +62,7 @@ public class Theme implements Serializable {
         this.id = id;
     }
 
-    public Theme(Long id, String name, String decryption, Subject subject, Set<QuestionNew> questions, Integer questionQuantityInTest, Integer attemptNumberInTest, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+    public Theme(Long id, String name, String decryption, Subject subject, Set<QuestionData> questions, Integer questionQuantityInTest, Integer attemptNumberInTest, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.decryption = decryption;
@@ -122,11 +123,11 @@ public class Theme implements Serializable {
         this.subject = subject;
     }
 
-    public Set<QuestionNew> getQuestions() {
+    public Set<QuestionData> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(Set<QuestionNew> questions) {
+    public void setQuestions(Set<QuestionData> questions) {
         this.questions = questions;
     }
 

@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.model.new_;
+package com.example.javaserver.testing.n.model;
 
 import com.example.javaserver.study.model.UserFile;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.*;
 
 @Entity
-public class AnswerOptionNew {
+public class AnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -21,16 +21,16 @@ public class AnswerOptionNew {
     @JsonIdentityReference(alwaysAsId = true)
     private UserFile file;
 
-    @JsonProperty("facultyId")
+    @JsonProperty("questionId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    private QuestionChooseAndSeqNew questionChooseAndSeqNew;
+    private QuestionChooseAndSeq questionChooseAndSeq;
 
-    public AnswerOptionNew() {
+    public AnswerOption() {
     }
 
-    public AnswerOptionNew(Integer id, String answer, Boolean isRight, UserFile file) {
+    public AnswerOption(Integer id, String answer, Boolean isRight, UserFile file) {
         this.id = id;
         this.answer = answer;
         this.isRight = isRight;

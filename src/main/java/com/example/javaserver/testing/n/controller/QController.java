@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.model.new_;
+package com.example.javaserver.testing.n.controller;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,4 +1,4 @@
-package com.example.javaserver.testing.model.new_;
+package com.example.javaserver.testing.n.model;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.study.model.UserFile;
@@ -14,7 +14,7 @@ import java.util.Set;
 @DiscriminatorColumn(name = "question_discriminator",
         discriminatorType = DiscriminatorType.STRING)
 
-public abstract class QuestionNew {
+public abstract class QuestionData {
     @Id
     @GeneratedValue()
     private Long id;
@@ -40,7 +40,7 @@ public abstract class QuestionNew {
     @JsonIgnore
     private Subject subject;
 
-    public QuestionNew(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject) {
+    public QuestionData(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject) {
         this.id = id;
         this.question = question;
         this.questionType = questionType;
@@ -50,7 +50,7 @@ public abstract class QuestionNew {
         this.subject = subject;
     }
 
-    public QuestionNew() {
+    public QuestionData() {
     }
 
     public Long getId() {
