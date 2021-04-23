@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.FacultyIn;
+import com.example.javaserver.common_data.controller.dto.FacultyDto;
+import com.example.javaserver.common_data.controller.mapper.FacultyMapper;
 import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.common_data.service.FacultyService;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -17,19 +18,24 @@ import java.util.Set;
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService facultyService;
+    private final FacultyMapper facultyMapper;
 
     @Autowired
-    public FacultyController(FacultyService facultyService) {
+    public FacultyController(FacultyService facultyService, FacultyMapper facultyMapper) {
         this.facultyService = facultyService;
+        this.facultyMapper = facultyMapper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ADMIN"})
-    public Message create(
-            @RequestBody FacultyIn facultyIn
+    public FacultyDto create(
+            @RequestBody FacultyDto facultyDto
     ) {
-        return facultyService.create(facultyIn);
+        return facultyMapper.toDto(
+                facultyService.create(
+                        facultyMapper.toEntity(facultyDto))
+        );
     }
 
     @DeleteMapping
@@ -41,7 +47,7 @@ public class FacultyController {
         return facultyService.delete(ids);
     }
 
-    @PatchMapping
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
     public Message update(
@@ -55,25 +61,31 @@ public class FacultyController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Faculty> getAll() {
-        return facultyService.getAll();
+    public Collection<FacultyDto> getAll() {
+        return facultyMapper.toDto(
+                facultyService.getAll()
+        );
     }
 
     @PostMapping("/criteria-search")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Faculty> criteriaSearch(
+    public Collection<FacultyDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return facultyService.criteriaSearch(criteria);
+        return facultyMapper.toDto(
+                facultyService.criteriaSearch(criteria)
+        );
     }
 
     @PostMapping("/search-by-ids")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Faculty> searchByIds(
+    public Collection<FacultyDto> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return facultyService.searchByIds(ids);
+        return facultyMapper.toDto(
+                facultyService.searchByIds(ids)
+        );
     }
 }

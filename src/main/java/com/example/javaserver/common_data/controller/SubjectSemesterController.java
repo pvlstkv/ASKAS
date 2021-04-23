@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.controller.dto.SubjectSemesterIn;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;

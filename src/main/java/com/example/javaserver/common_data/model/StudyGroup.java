@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
+import com.example.javaserver.common_data.controller.dto.StudyGroupI;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;

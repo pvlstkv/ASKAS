@@ -1,4 +1,4 @@
-package com.example.javaserver.common_data.controller.client_model;
+package com.example.javaserver.common_data.controller.dto;
 
 import com.example.javaserver.common_data.model.SubjectControlType;
 

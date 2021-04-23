@@ -14,7 +14,7 @@ public interface DepartmentRepo extends
 {
     @Transactional
     void deleteAllByIdIn(Collection<Long> ids);
-    Collection<Department> findAllByIdIn(Set<Long> ids);
+    Set<Department> findAllByIdIn(Set<Long> ids);
     Collection<Department> findAllBy();
     Optional<Department> findByShortName(String name);
 }
