@@ -27,17 +27,19 @@ public class ThemeService {
         this.userRepo = userRepo;
     }
 
-    public void createTheme(ThemeIn themeIn) {
-        if (themeRepo.existsByName(themeIn.getName())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
-        }
+    public Long createTheme(ThemeIn themeIn) {
+//        if (themeRepo.existsByName(themeIn.getName())) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Такая тема уже сущетвует.");
+//        }
         if (!subjectRepo.existsById(themeIn.getSubjectId())) {
             String response = String.format("Предмета" + doesntExistById, themeIn.getSubjectId());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response);
         }
         Subject subject = subjectRepo.findById(themeIn.getSubjectId()).get();
         Theme theme = new Theme(themeIn, subject);
-        themeRepo.save(theme);
+        theme = themeRepo.save(theme);
+        themeRepo.flush();
+        return theme.getId();
     }
 
     public void updateTheme(ThemeUpdateIn themeUpdateIn) {

@@ -1,110 +1,128 @@
 package com.example.javaserver.study.controller;
 
 import com.example.javaserver.general.criteria.SearchCriteria;
-import com.example.javaserver.general.service.RequestHandlerService;
-import com.example.javaserver.study.controller.dto.TaskIn;
+import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.study.controller.dto.TaskDto;
+import com.example.javaserver.study.controller.mapper.TaskMapper;
 import com.example.javaserver.study.service.TaskService;
-import com.example.javaserver.user.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.EnumSet;
+import javax.validation.Valid;
+import java.util.Collection;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    private final RequestHandlerService requestHandlerService;
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
     @Autowired
-    public TaskController(RequestHandlerService requestHandlerService, TaskService taskService) {
-        this.requestHandlerService = requestHandlerService;
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN"})
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestHeader("token") String token,
-            @RequestBody TaskIn taskIn
+    public TaskDto create(
+            @RequestBody @Valid TaskDto taskDto,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.create(taskIn, c),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
+        return taskMapper.toDto(
+                taskService.create(
+                        taskMapper.toEntity(taskDto),
+                        userDetails
+                )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN"})
     @DeleteMapping
-    public ResponseEntity<?> delete(
-            @RequestHeader("token") String token,
+    public Message delete(
             @RequestBody Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.delete(ids),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
-        );
+        return taskService.delete(ids);
     }
 
-    @PatchMapping
-    public ResponseEntity<?> update(
-            @RequestHeader("token") String token,
-            @RequestBody TaskIn taskIn
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN"})
+    @PutMapping
+    public TaskDto update(
+            @RequestParam("id") Long id,
+            @RequestBody @Valid TaskDto taskDto
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.update(taskIn),
-                EnumSet.of(UserRole.ADMIN, UserRole.TEACHER)
+        return taskMapper.toDto(
+                taskService.update(
+                        id,
+                        taskMapper.toEntity(taskDto)
+                )
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping("/all")
-    public ResponseEntity<?> getAll(
-            @RequestHeader("token") String token
-    ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.getAll(),
-                EnumSet.allOf(UserRole.class)
+    public Collection<TaskDto> getAll() {
+        return taskMapper.toDto(
+                taskService.getAll()
         );
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
     @PostMapping("/criteria-search")
-    public ResponseEntity<?> criteriaSearch(
-            @RequestHeader("token") String token,
+    public Collection<TaskDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.criteriaSearch(criteria),
-                EnumSet.allOf(UserRole.class)
+        return taskMapper.toDto(
+                taskService.criteriaSearch(criteria)
         );
     }
 
-    @PostMapping("/search-by-ids")
-    public ResponseEntity<?> searchByIds(
-            @RequestHeader("token") String token,
-            @RequestBody Set<Long> ids
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    @GetMapping("/search-by-ids")
+    public Collection<TaskDto> searchByIds(
+            @RequestParam("ids") Set<Long> ids
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.searchByIds(ids),
-                EnumSet.allOf(UserRole.class)
+        return taskMapper.toDto(
+                taskService.getByIds(ids)
         );
     }
 
-    @GetMapping
-    public ResponseEntity<?> searchBySubjectAndUser(
-            @RequestHeader("token") String token,
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    @GetMapping("/learning")
+    public Collection<TaskDto> searchBySubjectAndStudent(
             @RequestParam("subjectId") Long subjectId,
-            @RequestParam(value = "userId", required = false) Integer userId
+            @RequestParam(value = "studentId", required = false) Integer userId,
+            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-        return requestHandlerService.proceed(
-                token,
-                (c) -> taskService.searchBySubjectAndUser(subjectId, userId, c),
-                EnumSet.allOf(UserRole.class) /*EnumSet.of(UserRole.USER)*/
+        return taskMapper.toDto(
+                taskService.searchBySubjectAndStudent(
+                        subjectId,
+                        userId,
+                        userDetails
+                )
+        );
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    @GetMapping("/teaching")
+    public Collection<TaskDto> searchBySubject(
+            @RequestParam("subjectId") Long subjectId
+    ) {
+        return taskMapper.toDto(
+                taskService.searchBySubject(subjectId)
         );
     }
 }

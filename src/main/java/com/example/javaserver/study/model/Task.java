@@ -2,10 +2,6 @@ package com.example.javaserver.study.model;
 
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,34 +16,40 @@ public class Task implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private TaskType type;
+
+    @Column(length = 50)
     private String title;
+
+    @Column(length = 1_000_000)
     private String description;
 
-    @JsonProperty("fileIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "file_task",
+            joinColumns = {@JoinColumn(name = "task_id")},
+            inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private Set<UserFile> userFiles;
 
-    @JsonProperty("semesterId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
-    private SubjectSemester semester;
+    @ManyToMany
+    @JoinTable(
+            name = "task_semester",
+            joinColumns = {@JoinColumn(name = "task_id")},
+            inverseJoinColumns = {@JoinColumn(name = "semester_id")})
+    private Set<SubjectSemester> semesters;
 
-    @JsonProperty("workIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Work> works;
 
-    @JsonProperty("userId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private User user;
 
-    public Task() {
+    public Task() { }
+
+    @PreRemove
+    private void removeHandler() {
+        userFiles.forEach(UserFile::decLinkCount);
+        userFiles.clear();
+        semesters.clear();
     }
 
     public Long getId() {
@@ -90,12 +92,12 @@ public class Task implements Serializable {
         this.userFiles = userFiles;
     }
 
-    public SubjectSemester getSemester() {
-        return semester;
+    public Set<SubjectSemester> getSemesters() {
+        return semesters;
     }
 
-    public void setSemester(SubjectSemester semester) {
-        this.semester = semester;
+    public void setSemesters(Set<SubjectSemester> semesters) {
+        this.semesters = semesters;
     }
 
     public List<Work> getWorks() {

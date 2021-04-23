@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.SubjectIn;
+import com.example.javaserver.common_data.controller.dto.SubjectIn;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.service.SubjectService;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -77,7 +77,7 @@ public class SubjectController {
     public Collection<Subject> searchByIds(
             @RequestBody Set<Long> ids
     ) {
-        return subjectService.searchByIds(ids);
+        return subjectService.getByIds(ids);
     }
 
     @GetMapping("/learning")

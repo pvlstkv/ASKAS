@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.controller.dto.SubjectSemesterIn;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -49,10 +49,9 @@ public class SubjectSemesterController {
             @RequestParam(value = "controlType", required = false) String controlType,
             @RequestParam(value = "hasCourseProject", required = false) String hasCourseProject,
             @RequestParam(value = "hasCourseWork", required = false) String hasCourseWork,
-            @RequestParam(value = "numberOfSemester", required = false) String numberOfSemester,
             @RequestParam(value = "subjectId", required = false) String subjectId
     ) {
-        return subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, numberOfSemester, subjectId);
+        return subjectSemesterService.update(id, controlType, hasCourseProject, hasCourseWork, subjectId);
     }
 
     @PatchMapping("/assign")
@@ -88,5 +87,15 @@ public class SubjectSemesterController {
             @RequestBody Set<Long> ids
     ) {
         return subjectSemesterService.searchByIds(ids);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<SubjectSemester> searchBySubjectIdAndGroupIds(
+            @RequestParam("subjectId") Long subjectId,
+            @RequestParam("groupId") Set<Long> groupIds
+    ) {
+        return subjectSemesterService.searchBySubjectIdAndGroupIds(subjectId, groupIds);
     }
 }

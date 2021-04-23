@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "works")
@@ -18,32 +19,38 @@ public class Work {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonProperty("taskId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Task task;
 
-    @JsonProperty("userId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private User user;
 
-    @JsonProperty("fileIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "work", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "file_work",
+            joinColumns = {@JoinColumn(name = "work_id")},
+            inverseJoinColumns = {@JoinColumn(name = "file_id")})
     private Set<UserFile> userFiles;
 
     private OffsetDateTime createdAt;
+
     private OffsetDateTime updatedAt;
+
+    @Column(length = 1_000_000)
     private String teacherComment;
+
+    @Column(length = 1_000_000)
     private String studentComment;
+
     private Mark mark;
 
-
     public Work() {
+    }
+
+    @PreRemove
+    private void removeHandler() {
+        userFiles.forEach(UserFile::decLinkCount);
+        userFiles.clear();
     }
 
     public Long getId() {

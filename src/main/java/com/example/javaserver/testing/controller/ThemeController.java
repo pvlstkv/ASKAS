@@ -34,10 +34,10 @@ public class ThemeController {
     @PostMapping("/theme")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    public void createTheme(
+    public Long createTheme(
             @RequestBody ThemeIn themeIn
     ) {
-        themeService.createTheme(themeIn);
+        return themeService.createTheme(themeIn);
     }
 
     @PutMapping("/theme")

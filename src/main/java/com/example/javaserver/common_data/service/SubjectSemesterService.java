@@ -1,9 +1,11 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.controller.dto.SubjectSemesterIn;
+import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectControlType;
 import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -24,11 +26,13 @@ import java.util.Set;
 public class SubjectSemesterService {
     private final SubjectSemesterRepo subjectSemesterRepo;
     private final SubjectRepo subjectRepo;
+    private final StudyGroupRepo studyGroupRepo;
 
     @Autowired
-    public SubjectSemesterService(SubjectSemesterRepo subjectSemesterRepo, SubjectRepo subjectRepo) {
+    public SubjectSemesterService(SubjectSemesterRepo subjectSemesterRepo, SubjectRepo subjectRepo, StudyGroupRepo studyGroupRepo) {
         this.subjectSemesterRepo = subjectSemesterRepo;
         this.subjectRepo = subjectRepo;
+        this.studyGroupRepo = studyGroupRepo;
     }
 
     public Message create(SubjectSemesterIn subjectSemesterIn) {
@@ -36,7 +40,6 @@ public class SubjectSemesterService {
         subjectSemester.setControlType(subjectSemesterIn.controlType);
         subjectSemester.setHasCourseProject(subjectSemesterIn.hasCourseProject);
         subjectSemester.setHasCourseWork(subjectSemesterIn.hasCourseWork);
-        subjectSemester.setNumberOfSemester(subjectSemesterIn.numberOfSemester);
 
         if (subjectSemesterIn.subjectId != null) {
             Optional<Subject> subject = subjectRepo.findById(subjectSemesterIn.subjectId);
@@ -62,7 +65,6 @@ public class SubjectSemesterService {
             String controlType,
             String hasCourseProject,
             String hasCourseWork,
-            String numberOfSemester,
             String subjectId
     ) {
         Optional<SubjectSemester> semesterOptional = subjectSemesterRepo.findById(id);
@@ -90,14 +92,6 @@ public class SubjectSemesterService {
         if (hasCourseWork != null) {
             try {
                 semester.setHasCourseWork(hasCourseWork.equals("null") ? null : Boolean.parseBoolean(hasCourseWork));
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
-            }
-        }
-
-        if (numberOfSemester != null) {
-            try {
-                semester.setNumberOfSemester(numberOfSemester.equals("null") ? null : Integer.parseInt(numberOfSemester));
             } catch (Exception e) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: hasCourseWork");
             }
@@ -155,5 +149,21 @@ public class SubjectSemesterService {
 
     public Collection<SubjectSemester> searchByIds(Set<Long> ids) {
         return subjectSemesterRepo.findAllByIdIn(ids);
+    }
+
+    public Collection<SubjectSemester> searchBySubjectIdAndGroupIds(Long subjectId, Set<Long> groupIds) {
+        Optional<Subject> subjectO = subjectRepo.findById(subjectId);
+        if (!subjectO.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
+        }
+
+        Collection<StudyGroup> groups = studyGroupRepo.findAllByIdIn(groupIds);
+        for (Long id : groupIds) {
+            if (groups.stream().noneMatch(g -> g.getId().equals(id))) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Семестр с id = " + id + " не существует");
+            }
+        }
+
+        return subjectSemesterRepo.findAllBySubjectEqualsAndStudyGroupIn(subjectO.get(), groups);
     }
 }

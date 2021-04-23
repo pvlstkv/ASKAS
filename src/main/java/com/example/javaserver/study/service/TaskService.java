@@ -3,247 +3,154 @@ package com.example.javaserver.study.service;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
-import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
+import com.example.javaserver.common_data.service.SubjectService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
-import com.example.javaserver.study.controller.dto.TaskIn;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.UserFile;
-import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
-import com.example.javaserver.study.repo.UserFileRepo;
-import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.user.model.User;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.model.UserRole;
+import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("Duplicates")
 @Service
 public class TaskService {
     private final TaskRepo taskRepo;
-    private final UserFileRepo userFileRepo;
-    private final WorkRepo workRepo;
-    private final SubjectSemesterRepo semesterRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
+    private final SubjectService subjectService;
 
     @Autowired
-    public TaskService(TaskRepo taskRepo, UserFileRepo userFileRepo, WorkRepo workRepo, SubjectSemesterRepo semesterRepo, UserRepo userRepo) {
+    public TaskService(TaskRepo taskRepo, UserService userService, SubjectService subjectService) {
         this.taskRepo = taskRepo;
-        this.userFileRepo = userFileRepo;
-        this.workRepo = workRepo;
-        this.semesterRepo = semesterRepo;
-        this.userRepo = userRepo;
+        this.userService = userService;
+        this.subjectService = subjectService;
     }
 
     @SuppressWarnings("Duplicates")
     @Transactional
-    public ResponseEntity<?> create(TaskIn taskIn, UserContext userContext) {
-        if (taskIn.title == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
-        }
-        if (taskIn.type == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
-        }
-        if (taskIn.semesterId == null) {
-            return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
-        }
+    public Task create(Task task, UserDetailsImp userDetails) {
+        User user = userService.getById(userDetails.getId());
 
-        Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
-        if (!semester.isPresent()) {
-            return new ResponseEntity<>(new Message("Семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
-        }
+        task.getUserFiles().forEach(UserFile::incLinkCount);
 
-        Optional<User> user = userRepo.findById(userContext.getUserId());
-        if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("UserId токена инвалидный"), HttpStatus.BAD_REQUEST);
-        }
-
-        Set<UserFile> userFiles = userFileRepo.getUserFilesByIdIn(taskIn.fileIds);
-        for (Long id : taskIn.fileIds) {
-            if (userFiles.stream().noneMatch(f -> f.getId().equals(id))) {
-                return new ResponseEntity<>(new Message("Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
-            }
-        }
-        for (UserFile file : userFiles) {
-            if (file.getTask() != null) {
-                return new ResponseEntity<>(new Message("Невозможно создать задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        Task task = new Task();
-        task.setTitle(taskIn.title);
-        task.setType(taskIn.type);
-        task.setDescription(taskIn.description);
-        task.setSemester(semester.get());
-        task.setUser(user.get());
-        userFiles.forEach(f -> f.setTask(task));
-        taskRepo.save(task);
-
-        return new ResponseEntity<>(new Message("Задание успешно создано"), HttpStatus.CREATED);
+        task.setUser(user);
+        return taskRepo.save(task);
     }
 
-    public ResponseEntity<?> delete(Set<Long> ids) {
+    public Message delete(Set<Long> ids) {
         taskRepo.deleteAllByIdIn(ids);
-        return new ResponseEntity<>(new Message("Найденные задания были успешно удалены"), HttpStatus.OK);
+        return new Message("Найденные задания были успешно удалены");
     }
 
     @Transactional
-    public ResponseEntity<?> update(TaskIn taskIn) {
-        Optional<Task> taskO = taskRepo.findById(taskIn.id);
-        if (!taskO.isPresent()) {
-            return new ResponseEntity<>(new Message("Задание с указанным id не существует"), HttpStatus.BAD_REQUEST);
+    public Task update(Long id, Task taskToPut) {
+        Optional<Task> taskO = taskRepo.findByIdEquals(id);
+        if (taskO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не найдено");
         }
         Task task = taskO.get();
 
-        if (task.getTitle() == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь заголовок"), HttpStatus.BAD_REQUEST);
-        } else if (!Objects.equals(task.getTitle(), taskIn.title)) {
-            task.setTitle(taskIn.title);
-        }
+        Set<UserFile> userFiles = taskToPut.getUserFiles();
+        Set<SubjectSemester> semesters = taskToPut.getSemesters();
 
-        if (task.getType() == null) {
-            return new ResponseEntity<>(new Message("Задание должно иметь тип"), HttpStatus.BAD_REQUEST);
-        } else if (!Objects.equals(task.getType(), taskIn.type)) {
-            task.setType(taskIn.type);
-        }
+        task.getUserFiles().forEach(UserFile::decLinkCount);
+        userFiles.forEach(UserFile::incLinkCount);
 
-        if (!Objects.deepEquals(task.getDescription(), taskIn.description)) {
-            task.setDescription(taskIn.description);
-        }
+        task.setType(taskToPut.getType());
+        task.setTitle(taskToPut.getTitle());
+        task.setDescription(taskToPut.getDescription());
+        task.setSemesters(semesters);
+        task.setUserFiles(userFiles);
 
-        if (task.getSemester() == null) {
-            return new ResponseEntity<>(new Message("Задание должно быть привязано к семестру"), HttpStatus.BAD_REQUEST);
-        } else if (!Objects.equals(task.getSemester().getId(), taskIn.semesterId)) {
-            Optional<SubjectSemester> semester = semesterRepo.findById(taskIn.semesterId);
-            if (!semester.isPresent()) {
-                return new ResponseEntity<>(new Message("Невозможно изменить задание: семестр с указанным id не существует"), HttpStatus.BAD_REQUEST);
-            }
-            task.setSemester(semester.get());
-        }
-
-        if (taskIn.fileIds == null) {
-            return new ResponseEntity<>(new Message("Невозможно изменить задание: fileIds должно быть не null"), HttpStatus.BAD_REQUEST);
-        }
-        Set<UserFile> filesToRemove = new HashSet<>();
-        task.getUserFiles().forEach(f -> {
-            if (!taskIn.fileIds.contains(f.getId())) {
-                filesToRemove.add(f);
-            }
-        });
-        if (!filesToRemove.isEmpty()) {
-            filesToRemove.forEach(f -> f.setTask(null));
-        }
-        Set<Long> fileToAddIds = new HashSet<>();
-        taskIn.fileIds.forEach(i -> {
-            if (task.getUserFiles().stream().noneMatch(f -> f.getId().equals(i))) {
-                fileToAddIds.add(i);
-            }
-        });
-        if (!fileToAddIds.isEmpty()) {
-            Set<UserFile> filesToAdd = userFileRepo.getUserFilesByIdIn(fileToAddIds);
-            for (Long id : fileToAddIds) {
-                if (filesToAdd.stream().noneMatch(f -> f.getId().equals(id))) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + id + " не найден"), HttpStatus.BAD_REQUEST);
-                }
-            }
-            for (UserFile file : filesToAdd) {
-                if (file.getTask() != null) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Файл с id = " + file.getId() + " привязан к другому заданию"), HttpStatus.BAD_REQUEST);
-                }
-            }
-            filesToAdd.forEach(f -> f.setTask(task));
-        }
-
-        if (taskIn.workIds == null) {
-            return new ResponseEntity<>(new Message("Невозможно изменить задание: workIds должно быть не null"), HttpStatus.BAD_REQUEST);
-        }
-        Set<Work> worksToRemove = new HashSet<>();
-        task.getWorks().forEach(w -> {
-            if (!taskIn.workIds.contains(w.getId())) {
-                worksToRemove.add(w);
-            }
-        });
-        if (!worksToRemove.isEmpty()) {
-            worksToRemove.forEach(f -> f.setTask(null));
-        }
-        Set<Long> workToAddIds = new HashSet<>();
-        taskIn.workIds.forEach(i -> {
-            if (task.getWorks().stream().noneMatch(w -> w.getId().equals(i))) {
-                workToAddIds.add(i);
-            }
-        });
-        if (!workToAddIds.isEmpty()) {
-            Set<Work> worksToAdd = workRepo.getWorksByIdIn(workToAddIds);
-            for (Long id : taskIn.workIds) {
-                if (worksToAdd.stream().noneMatch(w -> w.getId().equals(id))) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + id + " не найдена"), HttpStatus.BAD_REQUEST);
-                }
-            }
-            for (Work work : worksToAdd) {
-                if (work.getTask() != null) {
-                    return new ResponseEntity<>(new Message("Невозможно изменить задание: Работа с id = " + work.getId() + " привязана к другому заданию"), HttpStatus.BAD_REQUEST);
-                }
-            }
-            worksToAdd.forEach(f -> f.setTask(task));
-        }
-
-        return new ResponseEntity<>(new Message("Задание было успешно изменено"), HttpStatus.OK);
+        return task;
     }
 
-    public ResponseEntity<?> getAll() {
-        Collection<Task> tasks = taskRepo.findAll(null);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    public  Collection<Task> getAll() {
+        return taskRepo.findAll(null);
     }
 
-    public ResponseEntity<?> criteriaSearch(Set<SearchCriteria> criteria) {
+    public Collection<Task> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Task> specification = CommonSpecification.of(criteria);
-            List<Task> tasks = taskRepo.findAll(specification);
-            return new ResponseEntity<>(tasks, HttpStatus.OK);
+            return taskRepo.findAll(specification);
         } catch (Exception e) {
-            return new ResponseEntity<>(new Message("Критерии поиска некорректны"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
-    public ResponseEntity<?> searchByIds(Set<Long> ids) {
-        Collection<Task> tasks = taskRepo.findAllByIdIn(ids);
-        return new ResponseEntity<>(tasks, HttpStatus.OK);
+    public Task getById(Long id) {
+        Optional<Task> taskO = taskRepo.findByIdEquals(id);
+        if (taskO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Задание с указанным id не существует");
+        }
+        return taskO.get();
     }
 
-    public ResponseEntity<?> searchBySubjectAndUser(Long subjectId, Integer userId, UserContext userContext) {
+    public Set<Task> getByIds(Set<Long> ids) {
+        Set<Task> tasks = taskRepo.findAllByIdIn(ids);
+        if (tasks.size() == ids.size()) {
+            return tasks;
+        } else {
+            Collection<Long> foundIds = tasks.stream()
+                    .map(Task::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Задания с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
+    }
+
+    public Collection<Task> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {
         if (userId == null) {
-            userId = userContext.getUserId();
+            userId = userDetails.getId();
         }
 
-        Optional<User> user = userRepo.findById(userId);
-        if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Id пользователя инвалидный"), HttpStatus.BAD_REQUEST);
+        User user = userService.getById(userId);
+        if (!user.getRole().equals(UserRole.USER)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является студентом");
         }
 
-        StudyGroup group = user.get().getStudyGroup();
+        StudyGroup group = user.getStudyGroup();
         if (group == null) {
-            return new ResponseEntity<>(new Message("Студент не привязан к группе"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Студент не привязан к группе");
         }
 
         Set<SubjectSemester> semesters = group.getSubjectSemesters();
         if (semesters.isEmpty()) {
-            return new ResponseEntity<>(new Message("Группа, в которой состоит студент не имеет семестров"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группа, в которой состоит студент не имеет семестров");
         }
 
         Optional<SubjectSemester> semester = semesters.stream().filter(s -> subjectId.equals(s.getSubject().getId())).findFirst();
-        if (!semester.isPresent()) {
-            return new ResponseEntity<>(new Message("Предмета с указанным id нет у пользователя"), HttpStatus.BAD_REQUEST);
+        if (semester.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
         }
 
-        return new ResponseEntity<>(semester.get().getTasks(), HttpStatus.OK);
+        return semester.get().getTasks();
+    }
+
+    public Collection<Task> searchBySubject(Long subjectId) {
+        Subject subject = subjectService.getById(subjectId);
+
+        return subject
+                .getSemesters().stream()
+                .flatMap(sem -> sem.getTasks().stream())
+                .collect(Collectors.toSet());
     }
 }

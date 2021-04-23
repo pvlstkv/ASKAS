@@ -1,0 +1,156 @@
+package com.example.javaserver.study.service;
+
+import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.model.SubjectSemester;
+import com.example.javaserver.common_data.service.SubjectService;
+import com.example.javaserver.general.criteria.SearchCriteria;
+import com.example.javaserver.general.model.Message;
+import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.general.specification.CommonSpecification;
+import com.example.javaserver.study.model.Literature;
+import com.example.javaserver.study.model.UserFile;
+import com.example.javaserver.study.repo.LiteratureRepo;
+import com.example.javaserver.user.model.User;
+import com.example.javaserver.user.model.UserRole;
+import com.example.javaserver.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.transaction.Transactional;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@SuppressWarnings("Duplicates")
+@Service
+public class LiteratureService {
+    private final LiteratureRepo literatureRepo;
+    private final UserService userService;
+    private final SubjectService subjectService;
+
+    @Autowired
+    public LiteratureService(LiteratureRepo literatureRepo, UserService userService, SubjectService subjectService) {
+        this.literatureRepo = literatureRepo;
+        this.userService = userService;
+        this.subjectService = subjectService;
+    }
+
+    @Transactional
+    public Literature create(Literature literature, UserDetailsImp userDetails) {
+        User user = userService.getById(userDetails.getId());
+
+        literature.setUser(user);
+        literature.getFiles().forEach(UserFile::incLinkCount);
+
+        return literatureRepo.save(literature);
+    }
+
+    public Message delete(Set<Long> ids) {
+        literatureRepo.deleteAllByIdIn(ids);
+        return new Message("Найденные задания были успешно удалены");
+    }
+
+    @Transactional
+    public Literature update(Long id, Literature literatureToPut) {
+        Optional<Literature> literatureO = literatureRepo.findById(id);
+        if (literatureO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература с указанным id не найдена");
+        }
+        Literature literature = literatureO.get();
+
+        Set<SubjectSemester> semesters = literatureToPut.getSemesters();
+
+        Set<UserFile> files = literatureToPut.getFiles();
+        literature.getFiles().forEach(UserFile::decLinkCount);
+        files.forEach(UserFile::incLinkCount);
+
+        literature.setSemesters(semesters);
+        literature.setType(literatureToPut.getType());
+        literature.setTitle(literatureToPut.getTitle());
+        literature.setAuthors(literatureToPut.getAuthors());
+        literature.setDescription(literatureToPut.getDescription());
+        literature.setFiles(files);
+
+        return literature;
+    }
+
+    public  Collection<Literature> getAll() {
+        return literatureRepo.findAll(null);
+    }
+
+    public Collection<Literature> criteriaSearch(Set<SearchCriteria> criteria) {
+        try {
+            Specification<Literature> specification = CommonSpecification.of(criteria);
+            return literatureRepo.findAll(specification);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
+        }
+    }
+
+    public Literature getById(Long id) {
+        Optional<Literature> literatureO = literatureRepo.findByIdEquals(id);
+        if (literatureO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Литература с указанным id не существует");
+        }
+        return literatureO.get();
+    }
+
+    public Set<Literature> getByIds(Set<Long> ids) {
+        Set<Literature> literature = literatureRepo.findAllByIdIn(ids);
+        if (literature.size() == ids.size()) {
+            return literature;
+        } else {
+            Collection<Long> foundIds = literature.stream()
+                    .map(Literature::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Литература с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
+    }
+
+    public Collection<Literature> searchBySubjectAndStudent(Long subjectId, Integer userId, UserDetailsImp userDetails) {
+        if (userId == null) {
+            userId = userDetails.getId();
+        }
+
+        User user = userService.getById(userId);
+        if (!user.getRole().equals(UserRole.USER)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является студентом");
+        }
+
+        StudyGroup group = user.getStudyGroup();
+        if (group == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Студент не привязан к группе");
+        }
+
+        Set<SubjectSemester> semesters = group.getSubjectSemesters();
+        if (semesters.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группа, в которой состоит студент не имеет семестров");
+        }
+
+        Optional<SubjectSemester> semester = semesters.stream().filter(s -> subjectId.equals(s.getSubject().getId())).findFirst();
+        if (semester.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмета с указанным id нет у пользователя");
+        }
+
+        return semester.get().getLiterature();
+    }
+
+    public Collection<Literature> searchBySubject(Long subjectId) {
+        Subject subject = subjectService.getById(subjectId);
+
+        return subject
+                .getSemesters().stream()
+                .flatMap(sem -> sem.getLiterature().stream())
+                .collect(Collectors.toSet());
+    }
+}

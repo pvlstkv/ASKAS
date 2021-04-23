@@ -6,16 +6,17 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.config.JwtUtil;
-import com.example.javaserver.user.client_model.TokenIO;
-import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.controller.dto.TokenIO;
+import com.example.javaserver.user.controller.dto.UserI;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -33,60 +34,62 @@ public class AuthService {
         this.departmentRepo = departmentRepo;
     }
 
-    public ResponseEntity<?> logUser(User user){
+    @Transactional
+    public TokenIO logUser(User user){
         if(user.getLogin() == null){
-            return new ResponseEntity<>(new Message("Введите логин"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите логин");
         }
         if(user.getPassword() == null){
-            return new ResponseEntity<>(new Message("Введите пароль"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите пароль");
         }
         if(!userRepo.existsByLogin(user.getLogin())){
-            return new ResponseEntity<>(new Message("Пользователя с таким логином не существует"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователя с таким логином не существует");
         }
         User authUser = userRepo.getUserByLogin(user.getLogin());
         if(authUser.getPassword().equals(user.getPassword())){
             String token = jwtUtil.generateToken(authUser);
-            return new ResponseEntity<>(new TokenIO(token),HttpStatus.OK);
+            return new TokenIO(token);
         }
         else {
-            return new ResponseEntity<>(new Message("Неверный пароль"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный пароль");
         }
     }
 
-    public ResponseEntity<?> regUser(UserI userI){
+    @Transactional
+    public Message regUser(UserI userI){
         if(userI.getLogin() == null){
-            return new ResponseEntity<>(new Message("Введите логин"), HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите логин");
         }
         if(userI.getPassword() == null){
-            return new ResponseEntity<>(new Message("Введите пароль"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите пароль");
         }
         if(userI.getEmail() == null){
-            return new ResponseEntity<>(new Message("Введите вашу почту"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите вашу почту");
         }
         if (userI.getFirstName() == null){
-            return new ResponseEntity<>(new Message("Введите ваше Имя"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите ваше Имя");
         }
         if(userI.getLastName() == null){
-            return new ResponseEntity<>(new Message("Введите вашу фамилию"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите вашу фамилию");
         }
         /*if(userI.getPatronymic() == null){
             return new ResponseEntity<>(new Message("Введите ваше отчество"),HttpStatus.BAD_REQUEST);
         }*/
         if(userI.getPhone() == null){
-            return new ResponseEntity<>(new Message("Введите ваш телефон"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите ваш телефон");
         }
         if(userI.getRole() == null){
-            return new ResponseEntity<>(new Message("Укажите роль"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите роль");
         }
 
         if(userRepo.existsByLogin(userI.getLogin())){
-            return new ResponseEntity<>(new Message("Пользователя с таким логином уже существует"),HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователя с таким логином уже существует");
         }
 
         if(userI.getRole().equals(UserRole.ADMIN)){
             User user = new User(userI);
             userRepo.save(user);
-            return new ResponseEntity<>(new Message("Пользователь с ролью: админ успешно создан"),HttpStatus.CREATED);
+            return new Message("Пользователь с ролью: админ успешно создан");
 
         }else if(userI.getRole().equals(UserRole.TEACHER)){
             User user = new User(userI);
@@ -94,26 +97,26 @@ public class AuthService {
             if(department.isPresent()){
                 user.setDepartment(department.get());
             }else {
-                return new ResponseEntity<>(new Message("Такой кафедры не существует"),HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой кафедры не существует");
             }
             userRepo.save(user);
-            return new ResponseEntity<>(new Message("Пользователь с ролью: преподаватель успешно создан"),HttpStatus.CREATED);
+            return new Message("Пользователь с ролью: преподаватель успешно создан");
         }else if(userI.getRole().equals(UserRole.USER)){
             User user = new User(userI);
             Optional<StudyGroup> studyGroup = studyGroupRepo.findById(userI.getStudyGroupId());
             if(studyGroup.isPresent()){
                 user.setStudyGroup(studyGroup.get());
             }else {
-                return new ResponseEntity<>(new Message("Такой группы не существует"),HttpStatus.BAD_REQUEST);
+                return new Message("Такой группы не существует");
             }
             try {
                 userRepo.save(user);
-                return new ResponseEntity<>(new Message("Пользователь с ролью: студент успешно создан"),HttpStatus.CREATED);
+                return new Message("Пользователь с ролью: студент успешно создан");
             } catch (Exception e){
-                return new ResponseEntity<>(new Message("Ошибка попробуйте позже"),HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка попробуйте позже");
             }
         }else {
-            return new ResponseEntity<>(new Message("Ошибка, такой роли не существует"),HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка, такой роли не существует");
         }
     }
 

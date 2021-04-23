@@ -1,11 +1,13 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
+import com.example.javaserver.common_data.controller.dto.StudyGroupI;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
+import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -27,13 +30,15 @@ import java.util.stream.Collectors;
 public class StudyGroupService {
     private final StudyGroupRepo studyGroupRepo;
     private final SubjectSemesterRepo subjectSemesterRepo;
+    private final SubjectRepo subjectRepo;
     private final UserRepo userRepo;
     private final DepartmentRepo departmentRepo;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
+    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, SubjectRepo subjectRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
         this.studyGroupRepo = studyGroupRepo;
         this.subjectSemesterRepo = subjectSemesterRepo;
+        this.subjectRepo = subjectRepo;
         this.userRepo = userRepo;
         this.departmentRepo = departmentRepo;
     }
@@ -54,26 +59,34 @@ public class StudyGroupService {
         return new Message("Учебная группа успешно создана");
     }
 
-    public Collection<StudyGroup> searchByIds(Set<Long> ids) {
-        return studyGroupRepo.findAllByIdIn(ids);
+    public StudyGroup getById(Long id) {
+        Optional<StudyGroup> groupO = studyGroupRepo.findByIdEquals(id);
+        if (groupO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группы с указанным id не существует");
+        }
+        return groupO.get();
     }
 
-    public StudyGroup get(Long id){
-        if(id != null){
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
-            if(!studyGroup.isPresent()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
-            }
-            return studyGroup.get();
+    public Set<StudyGroup> getByIds(Set<Long> ids) {
+        Set<StudyGroup> groups = studyGroupRepo.findAllByIdIn(ids);
+        if (groups.size() == ids.size()) {
+            return groups;
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
+            Collection<Long> foundIds = groups.stream()
+                    .map(StudyGroup::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Группы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
         }
     }
 
     @Transactional
     public Message enroll(Long studyGroupId, Set<Integer> userIds) {
         Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
+        if (group.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
         }
 
@@ -85,7 +98,7 @@ public class StudyGroupService {
     @Transactional
     public Message addSubjectSemesters(Long studyGroupId, Set<Long> subjectSemesterIds) {
         Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
+        if (group.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
         }
 
@@ -94,13 +107,13 @@ public class StudyGroupService {
         return new Message("Семестры были успешно добавлены для группы");
     }
 
-    public Collection<StudyGroup> getGroupsByUser(Integer userId, UserDetailsImp userDetails){
+    public Collection<StudyGroup> getGroupsByTeacher(Integer userId, UserDetailsImp userDetails){
         if (userId == null) {
             userId = userDetails.getId();
         }
 
         Optional<User> userO = userRepo.findById(userId);
-        if (!userO.isPresent()) {
+        if (userO.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет пользователя с указанным (явно или по токену) id");
         }
         User user = userO.get();
@@ -112,7 +125,21 @@ public class StudyGroupService {
         return user
                 .getTeachingSubjects().stream()
                 .flatMap(sub -> sub.getSemesters().stream())
-                .flatMap(sem -> sem.getStudyGroups().stream())
+                .map(SubjectSemester::getStudyGroup)
+                .collect(Collectors.toSet());
+    }
+
+    public Collection<StudyGroup> getGroupsBySubject(Long subjectId){
+        Optional<Subject> subjectO = subjectRepo.findById(subjectId);
+        if (subjectO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет предмета с указанным id");
+        }
+        Subject subject = subjectO.get();
+
+        return subjectSemesterRepo
+                .findAllBySubjectEquals(subject)
+                .stream()
+                .map(SubjectSemester::getStudyGroup)
                 .collect(Collectors.toSet());
     }
 }

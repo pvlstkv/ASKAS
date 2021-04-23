@@ -1,90 +1,154 @@
 package com.example.javaserver.study.service;
 
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.general.model.UserContext;
-import com.example.javaserver.study.controller.dto.UserFileOut;
+import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.repo.UserFileRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserService;
+import io.minio.*;
+import io.minio.messages.DeleteObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class UserFileService {
+    private final MinioClient minioClient;
     private final UserFileRepo userFileRepo;
-    private final UserRepo userRepo;
+    private final UserService userService;
+    private final String bucketName;
 
     @Autowired
-    public UserFileService(UserFileRepo userFileRepo, UserRepo userRepo) {
+    public UserFileService(
+            MinioClient minioClient,
+            UserFileRepo userFileRepo,
+            UserService userService,
+            @Value("${spring.minio.bucket}") String bucketName
+    ) {
+        this.minioClient = minioClient;
         this.userFileRepo = userFileRepo;
-        this.userRepo = userRepo;
+        this.userService = userService;
+        this.bucketName = bucketName;
     }
 
     @Transactional
-    public ResponseEntity<?> create(MultipartFile file, UserRole accessLevel, UserContext userContext) {
-        Optional<User> user = userRepo.findById(userContext.getUserId());
-        if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Токен инвалидный, userId не найден"), HttpStatus.BAD_REQUEST);
-        }
+    public UserFile upload(MultipartFile multipartFile, UserRole accessLevel, UserDetailsImp userDetails) {
+        User user = userService.getById(userDetails.getId());
 
-        if (accessLevel != null && user.get().getRole().compareTo(accessLevel) < 0) {
-            return new ResponseEntity<>(new Message("Уровень доступа к файлу превышает уровень доступа пользователя"), HttpStatus.BAD_REQUEST);
-        }
-
-        byte[] data;
-        try {
-            data = file.getBytes();
-        } catch (IOException e) {
-            return new ResponseEntity<>(new Message("Ошибка чтения файла"), HttpStatus.BAD_REQUEST);
+        if (accessLevel != null && user.getRole().compareTo(accessLevel) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Уровень доступа к файлу превышает уровень доступа пользователя");
         }
 
         UserFile userFile = new UserFile();
-        userFile.setUser(user.get());
+        userFile.setUser(user);
         userFile.setAccessLevel(accessLevel == null ? UserRole.USER : accessLevel);
-        userFile.setData(data);
-        userFile.setName(file.getOriginalFilename());
+        userFile.setName(multipartFile.getOriginalFilename());
+        userFile.setContentType(multipartFile.getContentType());
+        userFile.setContentLength(multipartFile.getSize());
+        userFile.setLinkCount(0);
         userFile = userFileRepo.save(userFile);
 
-        UserFileOut fileOut = new UserFileOut();
-        fileOut.id = userFile.getId();
+        try {
+            InputStream stream = multipartFile.getInputStream();
+            PutObjectArgs args = PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .stream(stream, stream.available(), -1L)
+                    .object(userFile.getId().toString())
+                    .build();
+            minioClient.putObject(args);
+        } catch (Exception e) {
+            userFileRepo.deleteById(userFile.getId());
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка загрузки файла", e);
+        }
 
-        return new ResponseEntity<>(fileOut, HttpStatus.CREATED);
+        return userFile;
     }
 
-    public ResponseEntity<?> download(Long id, UserContext userContext) {
-        Optional<UserFile> file = userFileRepo.findById(id);
-        if (!file.isPresent()) {
-            return new ResponseEntity<>(new Message("Файл с указанным id не найден"), HttpStatus.BAD_REQUEST);
-        }
+    @Transactional
+    public Collection<UserFile> deleteOrphan() {
+        Set<UserFile> files = userFileRepo.findAllByLinkCountEquals(0);
 
-        Optional<User> user = userRepo.findById(userContext.getUserId());
-        if (!user.isPresent()) {
-            return new ResponseEntity<>(new Message("Токен инвалидный, userId не найден"), HttpStatus.BAD_REQUEST);
-        }
+        Collection<DeleteObject> objects = files.stream()
+                .map(f -> new DeleteObject(f.getId().toString()))
+                .collect(Collectors.toSet());
+        RemoveObjectsArgs args = RemoveObjectsArgs.builder()
+                .bucket(bucketName)
+                .objects(objects).build();
 
-        if (user.get().getRole().compareTo(file.get().getAccessLevel()) < 0) {
-            return new ResponseEntity<>(new Message("Отказано в доступе к файлу"), HttpStatus.BAD_REQUEST);
-        }
+        minioClient.removeObjects(args);
+        //userFileRepo.deleteAll(files);
 
-        return new ResponseEntity<>(file.get().getData(), HttpStatus.OK);
+        return files;
     }
 
-    public ResponseEntity<?> getBy(Long[] idsArr, UserContext userContext) {
-        Set<Long> ids = Arrays.stream(idsArr).collect(Collectors.toSet());
-        Set<UserFile> files = userFileRepo.getUserFilesByIdIn(ids);
+    public ResponseEntity<ByteArrayResource> download(Long id, UserDetailsImp userDetails) {
+        Optional<UserFile> fileO = userFileRepo.findById(id);
+        if (fileO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не найден");
+        }
+        UserFile file = fileO.get();
 
-        return new ResponseEntity<>(files, HttpStatus.OK);
+        User user = userService.getById(userDetails.getId());
+
+        if (user.getRole().compareTo(file.getAccessLevel()) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Отказано в доступе к файлу");
+        }
+
+        GetObjectArgs args = GetObjectArgs.builder()
+                .bucket(bucketName)
+                .object(id.toString())
+                .build();
+
+        try {
+            GetObjectResponse response = minioClient.getObject(args);
+            byte[] content = response.readAllBytes();
+            ByteArrayResource resource = new ByteArrayResource(content);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Type", file.getContentType());
+            headers.add("Content-Length", file.getContentLength().toString());
+            return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Ошибка скачивания файла", e);
+        }
+    }
+
+    public UserFile getById(Long id) {
+        Optional<UserFile> userFileO = userFileRepo.findByIdEquals(id);
+        if (userFileO.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Файл с указанным id не существует");
+        }
+        return userFileO.get();
+    }
+
+    public Set<UserFile> getByIds(Set<Long> ids) {
+        Set<UserFile> userFiles = userFileRepo.findAllByIdIn(ids);
+        if (userFiles.size() == ids.size()) {
+            return userFiles;
+        } else {
+            Collection<Long> foundIds = userFiles.stream()
+                    .map(UserFile::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Файлы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
+        }
     }
 }

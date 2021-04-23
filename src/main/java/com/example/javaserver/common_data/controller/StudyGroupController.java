@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
+import com.example.javaserver.common_data.controller.dto.StudyGroupI;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.service.StudyGroupService;
@@ -34,7 +34,7 @@ public class StudyGroupController {
     public StudyGroup getGroup(
             @RequestParam(required = false) Long id
     ){
-        return studyGroupService.get(id);
+        return studyGroupService.getById(id);
     }
 
     @GetMapping("/list")
@@ -49,7 +49,7 @@ public class StudyGroupController {
     public Collection<StudyGroup> searchByIds(
             @RequestParam("id") Set<Long> ids
     ) {
-        return studyGroupService.searchByIds(ids);
+        return studyGroupService.getByIds(ids);
     }
 
     @PostMapping
@@ -84,10 +84,19 @@ public class StudyGroupController {
     @GetMapping("/teaching")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<StudyGroup> getGroupsByUser(
+    public Collection<StudyGroup> getGroupsByTeacher(
             @RequestParam(value = "userId", required = false) Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
     ){
-        return studyGroupService.getGroupsByUser(userId, userDetails);
+        return studyGroupService.getGroupsByTeacher(userId, userDetails);
+    }
+
+    @GetMapping("/learning")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"USER", "TEACHER", "ADMIN"})
+    public Collection<StudyGroup> getGroupsByTeacher(
+            @RequestParam("subjectId") Long subjectId
+    ){
+        return studyGroupService.getGroupsBySubject(subjectId);
     }
 }

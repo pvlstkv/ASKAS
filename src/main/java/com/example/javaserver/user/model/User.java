@@ -3,7 +3,7 @@ package com.example.javaserver.user.model;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.controller.dto.UserI;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -116,6 +116,11 @@ public class User implements Serializable {
         this.phone = phone;
         this.studyGroup = studyGroup;
         this.role = role;
+    }
+
+    @PreRemove
+    private void removeHandler() {
+        teachingSubjects.forEach(s -> s.getTeachers().remove(this));
     }
 
     public Department getDepartment() {
