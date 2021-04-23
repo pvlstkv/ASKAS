@@ -14,13 +14,25 @@ import java.util.Set;
 @DiscriminatorValue("choose_and_seq")
 public class SelectableQuestion extends QuestionData {
 
-    @OneToMany(mappedBy = "questionChooseAndSeq", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "selectableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptionList;
+
+    public SelectableQuestion(QuestionData questionData, List<AnswerOption> answerOptionList){
+        super(questionData);
+        this.answerOptionList = answerOptionList;
+    }
+    public SelectableQuestion( String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject, List<AnswerOption> answerOptionList) {
+        super( question, questionType, complexity, userFiles, theme, subject);
+        this.answerOptionList = answerOptionList;
+    }
 
     public SelectableQuestion() {
 
     }
-
+    public SelectableQuestion(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject, List<AnswerOption> answerOptionList) {
+        super(id, question, questionType, complexity, userFiles, theme, subject);
+        this.answerOptionList = answerOptionList;
+    }
     public List<AnswerOption> getAnswerOptionList() {
         return answerOptionList;
     }
@@ -29,10 +41,7 @@ public class SelectableQuestion extends QuestionData {
         this.answerOptionList = answerOptionList;
     }
 
-    public SelectableQuestion(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject, List<AnswerOption> answerOptionList) {
-        super(id, question, questionType, complexity, userFiles, theme, subject);
-        this.answerOptionList = answerOptionList;
-    }
+
 
     public SelectableQuestion(List<AnswerOption> answerOptionList) {
         this.answerOptionList = answerOptionList;

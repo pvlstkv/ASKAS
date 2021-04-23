@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class MatchableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @OneToOne
     private AnswerOption key;
     @OneToOne
@@ -19,17 +19,17 @@ public class MatchableAnswerOption {
     public MatchableAnswerOption() {
     }
 
-    public MatchableAnswerOption(Integer id, AnswerOption key, AnswerOption value) {
+    public MatchableAnswerOption(Long id, AnswerOption key, AnswerOption value) {
         this.id = id;
         this.key = key;
         this.value = value;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -1,12 +1,15 @@
-//package com.example.javaserver.testing.model.new_.dto.mapper;
+//package com.example.javaserver.testing.n.dto.mapper;
 //
-//import com.example.javaserver.testing.model.new_.QuestionNew;
-//import com.example.javaserver.testing.model.new_.dto.QuestionIn;
+//import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
+//import com.example.javaserver.testing.n.model.QuestionData;
 //import org.mapstruct.Mapper;
-//
-//import java.util.List;
+//import org.mapstruct.Mapping;
+//import org.mapstruct.Mappings;
 //
 //@Mapper
 //public interface QuestionMapper {
-//    QuestionIn map (QuestionNew question);
+//    @Mappings(
+//            @Mapping(source = "fileIds", target = "userFiles")
+//    )
+//    QuestionData mapToEntity(QuestionDataDto question);
 //}

@@ -14,7 +14,7 @@ import java.util.Set;
 @DiscriminatorColumn(name = "question_discriminator",
         discriminatorType = DiscriminatorType.STRING)
 
-public abstract class QuestionData {
+public class QuestionData {
     @Id
     @GeneratedValue()
     private Long id;
@@ -36,9 +36,29 @@ public abstract class QuestionData {
     @JsonIgnore
     private Theme theme;
 
-    @ManyToOne()
+    @ManyToOne
     @JsonIgnore
     private Subject subject;
+
+
+    public QuestionData(QuestionData questionData) {
+        this.id = questionData.getId();
+        this.question = questionData.getQuestion();
+        this.questionType = questionData.getQuestionType();
+        this.complexity = questionData.getComplexity();
+        this.userFiles = questionData.getUserFiles();
+        this.theme = questionData.getTheme();
+        this.subject = questionData.getSubject();
+    }
+
+    public QuestionData(String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject) {
+        this.question = question;
+        this.questionType = questionType;
+        this.complexity = complexity;
+        this.userFiles = userFiles;
+        this.theme = theme;
+        this.subject = subject;
+    }
 
     public QuestionData(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject) {
         this.id = id;

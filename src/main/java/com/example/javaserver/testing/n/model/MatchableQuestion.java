@@ -23,11 +23,16 @@ public class MatchableQuestion extends QuestionData {
     @JsonProperty("answerOptions")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "questionMatch",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "matchableQuestion",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchableAnswerOption> matchableAnswerOptionList;
 
     public MatchableQuestion() {
     }
+    public MatchableQuestion(QuestionData questionData, List<MatchableAnswerOption> matchableAnswerOptionList) {
+        super(questionData);
+        this.matchableAnswerOptionList = matchableAnswerOptionList;
+    }
+
 
     public MatchableQuestion(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject, List<MatchableAnswerOption> matchableAnswerOptionList) {
         super(id, question, questionType, complexity, userFiles, theme, subject);

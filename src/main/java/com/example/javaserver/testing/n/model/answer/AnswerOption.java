@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class AnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String answer;
     private Boolean isRight;
     @OneToOne
@@ -26,23 +26,23 @@ public class AnswerOption {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
-    private SelectableQuestion chooseableQuestion;
+    private SelectableQuestion selectableQuestion;
 
     public AnswerOption() {
     }
 
-    public AnswerOption(Integer id, String answer, Boolean isRight, UserFile file) {
+    public AnswerOption(Long id, String answer, Boolean isRight, UserFile file) {
         this.id = id;
         this.answer = answer;
         this.isRight = isRight;
         this.file = file;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -68,5 +68,13 @@ public class AnswerOption {
 
     public void setFile(UserFile file) {
         this.file = file;
+    }
+
+    public SelectableQuestion getSelectableQuestion() {
+        return selectableQuestion;
+    }
+
+    public void setSelectableQuestion(SelectableQuestion selectableQuestion) {
+        this.selectableQuestion = selectableQuestion;
     }
 }

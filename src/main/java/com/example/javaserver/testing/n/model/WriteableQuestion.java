@@ -23,7 +23,7 @@ public class WriteableQuestion extends QuestionData {
     @JsonProperty("answerOptions")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "questionWrite",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "writeableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WriteableAnswerOption> writeableAnswerOptionList;
 
     public WriteableQuestion() {
@@ -31,6 +31,11 @@ public class WriteableQuestion extends QuestionData {
 
     public WriteableQuestion(Long id, String question, QuestionType questionType, Double complexity, Set<UserFile> userFiles, Theme theme, Subject subject, List<WriteableAnswerOption> writeableAnswerOptionList) {
         super(id, question, questionType, complexity, userFiles, theme, subject);
+        this.writeableAnswerOptionList = writeableAnswerOptionList;
+    }
+
+    public WriteableQuestion(QuestionData questionData, List<WriteableAnswerOption> writeableAnswerOptionList) {
+        super(questionData);
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
 

@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class WriteableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String answer;
     private Boolean isStrict;
 
@@ -18,17 +18,17 @@ public class WriteableAnswerOption {
     public WriteableAnswerOption() {
     }
 
-    public WriteableAnswerOption(Integer id, String answer, Boolean isStrict) {
+    public WriteableAnswerOption(Long id, String answer, Boolean isStrict) {
         this.id = id;
         this.answer = answer;
         this.isStrict = isStrict;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
