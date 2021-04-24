@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.common_data.controller.dto.StudyGroupI;
+import com.example.javaserver.common_data.controller.dto.StudyGroupDto;
+import com.example.javaserver.conference.model.Conference;
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -28,8 +29,10 @@ public class StudyGroup implements Serializable {
 
     private Integer numberOfSemester;
 
+    @Column(length = 50)
     private String shortName;
 
+    @Column(length = 50)
     private String fullName;
 
     private OffsetDateTime createdAt;
@@ -38,37 +41,20 @@ public class StudyGroup implements Serializable {
 
     private Integer yearOfStudyStart;
 
-    @JsonProperty("departmentId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Department department;
 
-
-    @JsonProperty("studentIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> students;
 
-    @JsonProperty("subjectSemesterIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> subjectSemesters;
 
+    @OneToMany(mappedBy = "studyGroup")
+    private Set<Conference> conferences;
+
     public StudyGroup() {
     }
-
-    public StudyGroup(StudyGroupI studyGroupI) {
-        this.code = studyGroupI.getCode();
-        this.groupNumber = studyGroupI.getGroupNumber();
-        this.numberOfSemester = studyGroupI.getNumberOfSemester();
-        this.shortName = studyGroupI.getShortName();
-        this.fullName = studyGroupI.getFullName();
-        this.yearOfStudyStart = studyGroupI.getYearOfStudyStart();
-    }
-
 
     public StudyGroup(Integer code, Integer groupNumber, Integer numberOfSemester, String shortName, String fullName, Integer yearOfStudyStart) {
         this.code = code;

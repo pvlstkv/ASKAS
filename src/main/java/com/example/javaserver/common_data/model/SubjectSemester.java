@@ -3,7 +3,6 @@ package com.example.javaserver.common_data.model;
 
 import com.example.javaserver.study.model.Literature;
 import com.example.javaserver.study.model.Task;
-import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
@@ -16,33 +15,20 @@ public class SubjectSemester {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
     private String name;
     private SubjectControlType controlType;
     private Boolean hasCourseWork;
     private Boolean hasCourseProject;
 
-    @JsonProperty("taskIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany(mappedBy = "semesters")
     private Set<Task> tasks;
 
-    @JsonProperty("literatureIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany(mappedBy = "semesters")
     private Set<Literature> literature;
 
-    @JsonProperty("subjectId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private Subject subject;
 
-    @JsonProperty("studentGroupId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private StudyGroup studyGroup;
 
@@ -50,9 +36,6 @@ public class SubjectSemester {
 
     private OffsetDateTime updatedAt;
 
-    @JsonProperty("semesterMarkIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "subjectSemester", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SemesterMark> semesterMarks;
 
