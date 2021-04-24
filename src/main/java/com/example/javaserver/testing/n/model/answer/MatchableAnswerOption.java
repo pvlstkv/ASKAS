@@ -1,6 +1,8 @@
 package com.example.javaserver.testing.n.model.answer;
 
+
 import com.example.javaserver.testing.n.model.MatchableQuestion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -14,6 +16,7 @@ public class MatchableAnswerOption {
     @OneToOne(cascade = CascadeType.ALL)
     private AnswerOption value;
     @ManyToOne
+    @JsonIgnore
     private MatchableQuestion matchableQuestion;
 
     public MatchableAnswerOption() {

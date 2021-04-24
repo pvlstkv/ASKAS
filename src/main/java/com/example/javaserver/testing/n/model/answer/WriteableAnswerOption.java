@@ -1,6 +1,7 @@
 package com.example.javaserver.testing.n.model.answer;
 
 import com.example.javaserver.testing.n.model.WriteableQuestion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ public class WriteableAnswerOption {
     private Boolean isStrict;
 
     @ManyToOne
+    @JsonIgnore
     private WriteableQuestion writeableQuestion;
 
     public WriteableAnswerOption() {

@@ -11,7 +11,14 @@ import com.example.javaserver.testing.n.repo.QuestionRepo;
 import com.example.javaserver.testing.n.repo.SelectableQuestionRepo;
 import com.example.javaserver.testing.n.repo.WriteableQuestionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class QuestionService {
@@ -32,7 +39,9 @@ public class QuestionService {
     }
 
 
-    public void createQuestions(TestDto testDto) {
+    @Transactional
+
+    public void saveQuestions(TestDto testDto) {
         for (QuestionDataDto questionDataDto : testDto.getQuestionDataDtoList()) {
             QuestionData questionData = customQuestionMapper.toEntity(questionDataDto, testDto.getThemeId(), testDto.getSubjectId());
             System.out.println(questionData);
@@ -42,8 +51,17 @@ public class QuestionService {
         }
     }
 
+    public void deleteQuestions(Set<Long> ids){
+        questionRepo.deleteAllByIdIn(ids);
+    }
+
     public QuestionData get(Long id){
-        return questionRepo.findById(id).get();
+        Optional<QuestionData> questionData =  questionRepo.findById(id);
+        if (questionData.isPresent()){
+            return questionData.get();
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "вопроса с id = " + id + "не существует");
+        }
 
     }
     private void createSelectableQuestion(QuestionDataDto questionDataDto) {

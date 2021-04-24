@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class QController {
@@ -21,19 +22,25 @@ public class QController {
         this.questionService = questionService;
     }
 
-    @PostMapping("/question")
+    @PostMapping("/questions")
     public void create(@RequestBody TestDto testDto) {
         System.out.println(testDto);
-        questionService.createQuestions(testDto);
+        questionService.saveQuestions(testDto);
         int s = 0;
     }
 
-    @PutMapping("/question")
+    @PutMapping("/questions")
     public void update(@RequestBody TestDto testDto) {
         System.out.println(testDto);
-        questionService.createQuestions(testDto);
-        int s = 0;
+        questionService.saveQuestions(testDto);
     }
+
+    @DeleteMapping("/questions")
+    public void update(@RequestBody Set<Long> ids) {
+        questionService.deleteQuestions(ids);
+    }
+
+
     @GetMapping("/question")
     public QuestionData get(@RequestParam Long id) {
         return questionService.get(id);

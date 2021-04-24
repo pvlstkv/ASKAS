@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class QuestionDataDto {
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+
     private Long id;
     private String question;
     private QuestionType questionType;

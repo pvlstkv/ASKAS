@@ -2,10 +2,7 @@ package com.example.javaserver.testing.n.model.answer;
 
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.testing.n.model.SelectableQuestion;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.persistence.*;
 
@@ -22,9 +19,7 @@ public class AnswerOption {
     @JsonIdentityReference(alwaysAsId = true)
     private UserFile file;
 
-    @JsonProperty("questionId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     private SelectableQuestion selectableQuestion;
 
