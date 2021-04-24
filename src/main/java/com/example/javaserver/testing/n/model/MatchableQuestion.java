@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.Set;
+
 @Entity
 @DiscriminatorValue("match")
 public class MatchableQuestion extends QuestionData {
@@ -23,11 +24,16 @@ public class MatchableQuestion extends QuestionData {
     @JsonProperty("answerOptions")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @OneToMany(mappedBy = "matchableQuestion",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "matchableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchableAnswerOption> matchableAnswerOptionList;
 
     public MatchableQuestion() {
     }
+
+    public MatchableQuestion(QuestionData questionData) {
+        super(questionData);
+    }
+
     public MatchableQuestion(QuestionData questionData, List<MatchableAnswerOption> matchableAnswerOptionList) {
         super(questionData);
         this.matchableAnswerOptionList = matchableAnswerOptionList;
@@ -43,11 +49,11 @@ public class MatchableQuestion extends QuestionData {
         this.matchableAnswerOptionList = matchableAnswerOptionList;
     }
 
-    public List<MatchableAnswerOption> getMatchList() {
+    public List<MatchableAnswerOption> getMatchableAnswerOptionList() {
         return matchableAnswerOptionList;
     }
 
-    public void setMatchList(List<MatchableAnswerOption> matchableAnswerOptionList) {
+    public void setMatchableAnswerOptionList(List<MatchableAnswerOption> matchableAnswerOptionList) {
         this.matchableAnswerOptionList = matchableAnswerOptionList;
     }
 }

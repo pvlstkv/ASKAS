@@ -19,6 +19,13 @@ public class MatchableAnswerOption {
     public MatchableAnswerOption() {
     }
 
+    public MatchableAnswerOption(Long id, AnswerOption key, AnswerOption value, MatchableQuestion matchableQuestion) {
+        this.id = id;
+        this.key = key;
+        this.value = value;
+        this.matchableQuestion = matchableQuestion;
+    }
+
     public MatchableAnswerOption(Long id, AnswerOption key, AnswerOption value) {
         this.id = id;
         this.key = key;

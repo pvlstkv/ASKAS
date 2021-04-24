@@ -17,6 +17,9 @@ public class SelectableQuestion extends QuestionData {
     @OneToMany(mappedBy = "selectableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerOption> answerOptionList;
 
+    public SelectableQuestion(QuestionData questionData){
+        super(questionData);
+    }
     public SelectableQuestion(QuestionData questionData, List<AnswerOption> answerOptionList){
         super(questionData);
         this.answerOptionList = answerOptionList;

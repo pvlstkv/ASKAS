@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class QuestionData {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
     private String question;
@@ -36,7 +36,7 @@ public class QuestionData {
     @JsonIgnore
     private Theme theme;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
     private Subject subject;
 

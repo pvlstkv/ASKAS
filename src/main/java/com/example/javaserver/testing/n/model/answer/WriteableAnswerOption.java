@@ -47,4 +47,12 @@ public class WriteableAnswerOption {
     public void setStrict(Boolean strict) {
         isStrict = strict;
     }
+
+    public WriteableQuestion getWriteableQuestion() {
+        return writeableQuestion;
+    }
+
+    public void setWriteableQuestion(WriteableQuestion writeableQuestion) {
+        this.writeableQuestion = writeableQuestion;
+    }
 }

@@ -25,7 +25,7 @@ public class AnswerOption {
     @JsonProperty("questionId")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private SelectableQuestion selectableQuestion;
 
     public AnswerOption() {

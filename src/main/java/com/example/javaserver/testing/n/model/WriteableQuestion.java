@@ -34,6 +34,10 @@ public class WriteableQuestion extends QuestionData {
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
 
+    public WriteableQuestion(QuestionData questionData) {
+        super(questionData);
+    }
+
     public WriteableQuestion(QuestionData questionData, List<WriteableAnswerOption> writeableAnswerOptionList) {
         super(questionData);
         this.writeableAnswerOptionList = writeableAnswerOptionList;
@@ -44,11 +48,11 @@ public class WriteableQuestion extends QuestionData {
     }
 
 
-    public List<WriteableAnswerOption> getAnswerOptionWriteNewList() {
+    public List<WriteableAnswerOption> getAnswerOptionWriteList() {
         return writeableAnswerOptionList;
     }
 
-    public void setAnswerOptionWriteNewList(List<WriteableAnswerOption> writeableAnswerOptionList) {
+    public void setAnswerOptionWriteList(List<WriteableAnswerOption> writeableAnswerOptionList) {
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
 }
