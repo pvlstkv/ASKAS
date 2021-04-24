@@ -1,7 +1,6 @@
 package com.example.javaserver.schedule.service;
 
 import com.example.javaserver.schedule.model.Schedule;
-import com.example.javaserver.schedule.repo.ScheduleRepo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,16 +14,16 @@ import java.util.regex.Pattern;
 
 @Service
 public class ParserService {
-    private final ScheduleRepo scheduleRepo;
 
     private ArrayList<String> listHtmlPage;
     private ArrayList<String> listNameGroup;
     private List<Schedule> scheduleList;
     private final Map<String,Integer> weekStudy = new HashMap<>();
     private final Map<String,Integer> typeSubject = new HashMap<>();
+    private final ScheduleDataService scheduleDataService;
 
-    public ParserService(ScheduleRepo scheduleRepo) {
-        this.scheduleRepo = scheduleRepo;
+    public ParserService(ScheduleDataService scheduleDataService) {
+        this.scheduleDataService = scheduleDataService;
         scheduleList = new ArrayList<>();
         listNameGroup =  new ArrayList<>();
         //дни недели
@@ -193,19 +192,19 @@ public class ParserService {
 
     @Transactional
     public void deleteGroup(String nameGroup){
-        scheduleRepo.deleteByNameGroup(nameGroup);
+        scheduleDataService.deleteByNameGroup(nameGroup);
     }
 
     public void saveAll(){
         for (int i = 0; i < listNameGroup.size(); i++) {
             String nameGroup = listNameGroup.get(i);
-            if(scheduleRepo.existsByNameGroup(nameGroup)){
+            if(scheduleDataService.existsByNameGroup(nameGroup)){
                 deleteGroup(nameGroup);
             }
             for (int j = 0; j < scheduleList.size(); j++) {
                 Schedule schedule = new Schedule(scheduleList.get(j));
                 schedule.setNameGroup(nameGroup);
-                scheduleRepo.save(schedule);
+                scheduleDataService.save(schedule);
             }
         }
         scheduleList = new ArrayList<>();

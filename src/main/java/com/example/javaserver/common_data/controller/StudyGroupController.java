@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
+import com.example.javaserver.common_data.controller.dto.StudyGroupI;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.common_data.service.StudyGroupService;

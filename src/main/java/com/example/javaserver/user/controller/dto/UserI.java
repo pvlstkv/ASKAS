@@ -1,4 +1,4 @@
-package com.example.javaserver.user.client_model;
+package com.example.javaserver.user.controller.dto;
 
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;

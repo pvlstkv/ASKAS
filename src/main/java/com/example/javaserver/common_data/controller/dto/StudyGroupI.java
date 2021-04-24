@@ -1,10 +1,8 @@
-package com.example.javaserver.common_data.controller.client_model;
+package com.example.javaserver.common_data.controller.dto;
 
-import com.example.javaserver.common_data.model.StudyGroup;
-import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.controller.dto.UserI;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class StudyGroupI {
 

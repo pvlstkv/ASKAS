@@ -1,4 +1,4 @@
-package com.example.javaserver.user.client_model;
+package com.example.javaserver.user.controller.dto;
 
 public class TokenIO {
     public String token;

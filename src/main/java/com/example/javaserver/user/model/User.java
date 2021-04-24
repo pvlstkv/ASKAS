@@ -3,7 +3,7 @@ package com.example.javaserver.user.model;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.user.client_model.UserI;
+import com.example.javaserver.user.controller.dto.UserI;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;

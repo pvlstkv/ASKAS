@@ -1,6 +1,5 @@
 package com.example.javaserver.schedule.service;
 
-import com.example.javaserver.general.model.Message;
 import com.example.javaserver.schedule.controller.dto.*;
 import com.example.javaserver.schedule.model.Schedule;
 import com.example.javaserver.schedule.repo.ScheduleRepo;
@@ -13,14 +12,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class TeacherService {
-    private final ScheduleRepo scheduleRepo;
 
-    public TeacherService(ScheduleRepo scheduleRepo) {
-        this.scheduleRepo = scheduleRepo;
+    private final ScheduleDataService scheduleDataService;
+    public TeacherService(ScheduleRepo scheduleRepo, ScheduleDataService scheduleDataService) {
+        this.scheduleDataService = scheduleDataService;
     }
 
     public Collection<String> getListTeacher(){
-        Collection<Schedule> schedules = (Collection<Schedule>) scheduleRepo.findAll();
+        Collection<Schedule> schedules = (Collection<Schedule>) scheduleDataService.findAll();
         List<String> listTeacher = schedules.stream().distinct().map(schedule -> schedule.getTeacher()).collect(Collectors.toList());
         Set<String> setTeacher = new HashSet<>();
         for (String s : listTeacher){
@@ -31,7 +30,7 @@ public class TeacherService {
     }
 
     public GroupTeacher getScheduleTeacher(String nameTeacher){
-        if(!scheduleRepo.existsByTeacher(nameTeacher)){
+        if(!scheduleDataService.existsByTeacher(nameTeacher)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"такого преподователя не сущевсвует");
         }
         GroupTeacher teacher = new GroupTeacher(nameTeacher);
@@ -46,7 +45,7 @@ public class TeacherService {
     public void fillListDays(String nameTeacher, List<DayTeacher> days, int numWeek){
         for (int i = 1; i < 8; i++) {
             DayTeacher dayTeacher = new DayTeacher(i,numWeek);
-            List<Schedule> scheduleList = scheduleRepo.findByTeacherAndNumberDayAndNumberWeek(nameTeacher,i,numWeek);
+            List<Schedule> scheduleList = scheduleDataService.findByTeacherAndNumberDayAndNumberWeek(nameTeacher,i,numWeek);
             List<CoupleTeacher> couples = getCouple(scheduleList);
             if(couples.size() != 0){
                 dayTeacher.setCoupels(couples);

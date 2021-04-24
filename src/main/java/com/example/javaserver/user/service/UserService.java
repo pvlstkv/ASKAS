@@ -3,8 +3,8 @@ package com.example.javaserver.user.service;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.user.client_model.UserI;
-import com.example.javaserver.user.dto.UpdateUser;
+import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,7 +138,7 @@ public class UserService {
             userRepo.delete(user.get());
             return new Message("Пользователь удален");
         }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "шибка такой пользователь не найден");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка такой пользователь не найден");
         }
     }
 

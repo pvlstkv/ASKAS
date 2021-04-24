@@ -14,6 +14,6 @@ public interface ScheduleRepo extends CrudRepository<Schedule, Long> {
     boolean existsByNameGroup(String nameGroup);
     boolean existsByTeacher(String nameTeacher);
     @Transactional
-    long deleteByNameGroup(String nameGroup);
+    Long deleteByNameGroup(String nameGroup);
     Collection<Schedule> findAllByTeacher(String nameTeacher);
 }
