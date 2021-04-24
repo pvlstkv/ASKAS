@@ -9,9 +9,9 @@ public class MatchableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private AnswerOption key;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private AnswerOption value;
     @ManyToOne
     private MatchableQuestion matchableQuestion;

@@ -3,12 +3,10 @@ package com.example.javaserver.testing.n.controller;
 import com.example.javaserver.testing.n.dto.Exp;
 import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.dto.test.TestDto;
+import com.example.javaserver.testing.n.model.QuestionData;
 import com.example.javaserver.testing.n.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +26,17 @@ public class QController {
         System.out.println(testDto);
         questionService.createQuestions(testDto);
         int s = 0;
+    }
+
+    @PutMapping("/question")
+    public void update(@RequestBody TestDto testDto) {
+        System.out.println(testDto);
+        questionService.createQuestions(testDto);
+        int s = 0;
+    }
+    @GetMapping("/question")
+    public QuestionData get(@RequestParam Long id) {
+        return questionService.get(id);
     }
 
     @PostMapping("/exp")
