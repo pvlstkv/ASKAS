@@ -1,19 +1,17 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.dto.SubjectIn;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.DepartmentRepo;
-import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.general.specification.CommonSpecification;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -29,37 +27,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class SubjectService {
-    private final SubjectRepo subjectRepo;
-    private final UserRepo userRepo;
+    private final SubjectDataService subjectDataService;
+    private final UserDataService userDataService;
     private final DepartmentRepo departmentRepo;
 
     @Autowired
-    public SubjectService(SubjectRepo subjectRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
-        this.subjectRepo = subjectRepo;
-        this.userRepo = userRepo;
+    public SubjectService(SubjectDataService subjectDataService, UserDataService userDataService, DepartmentRepo departmentRepo) {
+        this.subjectDataService = subjectDataService;
+        this.userDataService = userDataService;
         this.departmentRepo = departmentRepo;
     }
 
     @Transactional
-    public Message create(SubjectIn subjectIn) {
-        Subject subject = new Subject();
-        subject.setName(subjectIn.name);
-        subject.setDecryption(subjectIn.decryption);
-
-        if (subjectIn.departmentId != null) {
-            Optional<Department> department = departmentRepo.findById(subjectIn.departmentId);
-            if (department.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Кафедра с указанным id не существует");
-            }
-            subject.setDepartment(department.get());
-        }
-
-        subjectRepo.save(subject);
-        return new Message("Предмет успешно создан");
+    public Subject create(Subject subject) {
+        return subjectDataService.save(subject);
     }
 
+    @Transactional
     public Message delete(Set<Long> ids) {
-        subjectRepo.deleteAllByIdIn(ids);
+        subjectDataService.deleteAllByIdIn(ids);
         return new Message("Найденные предметы были успешно удалены");
     }
 
@@ -71,12 +57,7 @@ public class SubjectService {
             String decryption,
             String departmentId
     ) {
-        Optional<Subject> subjectOptional = subjectRepo.findById(id);
-        if (subjectOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
-        }
-        Subject subject = subjectOptional.get();
-
+        Subject subject = subjectDataService.getById(id);
         if (name != null) {
             try {
                 subject.setName(name.equals("null") ? null : name);
@@ -84,7 +65,6 @@ public class SubjectService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: name");
             }
         }
-
         if (decryption != null) {
             try {
                 subject.setDecryption(decryption.equals("null") ? null : decryption);
@@ -92,7 +72,6 @@ public class SubjectService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Недопустимое значение поля: decryption");
             }
         }
-
         if (departmentId != null) {
             Department department = null;
             if (!departmentId.equals("null")) {
@@ -109,33 +88,29 @@ public class SubjectService {
             }
             subject.setDepartment(department);
         }
-
         return new Message("Предмет был успешно изменён");
     }
 
     public Collection<Subject> getAll() {
-        return subjectRepo.findAllBy();
+        return subjectDataService.findAllBy();
     }
 
     public Collection<Subject> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Subject> specification = CommonSpecification.of(criteria);
-            return subjectRepo.findAll(specification);
+            return subjectDataService.findAll(specification);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
     public Subject getById(Long id) {
-        Optional<Subject> subjectO = subjectRepo.findByIdEquals(id);
-        if (subjectO.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Предмет с указанным id не существует");
-        }
-        return subjectO.get();
+        Subject subject = subjectDataService.getById(id);
+        return subject;
     }
 
     public Set<Subject> getByIds(Set<Long> ids) {
-        Set<Subject> subjects = subjectRepo.findAllByIdIn(ids);
+        Set<Subject> subjects = subjectDataService.findAllByIdIn(ids);
         if (subjects.size() == ids.size()) {
             return subjects;
         } else {
@@ -155,12 +130,9 @@ public class SubjectService {
             userId = userDetails.getId();
         }
 
-        Optional<User> user = userRepo.findById(userId);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
-        }
+        User user = userDataService.getById(userId);
 
-        StudyGroup group = user.get().getStudyGroup();
+        StudyGroup group = user.getStudyGroup();
         if (group == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не привязан ни к какой группе");
         }
@@ -176,17 +148,11 @@ public class SubjectService {
         if (userId == null) {
             userId = userDetails.getId();
         }
-
-        Optional<User> user = userRepo.findById(userId);
-        if (user.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь с указанным id не найден");
-        }
-
-        if (!user.get().getRole().equals(UserRole.TEACHER)) {
+        User user = userDataService.getById(userId);
+        if (!user.getRole().equals(UserRole.TEACHER)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
         }
-
-        return user.get().getTeachingSubjects();
+        return user.getTeachingSubjects();
     }
 
     @Transactional
@@ -194,14 +160,10 @@ public class SubjectService {
            Long subjectId,
            Set<Integer> userIds
     ){
-        Optional<Subject> subject = subjectRepo.findById(subjectId);
-        if(subject.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "нет такого предмета");
-        }
-        Set<User> userSet = userRepo.getUsersByIdInAndRoleEquals(userIds,UserRole.TEACHER);
-        subject.get().getTeachers().addAll(userSet);
-
-        subjectRepo.save(subject.get());
+        Subject subject = subjectDataService.getById(subjectId);
+        Set<User> userSet = userDataService.getUsersByIdInAndRoleEquals(userIds,UserRole.TEACHER);
+        subject.getTeachers().addAll(userSet);
+        subjectDataService.save(subject);
         return new Message("преподаватели добавлены");
     }
 }

@@ -46,9 +46,9 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @GetMapping("/search-by")
+    @GetMapping("/search-by-ids")
     public Collection<User> searchByIds(
-            @RequestParam("id") Set<Integer> ids
+            @RequestParam("ids") Set<Integer> ids
     ) {
         return userService.getByIds(ids);
     }

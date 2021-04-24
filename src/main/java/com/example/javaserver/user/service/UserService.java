@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
     private final UserRepo userRepo;
     private final StudyGroupRepo studyGroupRepo;
 
@@ -44,7 +45,7 @@ public class UserService {
     public User getById(Integer id) {
         Optional<User> userO = userRepo.findByIdEquals(id);
         if (userO.isEmpty()) {
-            throw new EntityNotFoundException("Пользователь с указанным id не существует");
+            throw new EntityNotFoundException("Пользователь с id "+ id + " не существует");
         }
         return userO.get();
     }

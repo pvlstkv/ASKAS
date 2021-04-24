@@ -78,11 +78,11 @@ public class FacultyController {
         );
     }
 
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     public Collection<FacultyDto> searchByIds(
-            @RequestBody Set<Long> ids
+            @RequestParam("ids") Set<Long> ids
     ) {
         return facultyMapper.toDto(
                 facultyService.searchByIds(ids)

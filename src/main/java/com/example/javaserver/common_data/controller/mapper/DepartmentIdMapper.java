@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 @Component
-public class DepartamentIdMapper {
+public class DepartmentIdMapper {
 
     private final DepartmentDataService service;
 
     @Autowired
-    public DepartamentIdMapper(DepartmentDataService service) {
+    public DepartmentIdMapper(DepartmentDataService service) {
         this.service = service;
     }
 
