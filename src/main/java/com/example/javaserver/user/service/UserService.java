@@ -45,7 +45,7 @@ public class UserService {
     public User getById(Integer id) {
         Optional<User> userO = userRepo.findByIdEquals(id);
         if (userO.isEmpty()) {
-            throw new EntityNotFoundException("Пользователь с указанным id не существует");
+            throw new EntityNotFoundException("Пользователь с id "+ id + " не существует");
         }
         return userO.get();
     }

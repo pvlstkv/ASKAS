@@ -1,8 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
 import com.example.javaserver.common_data.controller.dto.DepartmentDto;
-import com.example.javaserver.common_data.controller.mapper.DepartamentMapper;
-import com.example.javaserver.common_data.model.Department;
+import com.example.javaserver.common_data.controller.mapper.DepartmentMapper;
 import com.example.javaserver.common_data.service.DepartmentService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
@@ -19,12 +18,12 @@ import java.util.Set;
 @RequestMapping("/department")
 public class DepartmentController {
     private final DepartmentService departmentService;
-    private final DepartamentMapper departamentMapper;
+    private final DepartmentMapper departmentMapper;
 
     @Autowired
-    public DepartmentController(DepartmentService departmentService, DepartamentMapper departamentMapper) {
+    public DepartmentController(DepartmentService departmentService, DepartmentMapper departmentMapper) {
         this.departmentService = departmentService;
-        this.departamentMapper = departamentMapper;
+        this.departmentMapper = departmentMapper;
     }
 
     @PostMapping
@@ -33,9 +32,9 @@ public class DepartmentController {
     public DepartmentDto create(
             @Valid @RequestBody DepartmentDto departmentDto
     ) {
-        return departamentMapper.toDto(
+        return departmentMapper.toDto(
                 departmentService.create(
-                        departamentMapper.toEntity(departmentDto)
+                        departmentMapper.toEntity(departmentDto)
                 )
         );
 
@@ -66,7 +65,7 @@ public class DepartmentController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     public Collection<DepartmentDto> search() {
-        return departamentMapper.toDto(
+        return departmentMapper.toDto(
                 departmentService.getAll()
         );
     }
@@ -84,7 +83,7 @@ public class DepartmentController {
     public Collection<DepartmentDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return departamentMapper.toDto(
+        return departmentMapper.toDto(
                 departmentService.criteriaSearch(criteria)
         );
     }
@@ -95,7 +94,7 @@ public class DepartmentController {
     public Collection<DepartmentDto> searchByIds(
             @RequestParam("ids") Set<Long> ids
     ) {
-        return departamentMapper.toDto(
+        return departmentMapper.toDto(
                 departmentService.searchByIds(ids)
         );
     }

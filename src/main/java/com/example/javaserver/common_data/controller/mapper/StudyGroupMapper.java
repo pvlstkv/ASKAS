@@ -13,7 +13,7 @@ import java.util.Collection;
 
 @Component
 @Mapper(componentModel = "spring", uses = {
-        DepartamentIdMapper.class,
+        DepartmentIdMapper.class,
         UserIdMapper.class,
         SemesterIdMapper.class
 })

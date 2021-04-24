@@ -1,12 +1,7 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.common_data.controller.dto.StudyGroupDto;
 import com.example.javaserver.conference.model.Conference;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -50,7 +45,7 @@ public class StudyGroup implements Serializable {
     @OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> subjectSemesters;
 
-    @OneToMany(mappedBy = "studyGroup")
+    @ManyToMany(mappedBy = "studyGroups")
     private Set<Conference> conferences;
 
     public StudyGroup() {
@@ -63,6 +58,11 @@ public class StudyGroup implements Serializable {
         this.shortName = shortName;
         this.fullName = fullName;
         this.yearOfStudyStart = yearOfStudyStart;
+    }
+
+    @PreRemove
+    public void preRemove() {
+        conferences.forEach(c -> c.getStudyGroups().remove(this));
     }
 
     public Integer getNumberOfSemester() {
@@ -159,5 +159,13 @@ public class StudyGroup implements Serializable {
 
     public void setSubjectSemesters(Set<SubjectSemester> subjectSemesters) {
         this.subjectSemesters = subjectSemesters;
+    }
+
+    public Set<Conference> getConferences() {
+        return conferences;
+    }
+
+    public void setConferences(Set<Conference> conferences) {
+        this.conferences = conferences;
     }
 }

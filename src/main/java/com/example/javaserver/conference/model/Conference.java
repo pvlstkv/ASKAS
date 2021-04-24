@@ -1,10 +1,10 @@
 package com.example.javaserver.conference.model;
 
 import com.example.javaserver.common_data.model.StudyGroup;
+import com.example.javaserver.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 public class Conference {
@@ -12,12 +12,17 @@ public class Conference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     private String token;
 
-    @NotNull
+    @ManyToMany
+    @JoinTable(
+            name = "conference_group",
+            joinColumns = {@JoinColumn(name = "conference_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")})
+    private Set<StudyGroup> studyGroups;
+
     @ManyToOne
-    private StudyGroup studyGroup;
+    private User user;
 
     public Conference() {
     }
@@ -38,11 +43,19 @@ public class Conference {
         this.token = token;
     }
 
-    public StudyGroup getStudyGroup() {
-        return studyGroup;
+    public Set<StudyGroup> getStudyGroups() {
+        return studyGroups;
     }
 
-    public void setStudyGroup(StudyGroup studyGroup) {
-        this.studyGroup = studyGroup;
+    public void setStudyGroups(Set<StudyGroup> studyGroups) {
+        this.studyGroups = studyGroups;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

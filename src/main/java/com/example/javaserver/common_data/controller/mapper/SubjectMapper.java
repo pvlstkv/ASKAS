@@ -16,7 +16,7 @@ import java.util.Collection;
         //ThemeIdMapper.class,
         UserIdMapper.class,
         SemesterIdMapper.class,
-        DepartamentIdMapper.class
+        DepartmentIdMapper.class
         //QuestionIdMapper.class
 })
 public interface SubjectMapper {

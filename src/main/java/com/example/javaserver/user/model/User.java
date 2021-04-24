@@ -3,11 +3,8 @@ package com.example.javaserver.user.model;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.conference.model.Conference;
 import com.example.javaserver.user.controller.dto.UserI;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,27 +32,21 @@ public class User implements Serializable {
 
     private String phone;
 
-    @JsonProperty("studyGroupId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private StudyGroup studyGroup;
 
-    @JsonProperty("departmentId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private Department department;
 
-    @JsonProperty("teachingSubjectIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
     @JoinTable(
             name = "teacher_subject",
             joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "subject_id")})
     private Set<Subject> teachingSubjects;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Conference> conferences;
 
     private UserRole role;
 
@@ -217,6 +208,14 @@ public class User implements Serializable {
 
     public void setTeachingSubjects(Set<Subject> teachingSubjects) {
         this.teachingSubjects = teachingSubjects;
+    }
+
+    public Set<Conference> getConferences() {
+        return conferences;
+    }
+
+    public void setConferences(Set<Conference> conferences) {
+        this.conferences = conferences;
     }
 
     @Override
