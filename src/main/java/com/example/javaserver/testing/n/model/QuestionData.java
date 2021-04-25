@@ -2,7 +2,7 @@ package com.example.javaserver.testing.n.model;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.study.model.UserFile;
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.model.Theme;
 import com.fasterxml.jackson.annotation.*;
 

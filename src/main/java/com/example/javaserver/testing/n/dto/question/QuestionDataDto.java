@@ -1,6 +1,6 @@
 package com.example.javaserver.testing.n.dto.question;
 
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.Null;
@@ -15,10 +15,10 @@ public class QuestionDataDto {
     private QuestionType questionType;
     private Double complexity;
     private Set<Long> fileIds;
+//    List<Map<String, Object>>
+    private Object answers;
 
-    private List<Map<String, Object>> answers;
-
-    public QuestionDataDto(Long id, String question, QuestionType questionType, Double complexity, Set<Long> fileIds, List<Map<String, Object>> answers) {
+    public QuestionDataDto(Long id, String question, QuestionType questionType, Double complexity, Set<Long> fileIds, Object answers) {
         this.id = id;
         this.question = question;
         this.questionType = questionType;
@@ -27,7 +27,7 @@ public class QuestionDataDto {
         this.answers = answers;
     }
 
-    public QuestionDataDto(String question, QuestionType questionType, Double complexity, Set<Long> fileIds, List<Map<String, Object>> answers) {
+    public QuestionDataDto(String question, QuestionType questionType, Double complexity, Set<Long> fileIds, Object answers) {
         this.question = question;
         this.questionType = questionType;
         this.complexity = complexity;
@@ -81,11 +81,11 @@ public class QuestionDataDto {
         this.fileIds = fileIds;
     }
 
-    public List<Map<String, Object>> getAnswers() {
+    public Object getAnswers() {
         return answers;
     }
 
-    public void setAnswers(List<Map<String, Object>> answers) {
+    public void setAnswers(Object answers) {
         this.answers = answers;
     }
 }

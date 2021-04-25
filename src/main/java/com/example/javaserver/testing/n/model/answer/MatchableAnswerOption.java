@@ -15,6 +15,7 @@ public class MatchableAnswerOption {
     private AnswerOption key;
     @OneToOne(cascade = CascadeType.ALL)
     private AnswerOption value;
+
     @ManyToOne
     @JsonIgnore
     private MatchableQuestion matchableQuestion;
@@ -34,6 +35,12 @@ public class MatchableAnswerOption {
         this.key = key;
         this.value = value;
     }
+
+    public MatchableAnswerOption( AnswerOption key, AnswerOption value) {
+        this.key = key;
+        this.value = value;
+    }
+
 
     public Long getId() {
         return id;
@@ -59,11 +66,11 @@ public class MatchableAnswerOption {
         this.value = value;
     }
 
-    public MatchableQuestion getQuestionMatch() {
+    public MatchableQuestion getMatchableQuestion() {
         return matchableQuestion;
     }
 
-    public void setQuestionMatch(MatchableQuestion matchableQuestion) {
+    public void setMatchableQuestion(MatchableQuestion matchableQuestion) {
         this.matchableQuestion = matchableQuestion;
     }
 }

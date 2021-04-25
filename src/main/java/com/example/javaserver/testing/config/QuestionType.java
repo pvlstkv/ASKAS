@@ -1,7 +1,7 @@
 package com.example.javaserver.testing.config;
 
 public enum QuestionType {
-    SELECT(0),
+    CHOOSE(0),
     WRITE(1),
     MATCH(2),
     SEQUENCE(3);

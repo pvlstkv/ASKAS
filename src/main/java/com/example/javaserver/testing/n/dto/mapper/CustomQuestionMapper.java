@@ -4,8 +4,11 @@ import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.study.service.UserFileService;
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.model.Theme;
+import com.example.javaserver.testing.n.dto.answer.AnswerOptionDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.TestAnswerOptionDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.TestMatchableAnswerDto;
 import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.model.MatchableQuestion;
 import com.example.javaserver.testing.n.model.QuestionData;
@@ -20,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomQuestionMapper {
     private final UserFileService userFileService;
     private final SubjectRepo subjectRepo;
     private final ThemeRepo themeRepo;
+
 
     @Autowired
     public CustomQuestionMapper(UserFileService userFileService, SubjectRepo subjectRepo, ThemeRepo themeRepo) {
@@ -56,6 +61,36 @@ public class CustomQuestionMapper {
             matchableQuestion.setMatchableAnswerOptionList(answers);
             return matchableQuestion;
         }
+    }
+
+    public QuestionDataDto toDto(QuestionData questionData) {
+        QuestionDataDto questionDataDto = new QuestionDataDto();
+        questionDataDto.setId(questionData.getId());
+        questionDataDto.setQuestion(questionData.getQuestion());
+        questionDataDto.setFileIds(questionData.getUserFiles().stream().map(UserFile::getId).collect(Collectors.toSet()));
+        questionDataDto.setQuestionType(questionData.getQuestionType());
+        if (questionData.getQuestionType().equals(QuestionType.WRITE)) {
+            return questionDataDto;
+        } else if (questionData.getQuestionType().equals(QuestionType.SELECT) || questionData.getQuestionType().equals(QuestionType.SEQUENCE)) {
+            List<TestAnswerOptionDto> selectableAnswerDtos = new ArrayList<>();
+            for (AnswerOption answer : ((SelectableQuestion) questionData).getAnswerOptionList()) {
+                selectableAnswerDtos.add(new TestAnswerOptionDto(answer.getAnswer(), getFileId(answer.getFile())));
+            }
+            questionDataDto.setAnswers(selectableAnswerDtos);
+        } else { //if (questionData.getQuestionType().equals(QuestionType.MATCH))
+            List<TestMatchableAnswerDto> matchableAnswerDtos = new ArrayList<>();
+            for (MatchableAnswerOption answer : ((MatchableQuestion) questionData).getMatchableAnswerOptionList()) {
+                TestAnswerOptionDto key = new TestAnswerOptionDto(answer.getKey().getAnswer(), getFileId(answer.getKey().getFile()));
+                TestAnswerOptionDto value = new TestAnswerOptionDto(answer.getValue().getAnswer(), getFileId(answer.getValue().getFile()));
+                matchableAnswerDtos.add(new TestMatchableAnswerDto(key, value));
+            }
+            questionDataDto.setAnswers(matchableAnswerDtos);
+        }
+        return questionDataDto;
+    }
+
+    private Long getFileId(UserFile file) {
+        return file != null ? file.getId() : null;
     }
 
     private List<AnswerOption> extractSelectableAnswerOptionList(ArrayList<Map<String, Object>> answers, SelectableQuestion selectableQuestion) {

@@ -1,6 +1,6 @@
 package com.example.javaserver.testing.n.dto.question;
 
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.n.dto.answer.AnswerOptionDto;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package com.example.javaserver.testing.n.model;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.study.model.UserFile;
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.n.model.answer.WriteableAnswerOption;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -20,9 +20,7 @@ import java.util.Set;
 @Entity
 @DiscriminatorValue("write")
 public class WriteableQuestion extends QuestionData {
-    @JsonProperty("answerOptions")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
+
     @OneToMany(mappedBy = "writeableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WriteableAnswerOption> writeableAnswerOptionList;
 

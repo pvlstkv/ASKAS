@@ -2,7 +2,7 @@ package com.example.javaserver.testing.n.model;
 
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.study.model.UserFile;
-import com.example.javaserver.testing.config.QuestionType;
+import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.n.model.answer.MatchableAnswerOption;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -14,16 +14,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @DiscriminatorValue("match")
-public class MatchableQuestion extends QuestionData {
+public class MatchableQuestion extends QuestionData implements Serializable {
 
-    @JsonProperty("answerOptions")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "matchableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MatchableAnswerOption> matchableAnswerOptionList;
 
@@ -33,6 +31,7 @@ public class MatchableQuestion extends QuestionData {
     public MatchableQuestion(QuestionData questionData) {
         super(questionData);
     }
+
 
     public MatchableQuestion(QuestionData questionData, List<MatchableAnswerOption> matchableAnswerOptionList) {
         super(questionData);
@@ -56,4 +55,5 @@ public class MatchableQuestion extends QuestionData {
     public void setMatchableAnswerOptionList(List<MatchableAnswerOption> matchableAnswerOptionList) {
         this.matchableAnswerOptionList = matchableAnswerOptionList;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.example.javaserver.testing.n.controller;
 
+import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.model.QuestionData;
 import com.example.javaserver.testing.n.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class TestController {
     @GetMapping("/test")
     @ResponseStatus(HttpStatus.OK)
 //    @Secured({"USER", "TEACHER", "ADMIN"})
-    public Set<QuestionData> makeTest(
+    public   Set<QuestionDataDto> makeTest(
             @RequestParam(value = "theme_id") Long themeId,
             @RequestParam(value = "limit", required = false) Integer countOfQuestions
 //            ,

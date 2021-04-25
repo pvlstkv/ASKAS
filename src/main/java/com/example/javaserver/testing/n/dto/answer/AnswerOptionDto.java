@@ -1,6 +1,8 @@
 package com.example.javaserver.testing.n.dto.answer;
 
-public class AnswerOptionDto {
+import com.example.javaserver.testing.n.dto.answer.for_test.TestAnswerOptionDto;
+
+public class AnswerOptionDto extends TestAnswerOptionDto {
     private String answer;
     private Boolean isRight;
     private Long fileId;
