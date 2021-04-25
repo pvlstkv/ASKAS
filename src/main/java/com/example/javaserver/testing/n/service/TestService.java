@@ -9,10 +9,14 @@ import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.model.MatchableQuestion;
 import com.example.javaserver.testing.n.model.QuestionData;
 import com.example.javaserver.testing.n.model.SelectableQuestion;
+import com.example.javaserver.testing.n.model.WriteableQuestion;
 import com.example.javaserver.testing.n.model.answer.AnswerOption;
 import com.example.javaserver.testing.n.model.answer.MatchableAnswerOption;
+import com.example.javaserver.testing.n.model.answer.WriteableAnswerOption;
 import com.example.javaserver.testing.n.model.saving_result.PassedTest;
+import com.example.javaserver.testing.n.model.saving_result.question.PassedQuestionData;
 import com.example.javaserver.testing.n.repo.QuestionRepo;
+import com.example.javaserver.testing.n.service.model.CheckQuestion;
 import com.example.javaserver.testing.n.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.testing.repo.ThemeRepo;
 import com.example.javaserver.user.repo.UserRepo;
@@ -73,20 +77,28 @@ public class TestService {
     public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck) {
         AfterCheckTestDto afterCheckTest = new AfterCheckTestDto();
         PassedTest passedTest = new PassedTest();
+        List<PassedQuestionData> passedQuestions = new ArrayList<>();
         for (CheckTestDto questionForCheck : questionListForCheck) {
+            PassedQuestionData passedQuestion = new PassedQuestionData();
             Optional<QuestionData> originalQuestion = questionRepo.findById(questionForCheck.getQuestionId());
             if (originalQuestion.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
             if (originalQuestion.get().getQuestionType().equals(QuestionType.WRITE)) {
+                CheckQuestion checkQuestion = new CheckQuestion(0, originalQuestion.get(), questionForCheck.getAnswers(), passedQuestion);
 
             }
         }
         return afterCheckTest;
     }
 
-//    private double checkWriteQuestion(QuestionData originalQuestion, List<String> userAnswers) {
+//    private double checkWriteQuestion(CheckQuestion checkQuestion) {
 //        double rightAnswerDegree = 0;
+//        boolean userAnswerIsRight;
+//        List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionWriteList();
+//        for (String userAns : (List<String>) checkQuestion.getUserAnswers()) {
+//
+//        }
 //
 //    }
 

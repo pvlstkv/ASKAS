@@ -1,10 +1,10 @@
  create table "answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "file_id" int8, "selectable_question_id" int8, primary key ("id"));
      create table "matchable_answer_option" ("id"  bigserial not null, "key_id" int8, "matchable_question_id" int8, "value_id" int8, primary key ("id"));
-     create table "passed_matchable_answer" ("id"  bigserial not null, "key_id" int8, "passed_matchable_question_id" int8, "value_id" int8, primary key ("id"));
+     create table "passed_matchable_answer" ("id"  bigserial not null, "is_right" boolean, "key_id" int8, "passed_matchable_question_id" int8, "value_id" int8, primary key ("id"));
      create table "passed_question_data" ("passed_question_discriminator" varchar(31) not null, "id"  bigserial not null, "passed_test_id" int8, "question_data_id" int8, primary key ("id"));
-     create table "passed_selectable_answer" ("id"  bigserial not null, "passed_selectable_question_id" int8, "user_answer_id" int8, primary key ("id"));
+     create table "passed_selectable_answer" ("id"  bigserial not null, "is_right" boolean, "passed_selectable_question_id" int8, "user_answer_id" int8, primary key ("id"));
      create table "passed_test" ("id"  bigserial not null, "passed_at" timestamp, "rating_in_percent" int4, "theme_id" int8, "user_id" int4, primary key ("id"));
-     create table "passed_writeable_answer" ("id"  bigserial not null, "user_answer" varchar(255), "passed_writeable_question_id" int8, primary key ("id"));
+     create table "passed_writeable_answer" ("id"  bigserial not null, "is_right" boolean, "user_answer" varchar(255), "passed_writeable_question_id" int8, primary key ("id"));
      create table "question_data" ("question_discriminator" varchar(31) not null, "id"  bigserial not null, "complexity" float8, "question" varchar(255), "question_type" int4, "subject_id" int8, "theme_id" int8, primary key ("id"));
      create table "question_data_user_files" ("question_data_id" int8 not null, "user_files_id" int8 not null, primary key ("question_data_id", "user_files_id"));
      create table "writeable_answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_strict" boolean, "writeable_question_id" int8, primary key ("id"));

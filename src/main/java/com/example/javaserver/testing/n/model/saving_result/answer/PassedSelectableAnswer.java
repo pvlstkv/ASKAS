@@ -12,20 +12,17 @@ public class PassedSelectableAnswer {
     private Long id;
     @OneToOne
     private AnswerOption userAnswer;
+
+    private Boolean isRight;
     @ManyToOne
     private PassedSelectableQuestion passedSelectableQuestion;
 
     public PassedSelectableAnswer() {
     }
 
-    public PassedSelectableAnswer(AnswerOption userAnswer, PassedSelectableQuestion passedSelectableQuestion) {
+    public PassedSelectableAnswer(AnswerOption userAnswer, Boolean isRight, PassedSelectableQuestion passedSelectableQuestion) {
         this.userAnswer = userAnswer;
-        this.passedSelectableQuestion = passedSelectableQuestion;
-    }
-
-    public PassedSelectableAnswer(Long id, AnswerOption userAnswer, PassedSelectableQuestion passedSelectableQuestion) {
-        this.id = id;
-        this.userAnswer = userAnswer;
+        this.isRight = isRight;
         this.passedSelectableQuestion = passedSelectableQuestion;
     }
 

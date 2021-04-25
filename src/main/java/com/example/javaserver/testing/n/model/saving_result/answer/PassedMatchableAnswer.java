@@ -17,6 +17,8 @@ public class PassedMatchableAnswer {
     @OneToOne
     private AnswerOption value;
 
+    private Boolean isRight;
+
     @JsonIgnore
     @ManyToOne
     private PassedMatchableQuestion passedMatchableQuestion;
@@ -24,23 +26,19 @@ public class PassedMatchableAnswer {
     public PassedMatchableAnswer() {
     }
 
-    public PassedMatchableAnswer(AnswerOption key, AnswerOption value, PassedMatchableQuestion passedMatchableQuestion) {
-        this.key = key;
-        this.value = value;
-        this.passedMatchableQuestion = passedMatchableQuestion;
-    }
-
-    public PassedMatchableAnswer(Long id, AnswerOption key, AnswerOption value, PassedMatchableQuestion passedMatchableQuestion) {
+    public PassedMatchableAnswer(Long id, AnswerOption key, AnswerOption value, Boolean isRight, PassedMatchableQuestion passedMatchableQuestion) {
         this.id = id;
         this.key = key;
         this.value = value;
+        this.isRight = isRight;
         this.passedMatchableQuestion = passedMatchableQuestion;
     }
 
-    public PassedMatchableAnswer(Long id, AnswerOption key, AnswerOption value) {
-        this.id = id;
+    public PassedMatchableAnswer(AnswerOption key, AnswerOption value, Boolean isRight, PassedMatchableQuestion passedMatchableQuestion) {
         this.key = key;
         this.value = value;
+        this.isRight = isRight;
+        this.passedMatchableQuestion = passedMatchableQuestion;
     }
 
     public Long getId() {

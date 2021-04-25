@@ -12,6 +12,8 @@ public class PassedWriteableAnswer {
 
     private String userAnswer;
 
+    private Boolean isRight;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private PassedWriteableQuestion passedWriteableQuestion;
 
@@ -20,9 +22,18 @@ public class PassedWriteableAnswer {
 
     }
 
-    public PassedWriteableAnswer(String userAnswer, PassedWriteableQuestion passedWriteableQuestion) {
+    public PassedWriteableAnswer(String userAnswer, Boolean isRight, PassedWriteableQuestion passedWriteableQuestion) {
         this.userAnswer = userAnswer;
+        this.isRight = isRight;
         this.passedWriteableQuestion = passedWriteableQuestion;
+    }
+
+    public Boolean getRight() {
+        return isRight;
+    }
+
+    public void setRight(Boolean right) {
+        isRight = right;
     }
 
     public PassedWriteableAnswer(String userAnswer) {
