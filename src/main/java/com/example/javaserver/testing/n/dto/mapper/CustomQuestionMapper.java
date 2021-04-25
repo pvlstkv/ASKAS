@@ -80,8 +80,8 @@ public class CustomQuestionMapper {
         } else { //if (questionData.getQuestionType().equals(QuestionType.MATCH))
             List<TestMatchableAnswerDto> matchableAnswerDtos = new ArrayList<>();
             for (MatchableAnswerOption answer : ((MatchableQuestion) questionData).getMatchableAnswerOptionList()) {
-                TestAnswerOptionDto key = new TestAnswerOptionDto(answer.getId(), answer.getKey().getAnswer(), getFileId(answer.getKey().getFile()));
-                TestAnswerOptionDto value = new TestAnswerOptionDto(answer.getId(), answer.getValue().getAnswer(), getFileId(answer.getValue().getFile()));
+                TestAnswerOptionDto key = new TestAnswerOptionDto(answer.getKey().getId(), answer.getKey().getAnswer(), getFileId(answer.getKey().getFile()));
+                TestAnswerOptionDto value = new TestAnswerOptionDto(answer.getValue().getId(), answer.getValue().getAnswer(), getFileId(answer.getValue().getFile()));
                 matchableAnswerDtos.add(new TestMatchableAnswerDto(key, value));
             }
             questionDataDto.setAnswers(matchableAnswerDtos);

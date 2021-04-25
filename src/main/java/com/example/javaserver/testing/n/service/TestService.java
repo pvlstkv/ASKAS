@@ -1,9 +1,9 @@
 package com.example.javaserver.testing.n.service;
 
 import com.example.javaserver.testing.model.Theme;
-import com.example.javaserver.testing.model.dto.nv.AnswerDTOOut;
-import com.example.javaserver.testing.n.config.FieldCopyUtil;
 import com.example.javaserver.testing.n.config.QuestionType;
+import com.example.javaserver.testing.n.dto.answer.for_test.checking.CheckTestDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.result.AfterCheckTestDto;
 import com.example.javaserver.testing.n.dto.mapper.CustomQuestionMapper;
 import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.model.MatchableQuestion;
@@ -11,6 +11,7 @@ import com.example.javaserver.testing.n.model.QuestionData;
 import com.example.javaserver.testing.n.model.SelectableQuestion;
 import com.example.javaserver.testing.n.model.answer.AnswerOption;
 import com.example.javaserver.testing.n.model.answer.MatchableAnswerOption;
+import com.example.javaserver.testing.n.model.saving_result.PassedTest;
 import com.example.javaserver.testing.n.repo.QuestionRepo;
 import com.example.javaserver.testing.n.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.testing.repo.ThemeRepo;
@@ -54,20 +55,40 @@ public class TestService {
         Set<QuestionData> questions4Test = questionRepo.findAllByThemeId(themeId);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = ImmutableSet.copyOf(Iterables.limit(questions4Test, countOfQuestions));
-        Set<QuestionDataDto> question4TestDtos = new HashSet<>();
+        Set<QuestionDataDto> questionForTestDtos = new HashSet<>();
         for (QuestionData question : questions4Test) {
             if (question.getQuestionType().equals(QuestionType.MATCH)) {
                 shuffleMatchableQuestion((MatchableQuestion) question);
-                question4TestDtos.add(customQuestionMapper.toDto(question));
+                questionForTestDtos.add(customQuestionMapper.toDto(question));
             } else if (question.getQuestionType().equals(QuestionType.SELECT) || question.getQuestionType().equals(QuestionType.SEQUENCE)) {
                 shuffleSelectableQuestion((SelectableQuestion) question);
-                question4TestDtos.add(customQuestionMapper.toDto(question));
+                questionForTestDtos.add(customQuestionMapper.toDto(question));
             } else { // if type is WRITE
-                question4TestDtos.add(customQuestionMapper.toDto(question));
+                questionForTestDtos.add(customQuestionMapper.toDto(question));
             }
         }
-        return question4TestDtos;
+        return questionForTestDtos;
     }
+
+    public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck) {
+        AfterCheckTestDto afterCheckTest = new AfterCheckTestDto();
+        PassedTest passedTest = new PassedTest();
+        for (CheckTestDto questionForCheck : questionListForCheck) {
+            Optional<QuestionData> originalQuestion = questionRepo.findById(questionForCheck.getQuestionId());
+            if (originalQuestion.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            if (originalQuestion.get().getQuestionType().equals(QuestionType.WRITE)) {
+
+            }
+        }
+        return afterCheckTest;
+    }
+
+//    private double checkWriteQuestion(QuestionData originalQuestion, List<String> userAnswers) {
+//        double rightAnswerDegree = 0;
+//
+//    }
 
     private void shuffleMatchableQuestion(MatchableQuestion matchableQuestion) {
         List<AnswerOption> keys = new ArrayList<>();
@@ -88,6 +109,7 @@ public class TestService {
     private void shuffleSelectableQuestion(SelectableQuestion selectableQuestion) {
         Collections.shuffle(selectableQuestion.getAnswerOptionList());
     }
+
 
 /*    public checkTest() {
 

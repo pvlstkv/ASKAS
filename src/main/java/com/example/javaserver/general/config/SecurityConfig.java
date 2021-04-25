@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/teacher/**",
                         "/schedule/list",
                         "/study-group/list"
-                        ,"/*"
+                        ,"/**"
                 ).permitAll()
                 .antMatchers("/login").not().fullyAuthenticated()
                 .anyRequest().authenticated();

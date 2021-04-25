@@ -1,5 +1,10 @@
  create table "answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "file_id" int8, "selectable_question_id" int8, primary key ("id"));
      create table "matchable_answer_option" ("id"  bigserial not null, "key_id" int8, "matchable_question_id" int8, "value_id" int8, primary key ("id"));
+     create table "passed_matchable_answer" ("id"  bigserial not null, "key_id" int8, "passed_matchable_question_id" int8, "value_id" int8, primary key ("id"));
+     create table "passed_question_data" ("passed_question_discriminator" varchar(31) not null, "id"  bigserial not null, "passed_test_id" int8, "question_data_id" int8, primary key ("id"));
+     create table "passed_selectable_answer" ("id"  bigserial not null, "passed_selectable_question_id" int8, "user_answer_id" int8, primary key ("id"));
+     create table "passed_test" ("id"  bigserial not null, "passed_at" timestamp, "rating_in_percent" int4, "theme_id" int8, "user_id" int4, primary key ("id"));
+     create table "passed_writeable_answer" ("id"  bigserial not null, "user_answer" varchar(255), "passed_writeable_question_id" int8, primary key ("id"));
      create table "question_data" ("question_discriminator" varchar(31) not null, "id"  bigserial not null, "complexity" float8, "question" varchar(255), "question_type" int4, "subject_id" int8, "theme_id" int8, primary key ("id"));
      create table "question_data_user_files" ("question_data_id" int8 not null, "user_files_id" int8 not null, primary key ("question_data_id", "user_files_id"));
      create table "writeable_answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_strict" boolean, "writeable_question_id" int8, primary key ("id"));
@@ -28,6 +33,16 @@
      alter table "matchable_answer_option" add constraint "FKkmas5mbg7mn3ggocr3v98fxp8" foreign key ("key_id") references "answer_option";
      alter table "matchable_answer_option" add constraint "FKli9obwfca6ipc1alllac4dj3u" foreign key ("matchable_question_id") references "question_data";
      alter table "matchable_answer_option" add constraint "FK11nnl4okl7vsuq62392ay02i7" foreign key ("value_id") references "answer_option";
+     alter table "passed_matchable_answer" add constraint "FKtq0hl1lbcm3ofsno5v6t8ehsu" foreign key ("key_id") references "answer_option";
+     alter table "passed_matchable_answer" add constraint "FKi1hsbu25bk46ks6s7g83murxb" foreign key ("passed_matchable_question_id") references "passed_question_data";
+     alter table "passed_matchable_answer" add constraint "FKkvxxyst5v8otm0ksnsrrtg56p" foreign key ("value_id") references "answer_option";
+     alter table "passed_question_data" add constraint "FK17pd1lx823et26oxp725c397v" foreign key ("passed_test_id") references "passed_test";
+     alter table "passed_question_data" add constraint "FKgfs6sohus6eyhv4ool4vya12h" foreign key ("question_data_id") references "question_data";
+     alter table "passed_selectable_answer" add constraint "FK5xrd3wkkgyqa7l0v5tw04ni0a" foreign key ("passed_selectable_question_id") references "passed_question_data";
+     alter table "passed_selectable_answer" add constraint "FKho5b8rpj7ocyw86gdgeq9dnqt" foreign key ("user_answer_id") references "answer_option";
+     alter table "passed_test" add constraint "FKo04qp0hgry9fiunm54ugqcko1" foreign key ("theme_id") references "themes";
+     alter table "passed_test" add constraint "FKgp6wyeoegytfgvjirkfkpl7bn" foreign key ("user_id") references "users";
+     alter table "passed_writeable_answer" add constraint "FK2gljutru34fmcx4gl92eyasud" foreign key ("passed_writeable_question_id") references "passed_question_data";
      alter table "question_data" add constraint "FK3fjypj70dqj76x3hhb4w05vuj" foreign key ("subject_id") references "subjects";
      alter table "question_data" add constraint "FKp64m1jeg6et82kx5a96qlqxbq" foreign key ("theme_id") references "themes";
      alter table "question_data_user_files" add constraint "FKr3k8nug04x1uk9s8mq513y4cc" foreign key ("user_files_id") references "files";
@@ -59,4 +74,4 @@
      alter table "users" add constraint "FKowjuwfuaig2ujr9bqqvcl336t" foreign key ("department_id") references "departments";
      alter table "users" add constraint "FKmvx1us0w8j1d3w5252vnjd1u" foreign key ("study_group_id") references "study_groups";
      alter table "works" add constraint "FKf0vrd9bu8xax6y5g4w70gg405" foreign key ("task_id") references "tasks";
-     alter table "works" add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users";
+     alter table "works" add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users"
