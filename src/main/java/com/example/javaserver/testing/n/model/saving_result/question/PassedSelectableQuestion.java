@@ -27,6 +27,11 @@ public class PassedSelectableQuestion extends PassedQuestionData {
         this.userAnswers = userAnswers;
     }
 
+    public PassedSelectableQuestion(QuestionData questionData, PassedTest passedTest) {
+        super(questionData, passedTest);
+
+    }
+
     public PassedSelectableQuestion() {
 
     }

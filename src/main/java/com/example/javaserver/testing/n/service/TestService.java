@@ -3,7 +3,10 @@ package com.example.javaserver.testing.n.service;
 import com.example.javaserver.testing.model.Theme;
 import com.example.javaserver.testing.n.config.QuestionType;
 import com.example.javaserver.testing.n.dto.answer.for_test.checking.CheckTestDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.result.AfterCheckQuestionDto;
 import com.example.javaserver.testing.n.dto.answer.for_test.result.AfterCheckTestDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.result.UserSelectableAnswer;
+import com.example.javaserver.testing.n.dto.answer.for_test.result.UserWriteableAnswer;
 import com.example.javaserver.testing.n.dto.mapper.CustomQuestionMapper;
 import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.model.MatchableQuestion;
@@ -14,7 +17,12 @@ import com.example.javaserver.testing.n.model.answer.AnswerOption;
 import com.example.javaserver.testing.n.model.answer.MatchableAnswerOption;
 import com.example.javaserver.testing.n.model.answer.WriteableAnswerOption;
 import com.example.javaserver.testing.n.model.saving_result.PassedTest;
+import com.example.javaserver.testing.n.model.saving_result.answer.PassedSelectableAnswer;
+import com.example.javaserver.testing.n.model.saving_result.answer.PassedWriteableAnswer;
 import com.example.javaserver.testing.n.model.saving_result.question.PassedQuestionData;
+import com.example.javaserver.testing.n.model.saving_result.question.PassedSelectableQuestion;
+import com.example.javaserver.testing.n.model.saving_result.question.PassedWriteableQuestion;
+import com.example.javaserver.testing.n.repo.PassedTestRepo;
 import com.example.javaserver.testing.n.repo.QuestionRepo;
 import com.example.javaserver.testing.n.service.model.CheckQuestion;
 import com.example.javaserver.testing.n.service.model.ResultOfSomethingChecking;
@@ -26,10 +34,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TestService {
+    private final PassedTestRepo passedTestRepo;
     private final CustomQuestionMapper customQuestionMapper;
     private final UserRepo userRepo;
     private final ThemeRepo themeRepo;
@@ -37,11 +48,12 @@ public class TestService {
     private final String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.";
 
-    public TestService(UserRepo userRepo, ThemeRepo themeRepo, QuestionRepo questionRepo, CustomQuestionMapper customQuestionMapper) {
+    public TestService(PassedTestRepo passedTestRepo, CustomQuestionMapper customQuestionMapper, UserRepo userRepo, ThemeRepo themeRepo, QuestionRepo questionRepo) {
+        this.passedTestRepo = passedTestRepo;
+        this.customQuestionMapper = customQuestionMapper;
         this.userRepo = userRepo;
         this.themeRepo = themeRepo;
         this.questionRepo = questionRepo;
-        this.customQuestionMapper = customQuestionMapper;
     }
 
     public Set<QuestionDataDto> createTest(Long themeId, Integer countOfQuestions) {
@@ -75,32 +87,121 @@ public class TestService {
     }
 
     public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck) {
-        AfterCheckTestDto afterCheckTest = new AfterCheckTestDto();
+        List<AfterCheckQuestionDto> afterCheckQuestionList = new ArrayList<>();
         PassedTest passedTest = new PassedTest();
         List<PassedQuestionData> passedQuestions = new ArrayList<>();
+        double totalRightAnsDegree = 0;
         for (CheckTestDto questionForCheck : questionListForCheck) {
-            PassedQuestionData passedQuestion = new PassedQuestionData();
             Optional<QuestionData> originalQuestion = questionRepo.findById(questionForCheck.getQuestionId());
             if (originalQuestion.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
             if (originalQuestion.get().getQuestionType().equals(QuestionType.WRITE)) {
-                CheckQuestion checkQuestion = new CheckQuestion(0, originalQuestion.get(), questionForCheck.getAnswers(), passedQuestion);
-
+                totalRightAnsDegree = treatWriteQuestion(afterCheckQuestionList, passedTest, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+            } else if (originalQuestion.get().getQuestionType().equals(QuestionType.SELECT)) {
+                totalRightAnsDegree = treatSelectQuestion(afterCheckQuestionList, passedTest, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             }
+
         }
-        return afterCheckTest;
+        totalRightAnsDegree = Math.round(totalRightAnsDegree * 100 / questionListForCheck.size());
+        passedTest.setPassedQuestions(passedQuestions);
+        passedTest.setRatingInPercent((int) totalRightAnsDegree);
+        passedTest.setPassedAt(OffsetDateTime.now());
+        passedTestRepo.save(passedTest);
+        return new AfterCheckTestDto(afterCheckQuestionList, (long) totalRightAnsDegree);
     }
 
-//    private double checkWriteQuestion(CheckQuestion checkQuestion) {
-//        double rightAnswerDegree = 0;
-//        boolean userAnswerIsRight;
-//        List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionWriteList();
-//        for (String userAns : (List<String>) checkQuestion.getUserAnswers()) {
-//
-//        }
-//
-//    }
+    private double treatSelectQuestion(List<AfterCheckQuestionDto> afterCheckQuestionList, PassedTest passedTest, List<PassedQuestionData> passedQuestions, double totalRightAnsDegree, CheckTestDto questionForCheck, Optional<QuestionData> originalQuestion) {
+        PassedSelectableQuestion passedSelectableQuestion = new PassedSelectableQuestion(originalQuestion.get(), passedTest);
+        CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedSelectableQuestion);
+        checkSelectQuestion(checkQuestion);
+        totalRightAnsDegree += checkQuestion.getRating();
+
+        passedSelectableQuestion.setUserAnswers((List<PassedSelectableAnswer>) checkQuestion.getUserAnswers());
+        passedQuestions.add(passedSelectableQuestion);
+
+        List<UserSelectableAnswer> userAnswerIds = new ArrayList<>();
+        passedSelectableQuestion.getUserAnswers().forEach(it -> userAnswerIds.add(new UserSelectableAnswer(it.getUserAnswer().getId(), it.getRight())));
+
+        afterCheckQuestionList.add(new AfterCheckQuestionDto(originalQuestion.get(), userAnswerIds));
+        return totalRightAnsDegree;
+    }
+
+    private double treatWriteQuestion(List<AfterCheckQuestionDto> afterCheckQuestionList, PassedTest passedTest, List<PassedQuestionData> passedQuestions, double totalRightAnsDegree, CheckTestDto questionForCheck, Optional<QuestionData> originalQuestion) {
+        PassedWriteableQuestion passedWriteableQuestion = new PassedWriteableQuestion(originalQuestion.get(), passedTest);
+        CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedWriteableQuestion);
+        checkWriteQuestion(checkQuestion);
+        totalRightAnsDegree += checkQuestion.getRating();
+
+        passedWriteableQuestion.setUserAnswers((List<PassedWriteableAnswer>) checkQuestion.getUserAnswers());
+        passedQuestions.add(passedWriteableQuestion);
+
+        List<UserWriteableAnswer> userAnswers = new ArrayList<>();
+        passedWriteableQuestion.getUserAnswers().forEach(it -> userAnswers.add(new UserWriteableAnswer(it.getUserAnswer(), it.getRight())));
+
+        afterCheckQuestionList.add(new AfterCheckQuestionDto(originalQuestion.get(), userAnswers));
+        return totalRightAnsDegree;
+    }
+
+    private void checkSelectQuestion(CheckQuestion checkQuestion) {
+        double rightAnswerDegree = 0;
+        boolean userAnswerIsRight;
+        List<PassedSelectableAnswer> userAnswerList = new ArrayList<>();
+        List<AnswerOption> originalRightAnswers = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
+                .stream().filter(AnswerOption::getRight).collect(Collectors.toList());
+        List<Long> userAnswerIds = new ArrayList<>();
+        ((List<Integer>) checkQuestion.getUserAnswers()).forEach(it -> userAnswerIds.add(it.longValue()));
+        for (Long userAnsId : userAnswerIds) {
+            userAnswerIsRight = false;
+            for (AnswerOption origAns : originalRightAnswers) {
+                if (origAns.getId().equals(userAnsId)) {
+                    // if user gave right answers more than in the original question, then the answer is making true and adding points
+                    if (userAnswerIds.size() <= originalRightAnswers.size()) {
+                        rightAnswerDegree += 1.0 / originalRightAnswers.size();
+                        userAnswerIsRight = true;
+                    }
+                    break;
+                }
+            }
+            Optional<AnswerOption> userAnswerOption = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
+                    .stream().filter(it -> it.getId().equals(userAnsId)).findFirst();
+            PassedSelectableAnswer passedAnswer = new PassedSelectableAnswer(userAnswerOption.get(), userAnswerIsRight,
+                    (PassedSelectableQuestion) checkQuestion.getPassedQuestion());
+            userAnswerList.add(passedAnswer);
+        }
+        checkQuestion.setUserAnswers(userAnswerList);
+        checkQuestion.setRating(rightAnswerDegree);
+    }
+
+    private void checkWriteQuestion(CheckQuestion checkQuestion) {
+        double rightAnswerDegree = 0;
+        boolean userAnswerIsRight;
+        List<PassedWriteableAnswer> userAnswerList = new ArrayList<>();
+        List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionWriteList();
+        for (String userAns : (List<String>) checkQuestion.getUserAnswers()) {
+            userAnswerIsRight = false;
+            for (WriteableAnswerOption rightAnswer : originalAnswers) {
+                if (rightAnswer.getStrict()) {
+                    if (rightAnswer.getAnswer().equals(userAns)) {
+                        userAnswerIsRight = true;
+                        rightAnswerDegree += 1.0 / originalAnswers.size();
+                        break;
+                    }
+                } else {
+                    if (rightAnswer.getAnswer().toLowerCase().equals(userAns.toLowerCase())) {
+                        userAnswerIsRight = true;
+                        rightAnswerDegree += 1.0 / originalAnswers.size();
+                        break;
+                    }
+                }
+            }
+            PassedWriteableAnswer passedAnswer = new PassedWriteableAnswer(userAns, userAnswerIsRight,
+                    (PassedWriteableQuestion) checkQuestion.getPassedQuestion());
+            userAnswerList.add(passedAnswer);
+        }
+        checkQuestion.setUserAnswers(userAnswerList);
+        checkQuestion.setRating(rightAnswerDegree);
+    }
 
     private void shuffleMatchableQuestion(MatchableQuestion matchableQuestion) {
         List<AnswerOption> keys = new ArrayList<>();

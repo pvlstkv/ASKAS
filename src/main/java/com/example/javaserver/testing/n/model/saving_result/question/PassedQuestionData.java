@@ -29,6 +29,10 @@ public class PassedQuestionData {
         this.passedTest = passedTest;
     }
 
+    public PassedQuestionData(PassedTest passedTest) {
+        this.passedTest = passedTest;
+    }
+
     public Long getId() {
         return id;
     }

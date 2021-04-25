@@ -1,6 +1,7 @@
 package com.example.javaserver.testing.n.controller;
 
 import com.example.javaserver.testing.n.dto.answer.for_test.checking.CheckTestDto;
+import com.example.javaserver.testing.n.dto.answer.for_test.result.AfterCheckTestDto;
 import com.example.javaserver.testing.n.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.n.service.TestService;
 
@@ -36,11 +37,11 @@ public class TestController {
     @PostMapping("/test/check")
     @ResponseStatus(HttpStatus.OK)
 //    @Secured({"USER", "TEACHER", "ADMIN"})
-    public void checkTest(
+    public AfterCheckTestDto checkTest(
             @RequestBody List<CheckTestDto> questions
 //            ,
 //            @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
-       System.out.println(questions);
+        return testService.checkTest(questions);
     }
 }

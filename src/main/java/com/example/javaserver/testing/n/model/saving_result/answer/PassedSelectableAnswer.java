@@ -2,6 +2,7 @@ package com.example.javaserver.testing.n.model.saving_result.answer;
 
 import com.example.javaserver.testing.n.model.answer.AnswerOption;
 import com.example.javaserver.testing.n.model.saving_result.question.PassedSelectableQuestion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -14,6 +15,7 @@ public class PassedSelectableAnswer {
     private AnswerOption userAnswer;
 
     private Boolean isRight;
+    @JsonIgnore
     @ManyToOne
     private PassedSelectableQuestion passedSelectableQuestion;
 
@@ -48,5 +50,13 @@ public class PassedSelectableAnswer {
 
     public void setPassedSelectableQuestion(PassedSelectableQuestion passedSelectableQuestion) {
         this.passedSelectableQuestion = passedSelectableQuestion;
+    }
+
+    public Boolean getRight() {
+        return isRight;
+    }
+
+    public void setRight(Boolean right) {
+        isRight = right;
     }
 }

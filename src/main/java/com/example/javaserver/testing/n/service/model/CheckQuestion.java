@@ -12,7 +12,7 @@ public class CheckQuestion {
     public CheckQuestion() {
     }
 
-    public CheckQuestion(double rating, QuestionData originalQuestion, Object userAnswers, PassedQuestionData passedQuestion) {
+    public CheckQuestion(QuestionData originalQuestion, Object userAnswers, PassedQuestionData passedQuestion) {
         this.rating = rating;
         this.originalQuestion = originalQuestion;
         this.userAnswers = userAnswers;

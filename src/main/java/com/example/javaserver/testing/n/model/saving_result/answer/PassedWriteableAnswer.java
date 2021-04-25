@@ -1,6 +1,7 @@
 package com.example.javaserver.testing.n.model.saving_result.answer;
 
 import com.example.javaserver.testing.n.model.saving_result.question.PassedWriteableQuestion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 
@@ -13,7 +14,7 @@ public class PassedWriteableAnswer {
     private String userAnswer;
 
     private Boolean isRight;
-
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     private PassedWriteableQuestion passedWriteableQuestion;
 

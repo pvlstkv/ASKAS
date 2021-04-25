@@ -22,7 +22,10 @@ public class PassedWriteableQuestion extends PassedQuestionData {
     public PassedWriteableQuestion() {
 
     }
+    public PassedWriteableQuestion(QuestionData questionData, PassedTest passedTest) {
+        super(questionData, passedTest);
 
+    }
 
     public PassedWriteableQuestion(List<PassedWriteableAnswer> userAnswers) {
         this.userAnswers = userAnswers;
