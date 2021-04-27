@@ -91,6 +91,7 @@ public class TestServiceN {
     public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck, UserDetailsImp userDetails) {
         List<AfterCheckQuestionDto> afterCheckQuestionList = new ArrayList<>();
         PassedTestN passedTestN = new PassedTestN();
+        Optional<Theme> theme = themeRepo.findById(questionDataRepo.findById(questionListForCheck.get(0).getQuestionId()));
         List<PassedQuestionData> passedQuestions = new ArrayList<>();
         double totalRightAnsDegree = 0;
         for (CheckTestDto questionForCheck : questionListForCheck) {

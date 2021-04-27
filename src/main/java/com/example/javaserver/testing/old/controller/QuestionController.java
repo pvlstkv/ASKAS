@@ -62,16 +62,4 @@ public class QuestionController {
     ) {
         return questionService.fetchAllQuestions(themeId);
     }
-//
-//    @GetMapping("/exp")
-//    @ResponseStatus(HttpStatus.OK)
-//    @Secured({"TEACHER", "ADMIN"})
-//    public QuestionMatch exp(){
-//        List<Match> matches = new ArrayList<>();
-//        Match match = new Match(1L, new AnswerChoice("слово из левой колонки"),  new AnswerChoice("слово из правой колонки"));
-//        matches.add(match);
-//        matches.add(new Match(2L,  new AnswerChoice("key"), new AnswerChoice("value")));
-//        QuestionMatch questionMatch = new QuestionMatch(1L, "What is it?", QuestionType.CHOOSE, matches,3.0);
-//        return questionMatch;
-//    }
 }

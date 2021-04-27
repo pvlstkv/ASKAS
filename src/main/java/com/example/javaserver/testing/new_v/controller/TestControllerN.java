@@ -8,6 +8,7 @@ import com.example.javaserver.testing.new_v.dto.question.QuestionDataDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
+@RequestMapping(value = "testing/new/")
 public class TestControllerN {
 
     private final TestServiceN testServiceN;
@@ -26,19 +28,18 @@ public class TestControllerN {
 
     @GetMapping("/test")
     @ResponseStatus(HttpStatus.OK)
-//    @Secured({"USER", "TEACHER", "ADMIN"})
+    @Secured({"USER", "TEACHER", "ADMIN"})
     public Set<QuestionDataDto> makeTest(
             @RequestParam(value = "theme_id") Long themeId,
             @RequestParam(value = "limit", required = false) Integer countOfQuestions
-//            ,
-//            @AuthenticationPrincipal UserDetailsImp userDetails
+            , @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
         return testServiceN.createTest(themeId, countOfQuestions);
     }
 
     @PostMapping("/test/check")
     @ResponseStatus(HttpStatus.OK)
-//    @Secured({"USER", "TEACHER", "ADMIN"})
+    @Secured({"USER", "TEACHER", "ADMIN"})
     public AfterCheckTestDto checkTest(
             @RequestBody List<CheckTestDto> questions
             , @AuthenticationPrincipal UserDetailsImp userDetails
