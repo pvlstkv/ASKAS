@@ -91,7 +91,6 @@ public class TestServiceN {
     public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck, UserDetailsImp userDetails) {
         List<AfterCheckQuestionDto> afterCheckQuestionList = new ArrayList<>();
         PassedTestN passedTestN = new PassedTestN();
-        Optional<Theme> theme = themeRepo.findById(questionDataRepo.findById(questionListForCheck.get(0).getQuestionId()));
         List<PassedQuestionData> passedQuestions = new ArrayList<>();
         double totalRightAnsDegree = 0;
         for (CheckTestDto questionForCheck : questionListForCheck) {
@@ -107,12 +106,18 @@ public class TestServiceN {
 
         }
         totalRightAnsDegree = Math.round(totalRightAnsDegree * 100 / questionListForCheck.size());
+        saveTest(questionListForCheck, userDetails, passedTestN, passedQuestions, (int) totalRightAnsDegree);
+        return new AfterCheckTestDto(afterCheckQuestionList, (long) totalRightAnsDegree);
+    }
+
+    private void saveTest(List<CheckTestDto> questionListForCheck, UserDetailsImp userDetails, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, int totalRightAnsDegree) {
         passedTestN.setPassedQuestions(passedQuestions);
-        passedTestN.setRatingInPercent((int) totalRightAnsDegree);
+        passedTestN.setRatingInPercent(totalRightAnsDegree);
         passedTestN.setPassedAt(OffsetDateTime.now());
         passedTestN.setUser(fetchUser(userDetails));
+        Theme theme = themeRepo.findBySubjectId(questionListForCheck.get(0).getQuestionId());
+        passedTestN.setTheme(theme);
         passedTestRepoN.save(passedTestN);
-        return new AfterCheckTestDto(afterCheckQuestionList, (long) totalRightAnsDegree);
     }
 
     private double treatSelectQuestion(List<AfterCheckQuestionDto> afterCheckQuestionList, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, double totalRightAnsDegree, CheckTestDto questionForCheck, Optional<QuestionData> originalQuestion) {
