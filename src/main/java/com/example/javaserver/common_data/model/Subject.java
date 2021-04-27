@@ -1,6 +1,6 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testing.model.Theme;
+
 import com.example.javaserver.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -30,15 +30,15 @@ public class Subject {
 
     private OffsetDateTime updatedAt;
 
-    @JsonProperty("themeIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Theme> themes;
+//    @JsonProperty("themeIds")
+//    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+//    @JsonIdentityReference(alwaysAsId=true)
+//    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Theme> themes;
 
     @JsonProperty("teacherIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "teacher_subject",
@@ -46,28 +46,20 @@ public class Subject {
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> teachers;
 
-//    @OneToMany(mappedBy = "subject")
-//    private List<Question> question;
-
     @JsonProperty("subjectSemesterIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
     @JsonProperty("departmentId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Department department;
 
-//    @JsonProperty("questionIds")
-//    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-//    @JsonIdentityReference(alwaysAsId=true)
-//    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Question> question = new ArrayList<>();
-
-    public Subject() { }
+    public Subject() {
+    }
 
     @PreRemove
     private void removeHandler() {
@@ -98,13 +90,13 @@ public class Subject {
         this.id = id;
     }
 
-    public Set<Theme> getThemes() {
-        return themes;
-    }
-
-    public void setThemes(Set<Theme> themes) {
-        this.themes = themes;
-    }
+//    public Set<Theme> getThemes() {
+//        return themes;
+//    }
+//
+//    public void setThemes(Set<Theme> themes) {
+//        this.themes = themes;
+//    }
 
     public String getDecryption() {
         return decryption;
@@ -145,14 +137,6 @@ public class Subject {
     public void setDepartment(Department department) {
         this.department = department;
     }
-
-//    public List<Question> getQuestion() {
-//        return question;
-//    }
-//
-//    public void setQuestion(List<Question> question) {
-//        this.question = question;
-//    }
 
     public Set<User> getTeachers() {
         return teachers;
