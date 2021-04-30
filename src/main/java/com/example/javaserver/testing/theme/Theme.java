@@ -39,9 +39,9 @@ public class Theme implements Serializable {
 //    private Set<PassedTest> passedTests;
 
 
-    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<QuestionData> questions;
+//    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonIgnore
+//    private Set<QuestionData> questions;
 
     private Integer questionQuantityInTest;
 
@@ -67,7 +67,7 @@ public class Theme implements Serializable {
         this.name = name;
         this.decryption = decryption;
         this.subject = subject;
-        this.questions = questions;
+//        this.questions = questions;
         this.questionQuantityInTest = questionQuantityInTest;
         this.attemptNumberInTest = attemptNumberInTest;
         this.createdAt = createdAt;
@@ -123,13 +123,13 @@ public class Theme implements Serializable {
         this.subject = subject;
     }
 
-    public Set<QuestionData> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(Set<QuestionData> questions) {
-        this.questions = questions;
-    }
+//    public Set<QuestionData> getQuestions() {
+//        return questions;
+//    }
+//
+//    public void setQuestions(Set<QuestionData> questions) {
+//        this.questions = questions;
+//    }
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;

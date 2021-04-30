@@ -2,7 +2,7 @@
      create table "answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "file_id" int8, "selectable_question_id" int8, primary key ("id"));
      create table "matchable_answer_option" ("id"  bigserial not null, "key_id" int8, "matchable_question_id" int8, "value_id" int8, primary key ("id"));
      create table "passed_matchable_answer" ("id"  bigserial not null, "is_right" boolean, "key_id" int8, "passed_matchable_question_id" int8, "value_id" int8, primary key ("id"));
-     create table "passed_question_data" ("passed_question_discriminator" varchar(31) not null, "id"  bigserial not null, "passed_testn_id" int8, "question_data_id" int8, primary key ("id"));
+     create table "passed_question_data" ("passed_question_discriminator" varchar(31) not null, "id"  bigserial not null, "passed_test_id" int8, "question_data_id" int8, primary key ("id"));
      create table "passed_selectable_answer" ("id"  bigserial not null, "is_right" boolean, "passed_selectable_question_id" int8, "user_answer_id" int8, primary key ("id"));
      create table "passed_testn" ("id"  bigserial not null, "passed_at" timestamp, "rating_in_percent" int4, "theme_id" int8, "user_id" int4, primary key ("id"));
      create table "passed_writeable_answer" ("id"  bigserial not null, "is_right" boolean, "user_answer" varchar(255), "passed_writeable_question_id" int8, primary key ("id"));
@@ -45,7 +45,7 @@
      alter table "passed_matchable_answer" add constraint "FKtq0hl1lbcm3ofsno5v6t8ehsu" foreign key ("key_id") references "answer_option";
      alter table "passed_matchable_answer" add constraint "FKi1hsbu25bk46ks6s7g83murxb" foreign key ("passed_matchable_question_id") references "passed_question_data";
      alter table "passed_matchable_answer" add constraint "FKkvxxyst5v8otm0ksnsrrtg56p" foreign key ("value_id") references "answer_option";
-     alter table "passed_question_data" add constraint "FK8a70mskjudf32rga33j6a45yg" foreign key ("passed_testn_id") references "passed_testn";
+     alter table "passed_question_data" add constraint "FKjrq1jvptlv18jwmvcegi5b26a" foreign key ("passed_test_id") references "passed_testn";
      alter table "passed_question_data" add constraint "FKgfs6sohus6eyhv4ool4vya12h" foreign key ("question_data_id") references "question_data";
      alter table "passed_selectable_answer" add constraint "FK5xrd3wkkgyqa7l0v5tw04ni0a" foreign key ("passed_selectable_question_id") references "passed_question_data";
      alter table "passed_selectable_answer" add constraint "FKho5b8rpj7ocyw86gdgeq9dnqt" foreign key ("user_answer_id") references "answer_option";

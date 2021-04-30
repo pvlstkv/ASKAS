@@ -18,18 +18,18 @@ public class PassedQuestionData {
     private QuestionData questionData;
     @JsonIgnore
     @ManyToOne
-    private PassedTestN passedTestN;
+    private PassedTestN passedTest;
 
     public PassedQuestionData() {
     }
 
-    public PassedQuestionData(QuestionData questionData, PassedTestN passedTestN) {
+    public PassedQuestionData(QuestionData questionData, PassedTestN passedTest) {
         this.questionData = questionData;
-        this.passedTestN = passedTestN;
+        this.passedTest = passedTest;
     }
 
-    public PassedQuestionData(PassedTestN passedTestN) {
-        this.passedTestN = passedTestN;
+    public PassedQuestionData(PassedTestN passedTest) {
+        this.passedTest = passedTest;
     }
 
     public Long getId() {
@@ -49,10 +49,10 @@ public class PassedQuestionData {
     }
 
     public PassedTestN getPassedTest() {
-        return passedTestN;
+        return passedTest;
     }
 
-    public void setPassedTest(PassedTestN passedTestN) {
-        this.passedTestN = passedTestN;
+    public void setPassedTest(PassedTestN passedTest) {
+        this.passedTest = passedTest;
     }
 }

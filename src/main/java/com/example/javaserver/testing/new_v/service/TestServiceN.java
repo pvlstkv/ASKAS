@@ -2,23 +2,24 @@ package com.example.javaserver.testing.new_v.service;
 
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.testing.new_v.config.QuestionType;
-import com.example.javaserver.testing.new_v.dto.answer.for_test.result.UserSelectableAnswer;
-import com.example.javaserver.testing.new_v.dto.answer.for_test.result.UserWriteableAnswer;
+import com.example.javaserver.testing.new_v.dto.answer.for_test.result.*;
 import com.example.javaserver.testing.new_v.model.answer.MatchableAnswerOption;
 import com.example.javaserver.testing.new_v.model.answer.WriteableAnswerOption;
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
+import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedMatchableAnswer;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedSelectableAnswer;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedWriteableAnswer;
+import com.example.javaserver.testing.new_v.model.saving_result.question.PassedMatchableQuestion;
 import com.example.javaserver.testing.new_v.model.saving_result.question.PassedQuestionData;
 import com.example.javaserver.testing.new_v.model.saving_result.question.PassedSelectableQuestion;
 import com.example.javaserver.testing.new_v.model.saving_result.question.PassedWriteableQuestion;
+import com.example.javaserver.testing.new_v.repo.AnswerOptionRepo;
 import com.example.javaserver.testing.new_v.repo.PassedTestRepoN;
 import com.example.javaserver.testing.new_v.repo.question.QuestionDataRepo;
 import com.example.javaserver.testing.new_v.service.model.CheckQuestion;
+import com.example.javaserver.testing.new_v.service.model.MatchPair;
 import com.example.javaserver.testing.new_v.service.model.ResultOfSomethingChecking;
 import com.example.javaserver.testing.new_v.dto.answer.for_test.checking.CheckTestDto;
-import com.example.javaserver.testing.new_v.dto.answer.for_test.result.AfterCheckQuestionDto;
-import com.example.javaserver.testing.new_v.dto.answer.for_test.result.AfterCheckTestDto;
 import com.example.javaserver.testing.new_v.dto.mapper.CustomQuestionMapper;
 import com.example.javaserver.testing.new_v.dto.question.QuestionDataDto;
 import com.example.javaserver.testing.theme.Theme;
@@ -42,6 +43,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class TestServiceN {
+    private final AnswerOptionRepo answerOptionRepo;
     private final PassedTestRepoN passedTestRepoN;
     private final CustomQuestionMapper customQuestionMapper;
     private final UserRepo userRepo;
@@ -50,7 +52,8 @@ public class TestServiceN {
     private final String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.";
 
-    public TestServiceN(PassedTestRepoN passedTestRepoN, CustomQuestionMapper customQuestionMapper, UserRepo userRepo, ThemeRepo themeRepo, QuestionDataRepo questionDataRepo) {
+    public TestServiceN(AnswerOptionRepo answerOptionRepo, PassedTestRepoN passedTestRepoN, CustomQuestionMapper customQuestionMapper, UserRepo userRepo, ThemeRepo themeRepo, QuestionDataRepo questionDataRepo) {
+        this.answerOptionRepo = answerOptionRepo;
         this.passedTestRepoN = passedTestRepoN;
         this.customQuestionMapper = customQuestionMapper;
         this.userRepo = userRepo;
@@ -70,11 +73,12 @@ public class TestServiceN {
         }
         if (countOfQuestions < 1)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Количество вопросов не может быть меньше 1.");
-        Set<QuestionData> questions4Test = questionDataRepo.findAllByThemeId(themeId);
-        countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
-        questions4Test = ImmutableSet.copyOf(Iterables.limit(questions4Test, countOfQuestions));
+        List<QuestionData> questionsForTest = questionDataRepo.findAllByThemeId(themeId);
+        Collections.shuffle(questionsForTest);
+        countOfQuestions = Math.min(countOfQuestions, questionsForTest.size());
+        questionsForTest = questionsForTest.subList(0, countOfQuestions);
         Set<QuestionDataDto> questionForTestDtos = new HashSet<>();
-        for (QuestionData question : questions4Test) {
+        for (QuestionData question : questionsForTest) {
             if (question.getQuestionType().equals(QuestionType.MATCH)) {
                 shuffleMatchableQuestion((MatchableQuestion) question);
                 questionForTestDtos.add(customQuestionMapper.toDto(question));
@@ -89,34 +93,39 @@ public class TestServiceN {
     }
 
     public AfterCheckTestDto checkTest(List<CheckTestDto> questionListForCheck, UserDetailsImp userDetails) {
+        if (questionListForCheck.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Передан пустой список вопросов на проверку");
+        }
         List<AfterCheckQuestionDto> afterCheckQuestionList = new ArrayList<>();
         PassedTestN passedTestN = new PassedTestN();
         List<PassedQuestionData> passedQuestions = new ArrayList<>();
         double totalRightAnsDegree = 0;
+        Optional<QuestionData> originalQuestion = Optional.empty();
         for (CheckTestDto questionForCheck : questionListForCheck) {
-            Optional<QuestionData> originalQuestion = questionDataRepo.findById(questionForCheck.getQuestionId());
+            originalQuestion = questionDataRepo.findById(questionForCheck.getQuestionId());
             if (originalQuestion.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                String answer = String.format(doesntExistById, questionForCheck.getQuestionId());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вопроса" + answer);
             }
             if (originalQuestion.get().getQuestionType().equals(QuestionType.WRITE)) {
                 totalRightAnsDegree = treatWriteQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             } else if (originalQuestion.get().getQuestionType().equals(QuestionType.SELECT)) {
                 totalRightAnsDegree = treatSelectQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+            } else if (originalQuestion.get().getQuestionType().equals(QuestionType.MATCH)) {
+                totalRightAnsDegree = treatMatchQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             }
-
         }
         totalRightAnsDegree = Math.round(totalRightAnsDegree * 100 / questionListForCheck.size());
-        saveTest(questionListForCheck, userDetails, passedTestN, passedQuestions, (int) totalRightAnsDegree);
+        saveTest(originalQuestion.get(), userDetails, passedTestN, passedQuestions, (int) totalRightAnsDegree);
         return new AfterCheckTestDto(afterCheckQuestionList, (long) totalRightAnsDegree);
     }
 
-    private void saveTest(List<CheckTestDto> questionListForCheck, UserDetailsImp userDetails, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, int totalRightAnsDegree) {
+    private void saveTest(QuestionData originalQuestion, UserDetailsImp userDetails, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, int totalRightAnsDegree) {
         passedTestN.setPassedQuestions(passedQuestions);
         passedTestN.setRatingInPercent(totalRightAnsDegree);
         passedTestN.setPassedAt(OffsetDateTime.now());
         passedTestN.setUser(fetchUser(userDetails));
-        Theme theme = themeRepo.findBySubjectId(questionListForCheck.get(0).getQuestionId());
-        passedTestN.setTheme(theme);
+        passedTestN.setTheme(originalQuestion.getTheme());
         passedTestRepoN.save(passedTestN);
     }
 
@@ -150,6 +159,59 @@ public class TestServiceN {
 
         afterCheckQuestionList.add(new AfterCheckQuestionDto(originalQuestion.get(), userAnswers));
         return totalRightAnsDegree;
+    }
+
+    private double treatMatchQuestion(List<AfterCheckQuestionDto> afterCheckQuestionList, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, double totalRightAnsDegree, CheckTestDto questionForCheck, Optional<QuestionData> originalQuestion) {
+        PassedMatchableQuestion passedMatchableQuestion = new PassedMatchableQuestion(originalQuestion.get(), passedTestN);
+        CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedMatchableQuestion);
+        checkMatchQuestion(checkQuestion);
+        totalRightAnsDegree += checkQuestion.getRating();
+
+        passedMatchableQuestion.setUserAnswers((List<PassedMatchableAnswer>) checkQuestion.getUserAnswers());
+        passedQuestions.add(passedMatchableQuestion);
+
+        List<UserMatchableAnswer> userAnswers = new ArrayList<>();
+        passedMatchableQuestion.getUserAnswers().forEach(it -> userAnswers.add(
+                new UserMatchableAnswer(it.getKey().getId(), it.getValue().getId(), it.getRight()))
+        );
+        afterCheckQuestionList.add(new AfterCheckQuestionDto(originalQuestion.get(), userAnswers));
+        return totalRightAnsDegree;
+
+    }
+
+    private void checkMatchQuestion(CheckQuestion checkQuestion) {
+        double rightAnswerDegree = 0;
+        boolean userAnswerIsRight;
+        List<PassedMatchableAnswer> userAnswerList = new ArrayList<>();
+        List<MatchableAnswerOption> originalAnswers = ((MatchableQuestion) checkQuestion.getOriginalQuestion()).getMatchableAnswerOptionList();
+        List<MatchPair> userAnswerPairs = new ArrayList<>();
+        List<MatchPair> originalAnswerPairs = new ArrayList<>();
+        for (LinkedHashMap<String, Integer> userPair : ((List<LinkedHashMap<String, Integer>>) checkQuestion.getUserAnswers())) {
+            userAnswerList.add(new PassedMatchableAnswer(
+                    answerOptionRepo.findById(userPair.get("key").longValue()).get(),
+                    answerOptionRepo.findById(userPair.get("value").longValue()).get(),
+                    false, (PassedMatchableQuestion) checkQuestion.getPassedQuestion()
+            ));
+        }
+        for (MatchableAnswerOption originalPair : originalAnswers) {
+            originalAnswerPairs.add(new MatchPair(
+                    originalPair.getKey().getId().intValue(), originalPair.getValue().getId().intValue()
+            ));
+        }
+
+        for (PassedMatchableAnswer userMatch : userAnswerList) {
+            for (MatchPair originalPair : originalAnswerPairs) {
+                if (userMatch.getKey().getId() == originalPair.getKeyId().longValue()) {
+                    if (userMatch.getValue().getId() == originalPair.getValueId().longValue()) {
+                        userMatch.setRight(true);
+                        rightAnswerDegree += 1.0 / originalAnswerPairs.size();
+                        break;
+                    }
+                }
+            }
+        }
+        checkQuestion.setUserAnswers(userAnswerList);
+        checkQuestion.setRating(rightAnswerDegree);
     }
 
     private void checkSelectQuestion(CheckQuestion checkQuestion) {
@@ -187,27 +249,26 @@ public class TestServiceN {
         boolean userAnswerIsRight;
         List<PassedWriteableAnswer> userAnswerList = new ArrayList<>();
         List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionWriteList();
-        for (String userAns : (List<String>) checkQuestion.getUserAnswers()) {
-            userAnswerIsRight = false;
-            for (WriteableAnswerOption rightAnswer : originalAnswers) {
-                if (rightAnswer.getStrict()) {
-                    if (rightAnswer.getAnswer().equals(userAns)) {
-                        userAnswerIsRight = true;
-                        rightAnswerDegree += 1.0 / originalAnswers.size();
-                        break;
-                    }
-                } else {
-                    if (rightAnswer.getAnswer().toLowerCase().equals(userAns.toLowerCase())) {
-                        userAnswerIsRight = true;
-                        rightAnswerDegree += 1.0 / originalAnswers.size();
-                        break;
-                    }
+        String userAns = ((List<String>) checkQuestion.getUserAnswers()).get(0);
+        userAnswerIsRight = false;
+        for (WriteableAnswerOption rightAnswer : originalAnswers) {
+            if (rightAnswer.getStrict()) {
+                if (rightAnswer.getAnswer().equals(userAns)) {
+                    userAnswerIsRight = true;
+                    rightAnswerDegree++;
+                    break;
+                }
+            } else {
+                if (rightAnswer.getAnswer().toLowerCase().equals(userAns.toLowerCase())) {
+                    userAnswerIsRight = true;
+                    rightAnswerDegree++;
+                    break;
                 }
             }
-            PassedWriteableAnswer passedAnswer = new PassedWriteableAnswer(userAns, userAnswerIsRight,
-                    (PassedWriteableQuestion) checkQuestion.getPassedQuestion());
-            userAnswerList.add(passedAnswer);
         }
+        PassedWriteableAnswer passedAnswer = new PassedWriteableAnswer(userAns, userAnswerIsRight,
+                (PassedWriteableQuestion) checkQuestion.getPassedQuestion());
+        userAnswerList.add(passedAnswer);
         checkQuestion.setUserAnswers(userAnswerList);
         checkQuestion.setRating(rightAnswerDegree);
     }

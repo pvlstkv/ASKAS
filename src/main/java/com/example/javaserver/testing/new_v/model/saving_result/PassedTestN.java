@@ -19,7 +19,7 @@ public class PassedTestN implements Serializable {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "passedTestN", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "passedTest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PassedQuestionData> passedQuestions;
 
     @ManyToOne

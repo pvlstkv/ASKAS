@@ -21,12 +21,23 @@ public class PassedMatchableQuestion extends PassedQuestionData {
 
     }
 
+
+    public PassedMatchableQuestion(QuestionData questionData, PassedTestN passedTestN) {
+        super(questionData, passedTestN);
+
+    }
+
     public PassedMatchableQuestion(List<PassedMatchableAnswer> userAnswers) {
         this.userAnswers = userAnswers;
     }
 
     public PassedMatchableQuestion(QuestionData questionData, PassedTestN passedTestN, List<PassedMatchableAnswer> userAnswers) {
         super(questionData, passedTestN);
+        this.userAnswers = userAnswers;
+    }
+
+    public PassedMatchableQuestion(PassedTestN passedTest, List<PassedMatchableAnswer> userAnswers) {
+        super(passedTest);
         this.userAnswers = userAnswers;
     }
 

@@ -5,6 +5,7 @@ import com.example.javaserver.testing.new_v.model.saving_result.question.PassedM
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 public class PassedMatchableAnswer {
@@ -40,6 +41,11 @@ public class PassedMatchableAnswer {
         this.isRight = isRight;
         this.passedMatchableQuestion = passedMatchableQuestion;
     }
+    public PassedMatchableAnswer(AnswerOption key, AnswerOption value, Boolean isRight) {
+        this.key = key;
+        this.value = value;
+        this.isRight = isRight;
+    }
 
     public Long getId() {
         return id;
@@ -71,5 +77,13 @@ public class PassedMatchableAnswer {
 
     public void setPassedMatchableQuestion(PassedMatchableQuestion passedMatchableQuestion) {
         this.passedMatchableQuestion = passedMatchableQuestion;
+    }
+
+    public Boolean getRight() {
+        return isRight;
+    }
+
+    public void setRight(Boolean right) {
+        isRight = right;
     }
 }

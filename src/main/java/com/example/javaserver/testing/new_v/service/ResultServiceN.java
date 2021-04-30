@@ -45,7 +45,8 @@ public class ResultServiceN {
         if (!checkResult.getItsOK()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, checkResult.getErrors());
         }
-        return passedTestRepoN.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
+        List<PassedTestN> a = passedTestRepoN.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
+        return a;
     }
 
     public List<PassedThemeDto> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
