@@ -8,6 +8,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class StudyGroupDataService {
@@ -21,12 +23,18 @@ public class StudyGroupDataService {
         return studyGroupRepo.existsByShortName(shortName);
     }
 
+    public Set<StudyGroup> getAll() {
+        Iterable<StudyGroup> groupIterable = studyGroupRepo.findAll();
+        return StreamSupport.stream(groupIterable.spliterator(), false)
+                .collect(Collectors.toSet());
+    }
+
     public StudyGroup findByIdEquals(Long id){
         Optional<StudyGroup> group = studyGroupRepo.findByIdEquals(id);
         if (group.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Группы с указанным id не существует");
         }
-        return studyGroupRepo.findByIdEquals(id).get();
+        return group.get();
     }
 
     public Set<StudyGroup> findAllByIdIn(Set<Long> ids){

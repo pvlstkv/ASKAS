@@ -35,13 +35,16 @@ public class StudyGroupService {
         this.userDataService = userDataService;
     }
 
-
     public StudyGroup create(StudyGroup studyGroup) {
         return studyGroupDataService.save(studyGroup);
     }
 
     public StudyGroup getById(Long id) {
         return studyGroupDataService.findByIdEquals(id);
+    }
+
+    public Set<StudyGroup> getAll() {
+        return studyGroupDataService.getAll();
     }
 
     public Set<StudyGroup> getByIds(Set<Long> ids) {
