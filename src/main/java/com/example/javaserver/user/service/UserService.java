@@ -3,7 +3,7 @@ package com.example.javaserver.user.service;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UserDto;
 import com.example.javaserver.user.controller.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -86,37 +86,35 @@ public class UserService {
     }
 
 
-    public List<User> getListUser( ){
+    public Collection<User> getListUser( ){
         return userRepo.findAll();
     }
 
-    public Message updateUser(
-          UserI userI
-    )
+    public Message updateUser(UserDto userDto)
     {
-        Optional<User> user = userRepo.findById(userI.getId());
+        Optional<User> user = userRepo.findById(userDto.getId());
         if(user.isPresent()){
-            if(userI.getLogin() != null){
-                user.get().setLogin(userI.getLogin());
+            if(userDto.getLogin() != null){
+                user.get().setLogin(userDto.getLogin());
             }
-            if(userI.getPassword() != null){
-                user.get().setPassword(userI.getPassword());
+            if(userDto.getPassword() != null){
+                user.get().setPassword(userDto.getPassword());
             }
-            if(userI.getFirstName() != null){
-                user.get().setFirstName(userI.getFirstName());
+            if(userDto.getFirstName() != null){
+                user.get().setFirstName(userDto.getFirstName());
             }
-            if(userI.getLastName() != null){
-                user.get().setLastName(userI.getLastName());
+            if(userDto.getLastName() != null){
+                user.get().setLastName(userDto.getLastName());
             }
-            if(userI.getPatronymic() != null){
-                user.get().setPatronymic(userI.getPatronymic());
+            if(userDto.getPatronymic() != null){
+                user.get().setPatronymic(userDto.getPatronymic());
             }
-            if(userI.getPhone() != null){
-                user.get().setPhone(userI.getPhone());
+            if(userDto.getPhone() != null){
+                user.get().setPhone(userDto.getPhone());
             }
-            if(userI.getStudyGroupId() != null){
-                if(studyGroupRepo.existsById(userI.getStudyGroupId())){
-                    user.get().setStudyGroup(studyGroupRepo.findById(userI.getStudyGroupId()).get());
+            if(userDto.getStudyGroupId() != null){
+                if(studyGroupRepo.existsById(userDto.getStudyGroupId())){
+                    user.get().setStudyGroup(studyGroupRepo.findById(userDto.getStudyGroupId()).get());
                 }else {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Такой группы не существует");
                 }

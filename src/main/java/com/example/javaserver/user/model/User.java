@@ -4,7 +4,7 @@ import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.conference.model.Conference;
-import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UserDto;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -66,16 +66,6 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public User(UserI userI){
-        this.login = userI.getLogin();
-        this.password = userI.getPassword();
-        this.email = userI.getEmail();
-        this.firstName = userI.getFirstName();
-        this.lastName = userI.getLastName();
-        this.patronymic = userI.getPatronymic();
-        this.phone = userI.getPhone();
-        this.role = userI.getRole();
-    }
     public User(String login, String password, UserRole role) {
         this.login = login;
         this.password = password;
