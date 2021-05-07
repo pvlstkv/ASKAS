@@ -56,7 +56,7 @@ public class ResultController {
         return resultService.fetchUserPassedThemesBySubjectIdAndUserId(userId, subjectId, userDetails);
     }
 
-    @GetMapping("/test/passed-themes-by-group")
+    @GetMapping("/test/passed-themes-by-group") // todo rename url passed-tests-by-group
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     public List<PassedTestOut> fetchPassedThemesByGroup(

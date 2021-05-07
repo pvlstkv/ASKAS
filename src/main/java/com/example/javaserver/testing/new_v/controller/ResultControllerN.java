@@ -2,8 +2,9 @@ package com.example.javaserver.testing.new_v.controller;
 
 import com.example.javaserver.general.model.UserDetailsImp;
 
+import com.example.javaserver.testing.new_v.dto.answer.for_test.result.AfterCheckTestDto;
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
-import com.example.javaserver.testing.new_v.dto.test.PassedTestDto;
+import com.example.javaserver.testing.new_v.dto.test.PassedTestPerUserDto;
 import com.example.javaserver.testing.theme.dto.theme.PassedThemeDto;
 import com.example.javaserver.testing.new_v.service.ResultServiceN;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ResultControllerN {
     @GetMapping("/test/result/all")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public List<PassedTestN> fetchAllPassedTests(
+    public List<AfterCheckTestDto> fetchAllPassedTests(
             @AuthenticationPrincipal UserDetailsImp userDetails
     ) {
         return resultServiceN.formUserPassedTest(userDetails);
@@ -37,7 +38,7 @@ public class ResultControllerN {
     @GetMapping("/test/result")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public List<PassedTestN> fetchPassedTests(
+    public List<AfterCheckTestDto> fetchPassedTests(
             @RequestParam(value = "theme_id") Long themeId,
             @RequestParam(value = "user_id") Integer userId,
             @AuthenticationPrincipal UserDetailsImp userDetails
@@ -60,7 +61,7 @@ public class ResultControllerN {
     @GetMapping("/test/passed-themes-by-group")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
-    public List<PassedTestDto> fetchPassedThemesByGroup(
+    public List<PassedTestPerUserDto> fetchPassedThemesByGroup(
             @RequestParam(value = "group_id") Long groupId,
             @RequestParam(value = "theme_id") Long themeId
     ) {

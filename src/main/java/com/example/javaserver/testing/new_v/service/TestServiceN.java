@@ -117,7 +117,7 @@ public class TestServiceN {
         }
         totalRightAnsDegree = Math.round(totalRightAnsDegree * 100 / questionListForCheck.size());
         saveTest(originalQuestion.get(), userDetails, passedTestN, passedQuestions, (int) totalRightAnsDegree);
-        return new AfterCheckTestDto(afterCheckQuestionList, (long) totalRightAnsDegree);
+        return new AfterCheckTestDto(afterCheckQuestionList, (int) totalRightAnsDegree);
     }
 
     private void saveTest(QuestionData originalQuestion, UserDetailsImp userDetails, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, int totalRightAnsDegree) {

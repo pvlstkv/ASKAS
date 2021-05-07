@@ -1,17 +1,25 @@
 package com.example.javaserver.testing.new_v.dto.answer.for_test.result;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public class AfterCheckTestDto {
     private List<AfterCheckQuestionDto> questions;
-    private Long rating;
+    private Integer rating;
+    private OffsetDateTime passedAt;
 
     public AfterCheckTestDto() {
     }
 
-    public AfterCheckTestDto(List<AfterCheckQuestionDto> questions, Long rating) {
+    public AfterCheckTestDto(List<AfterCheckQuestionDto> questions, Integer rating) {
         this.questions = questions;
         this.rating = rating;
+    }
+
+    public AfterCheckTestDto(List<AfterCheckQuestionDto> questions, Integer rating, OffsetDateTime passedAt) {
+        this.questions = questions;
+        this.rating = rating;
+        this.passedAt = passedAt;
     }
 
     public List<AfterCheckQuestionDto> getQuestions() {
@@ -22,11 +30,19 @@ public class AfterCheckTestDto {
         this.questions = questions;
     }
 
-    public Long getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(Long rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public OffsetDateTime getPassedAt() {
+        return passedAt;
+    }
+
+    public void setPassedAt(OffsetDateTime passedAt) {
+        this.passedAt = passedAt;
     }
 }

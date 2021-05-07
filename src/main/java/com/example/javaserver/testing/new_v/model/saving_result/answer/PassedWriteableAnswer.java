@@ -4,9 +4,10 @@ import com.example.javaserver.testing.new_v.model.saving_result.question.PassedW
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class PassedWriteableAnswer {
+public class PassedWriteableAnswer implements Serializable, Answerable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

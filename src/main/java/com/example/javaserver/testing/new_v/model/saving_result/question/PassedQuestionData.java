@@ -5,12 +5,13 @@ import com.example.javaserver.testing.new_v.model.question.QuestionData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "passed_question_discriminator",
         discriminatorType = DiscriminatorType.STRING)
-public class PassedQuestionData {
+public class PassedQuestionData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

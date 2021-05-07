@@ -15,6 +15,10 @@ public interface ThemeRepo extends JpaRepository<Theme, Long> {
             " join (select * from themes where subject_id = ?2) as subj on \"user\".theme_id = subj.id", nativeQuery = true)
     List<Long> fetchPassedThemeIdsByUserId(Integer id, Long subjId);
 
+    @Query(value = "select distinct theme_id from (select * from passed_testn where user_id = ?1) as \"user\"\n" +
+            " join (select * from themes where subject_id = ?2) as subj on \"user\".theme_id = subj.id", nativeQuery = true)
+    List<Long> fetchPassedThemeIdsByUserIdN(Integer id, Long subjId);
+
     Theme findBySubjectId (Long subjectId);
 
 }

@@ -6,6 +6,9 @@ public class AfterCheckQuestionDto {
     private QuestionData questionData;
     private Object userAnswers;
 
+    public AfterCheckQuestionDto() {
+    }
+
     public AfterCheckQuestionDto(QuestionData questionData, Object userAnswer) {
         this.questionData = questionData;
         this.userAnswers = userAnswer;

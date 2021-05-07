@@ -38,30 +38,30 @@ public class QuestionServiceN {
 
 
     @Transactional
-
     public void saveQuestions(TestDto testDto) {
         for (QuestionDataDto questionDataDto : testDto.getQuestionDataDtoList()) {
             QuestionData questionData = customQuestionMapper.toEntity(questionDataDto, testDto.getThemeId(), testDto.getSubjectId());
             System.out.println(questionData);
 //            if (questionData.getQuestionType().equals(QuestionType.SELECT)) {
-                questionDataRepo.save(questionData);
+            questionDataRepo.save(questionData);
 //            }
         }
     }
 
-    public void deleteQuestions(Set<Long> ids){
+    public void deleteQuestions(Set<Long> ids) {
         questionDataRepo.deleteAllByIdIn(ids);
     }
 
-    public QuestionData get(Long id){
-        Optional<QuestionData> questionData =  questionDataRepo.findById(id);
-        if (questionData.isPresent()){
+    public QuestionData get(Long id) {
+        Optional<QuestionData> questionData = questionDataRepo.findById(id);
+        if (questionData.isPresent()) {
             return questionData.get();
-        }else{
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "вопроса с id = " + id + "не существует");
         }
 
     }
+
     private void createSelectableQuestion(QuestionDataDto questionDataDto) {
         SelectableQuestion question = new SelectableQuestion();
 

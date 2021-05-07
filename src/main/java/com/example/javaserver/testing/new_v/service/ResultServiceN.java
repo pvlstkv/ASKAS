@@ -5,10 +5,12 @@ import com.example.javaserver.common_data.repo.SubjectRepo;
 import com.example.javaserver.general.model.UserDetailsImp;
 
 
+import com.example.javaserver.testing.new_v.dto.answer.for_test.result.AfterCheckTestDto;
+import com.example.javaserver.testing.new_v.dto.mapper.ResultMapper;
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
 import com.example.javaserver.testing.new_v.repo.PassedTestRepoN;
 import com.example.javaserver.testing.new_v.service.model.ResultOfSomethingChecking;
-import com.example.javaserver.testing.new_v.dto.test.PassedTestDto;
+import com.example.javaserver.testing.new_v.dto.test.PassedTestPerUserDto;
 import com.example.javaserver.testing.theme.dto.theme.PassedThemeDto;
 import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.testing.theme.ThemeRepo;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 @Service
 public class ResultServiceN {
+    private final ResultMapper resultMapper;
     private final PassedTestRepoN passedTestRepoN;
     private final UserRepo userRepo;
     private final ThemeRepo themeRepo;
@@ -31,22 +34,23 @@ public class ResultServiceN {
     private final String doesntExistById = " с id %d в базе данных не существует. " +
             "Пожалуйста проверьте корретность введенных данных.";
 
-    public ResultServiceN(PassedTestRepoN passedTestRepoN, UserRepo userRepo, ThemeRepo themeRepo, SubjectRepo subjectRepo) {
+    public ResultServiceN(ResultMapper resultMapper, PassedTestRepoN passedTestRepoN, UserRepo userRepo, ThemeRepo themeRepo, SubjectRepo subjectRepo) {
+        this.resultMapper = resultMapper;
         this.passedTestRepoN = passedTestRepoN;
         this.userRepo = userRepo;
         this.themeRepo = themeRepo;
         this.subjectRepo = subjectRepo;
     }
 
-    public List<PassedTestN> fetchUserPassedTestsByThemeAndUserId(Integer userId, Long themeId, UserDetailsImp userDetailsImp) {
+    public List<AfterCheckTestDto> fetchUserPassedTestsByThemeAndUserId(Integer userId, Long themeId, UserDetailsImp userDetailsImp) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
         checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
         if (!checkResult.getItsOK()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, checkResult.getErrors());
         }
-        List<PassedTestN> a = passedTestRepoN.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
-        return a;
+        List<PassedTestN> passedTestNS = passedTestRepoN.findAllByUserAndTheme(checkResult.getUser(), checkResult.getTheme());
+        return resultMapper.toDto(passedTestNS);
     }
 
     public List<PassedThemeDto> fetchUserPassedThemesBySubjectIdAndUserId(Integer userId, Long subjectId, UserDetailsImp userDetails) {
@@ -57,7 +61,7 @@ public class ResultServiceN {
         if (!checkResult.getItsOK()) {
             throw checkResult.getResponseStatusException();
         }
-        List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
+        List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserIdN(userId, subjectId);
         List<Theme> themes = themeRepo.findAllById(themeIds);
         User user = userRepo.findById(userId).get();
         List<PassedThemeDto> passedThemeOuts = new ArrayList<>();
@@ -70,24 +74,9 @@ public class ResultServiceN {
         return passedThemeOuts;
     }
 
-//    public List<PassedTestOut> fetchUserPassedThemesBySubjectIdAndUserIdReduced(Integer userId, Long subjectId) {
-//        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
-//        checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
-//        checkResult = checkResult.checkIfExistsInDB(new Subject(subjectId), subjectRepo, checkResult);
-//        if (!checkResult.getItsOK()) {
-//            throw checkResult.getResponseStatusException();
-//        }
-//        List<PassedTestOut> results = new ArrayList<>();
-//        List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
-//        List<Theme> themes = themeRepo.findAllById(themeIds);
-//
-//
-//    }
-
-
-    public List<PassedTestDto> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {
+    public List<PassedTestPerUserDto> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {
         List<User> users = userRepo.findAllByStudyGroupId(groupId);
-        List<PassedTestDto> results = new ArrayList<>();
+        List<PassedTestPerUserDto> results = new ArrayList<>();
         Optional<Theme> themeOptional = themeRepo.findById(themeId);
         if (!themeOptional.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неверный id темы.");
@@ -97,13 +86,13 @@ public class ResultServiceN {
             List<PassedTestN> userPassedTestN = passedTestRepoN.findAllByUserAndTheme(user, theme);
             List<Integer> ratingsPerUser = new ArrayList<>();
             userPassedTestN.forEach(item -> ratingsPerUser.add(item.getRatingInPercent()));
-            results.add(new PassedTestDto(user.getId(), user.getFirstName(), user.getLastName(), user.getPatronymic(),
+            results.add(new PassedTestPerUserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getPatronymic(),
                     themeId, theme.getName(), ratingsPerUser));
         }
         return results;
     }
 
-    public List<PassedTestN> formUserPassedTest(UserDetailsImp userDetails) {
+    public List<AfterCheckTestDto> formUserPassedTest(UserDetailsImp userDetails) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userDetails.getId()), userRepo, checkResult);
         User user = fetchUser(userDetails);
@@ -112,14 +101,8 @@ public class ResultServiceN {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, response);
         }
         List<PassedTestN> passedTestNS = passedTestRepoN.findAllByUser(user);
-        System.out.println(themeRepo.fetchPassedThemeIdsByUserId(user.getId(), 1L));
-        return passedTestNS;
+        return resultMapper.toDto(passedTestNS);
     }
-
-//    public List<PassedTestOut> formPassedTestByUser(Integer userId){
-//        List<PassedTestOut> results = new ArrayList<>();
-//
-//    }
 
     private User fetchUser(UserDetailsImp userDetails) {
         Optional<User> user = userRepo.findById(userDetails.getId());

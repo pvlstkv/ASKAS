@@ -5,10 +5,10 @@ import com.example.javaserver.testing.new_v.model.saving_result.question.PassedM
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Optional;
+import java.io.Serializable;
 
 @Entity
-public class PassedMatchableAnswer {
+public class PassedMatchableAnswer implements Serializable, Answerable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

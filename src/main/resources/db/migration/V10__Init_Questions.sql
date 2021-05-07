@@ -346,7 +346,7 @@ values ('Мили', true,
         (select id from question_data where question_data.question like 'Выберите конечные детерминирование автоматы'));
 insert
 into answer_option (answer, is_right, selectable_question_id)
-values ('Мура', true,
+values ('Мура', false,
         (select id from question_data where question_data.question like 'Выберите конечные детерминирование автоматы'));
 insert
 into answer_option (answer, is_right, selectable_question_id)
