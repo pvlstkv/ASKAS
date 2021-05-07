@@ -1,9 +1,6 @@
 package com.example.javaserver.common_data.model;
 
 
-
-import com.fasterxml.jackson.annotation.*;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
@@ -26,9 +23,6 @@ public class Faculty implements Serializable {
 
     private OffsetDateTime updatedAt;
 
-    @JsonProperty("departmentIds")
-    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Department> departments;
 

@@ -13,11 +13,11 @@ public interface SubjectRepo extends
         CrudRepository<Subject, Long>,
         JpaSpecificationExecutor<Subject>
 {
+    Optional<Subject> findByIdEquals(Long id);
     Optional<Subject> findByName(String name);
-
     boolean existsByName(String name);
     @Transactional
     void deleteAllByIdIn(Collection<Long> ids);
-    Collection<Subject> findAllByIdIn(Set<Long> ids);
+    Set<Subject> findAllByIdIn(Set<Long> ids);
     Collection<Subject> findAllBy();
 }

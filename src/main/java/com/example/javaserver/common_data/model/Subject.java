@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,23 +24,19 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 50)
     private String name;
 
+    @Column(length = 1_000_000)
     private String decryption;
 
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
 
-    @JsonProperty("themeIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Theme> themes;
 
-    @JsonProperty("teacherIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToMany
     @JoinTable(
             name = "teacher_subject",
@@ -50,23 +47,14 @@ public class Subject {
 //    @OneToMany(mappedBy = "subject")
 //    private List<Question> question;
 
-    @JsonProperty("subjectSemesterIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
-    @JsonProperty("departmentId")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private Department department;
 
-    @JsonProperty("questionIds")
-    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> question = new ArrayList<>();
+    private List<Question> question;
 
     public Subject() { }
 

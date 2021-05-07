@@ -18,19 +18,32 @@
     </properties>
 
     <dependencies>
+        <!-- mapstruct for converting dto to models and vice versa -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.4.2.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.28</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.jlefebure/spring-boot-starter-minio -->
+        <!-- minio -->
         <dependency>
             <groupId>com.jlefebure</groupId>
             <artifactId>spring-boot-starter-minio</artifactId>
             <version>1.10</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.minio/minio -->
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>

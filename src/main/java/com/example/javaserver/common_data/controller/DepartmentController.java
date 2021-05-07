@@ -1,7 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.DepartmentIn;
-import com.example.javaserver.common_data.model.Department;
+import com.example.javaserver.common_data.controller.dto.DepartmentDto;
+import com.example.javaserver.common_data.controller.mapper.DepartmentMapper;
 import com.example.javaserver.common_data.service.DepartmentService;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Set;
 
@@ -17,19 +18,26 @@ import java.util.Set;
 @RequestMapping("/department")
 public class DepartmentController {
     private final DepartmentService departmentService;
+    private final DepartmentMapper departmentMapper;
 
     @Autowired
-    public DepartmentController(DepartmentService departmentService) {
+    public DepartmentController(DepartmentService departmentService, DepartmentMapper departmentMapper) {
         this.departmentService = departmentService;
+        this.departmentMapper = departmentMapper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ADMIN"})
-    public Message create(
-            @RequestBody DepartmentIn departmentIn
+    public DepartmentDto create(
+            @Valid @RequestBody DepartmentDto departmentDto
     ) {
-        return departmentService.create(departmentIn);
+        return departmentMapper.toDto(
+                departmentService.create(
+                        departmentMapper.toEntity(departmentDto)
+                )
+        );
+
     }
 
     @DeleteMapping
@@ -41,7 +49,7 @@ public class DepartmentController {
         return departmentService.delete(ids);
     }
 
-    @PatchMapping
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
     public Message update(
@@ -56,8 +64,10 @@ public class DepartmentController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Department> search() {
-        return departmentService.getAll();
+    public Collection<DepartmentDto> search() {
+        return departmentMapper.toDto(
+                departmentService.getAll()
+        );
     }
 
     @GetMapping("/all/short-names")
@@ -70,18 +80,22 @@ public class DepartmentController {
     @PostMapping("/criteria-search")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Department> criteriaSearch(
+    public Collection<DepartmentDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return departmentService.criteriaSearch(criteria);
+        return departmentMapper.toDto(
+                departmentService.criteriaSearch(criteria)
+        );
     }
 
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<Department> searchByIds(
-            @RequestBody Set<Long> ids
+    public Collection<DepartmentDto> searchByIds(
+            @RequestParam("ids") Set<Long> ids
     ) {
-        return departmentService.searchByIds(ids);
+        return departmentMapper.toDto(
+                departmentService.searchByIds(ids)
+        );
     }
 }

@@ -4,6 +4,5 @@ public enum TaskType {
     LAB,
     PRACTICE,
     COURSEWORK,
-    ESSAY,
-    LITERATURE
+    ESSAY
 }

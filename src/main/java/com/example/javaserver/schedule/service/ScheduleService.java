@@ -1,28 +1,30 @@
 package com.example.javaserver.schedule.service;
 
-import com.example.javaserver.general.model.Message;
-import com.example.javaserver.schedule.controller.model.Couple;
-import com.example.javaserver.schedule.controller.model.Day;
-import com.example.javaserver.schedule.controller.model.Group;
+import com.example.javaserver.schedule.controller.dto.Couple;
+import com.example.javaserver.schedule.controller.dto.Day;
+import com.example.javaserver.schedule.controller.dto.Group;
 import com.example.javaserver.schedule.model.Schedule;
-import com.example.javaserver.schedule.repo.ScheduleRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
 public class ScheduleService {
-    private final ScheduleRepo scheduleRepo;
-    private final ParserService parserService;
 
-    public ScheduleService(ScheduleRepo scheduleRepo, ParserService parserService) {
-        this.scheduleRepo = scheduleRepo;
+    private final ParserService parserService;
+    private final ScheduleDataService scheduleDataService;
+
+    public ScheduleService(ParserService parserService, ScheduleDataService scheduleDataService) {
         this.parserService = parserService;
+        this.scheduleDataService = scheduleDataService;
     }
 
-    public Message iteratingThroughGroups() {
+    @Async("processExecutor")
+    public void iteratingThroughGroups() {
         int part;
         int numberGroup;
         String baseUrl;
@@ -33,12 +35,12 @@ public class ScheduleService {
                 baseUrl = "https://www.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
                 try {
                     parserService.parserGroup(baseUrl);
-                } catch (Exception e){
+                } catch (IOException e){
                     e.printStackTrace();
+                    break;
                 }
             }
         }
-        return new Message("Всё ок");
     }
 
     public ResponseEntity<?> getScheduleGroup(String nameGroup){
@@ -51,18 +53,19 @@ public class ScheduleService {
     }
 
     public ResponseEntity<?> getListScheduleGroups(){
-        List<Schedule> scheduleList = (List<Schedule>) scheduleRepo.findAll();
+        List<Schedule> scheduleList = scheduleDataService.findAll ();
         Set<String> res = new LinkedHashSet<>();
         for (Schedule schedule : scheduleList) {
             res.add(schedule.getNameGroup());
         }
+        res.add(String.valueOf(res.size()));
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
     public void fillListDays(String nameGroup, List<Day> days, int numWeek){
         for (int i = 1; i < 8; i++) {
             Day day = new Day(i,numWeek);
-            List<Schedule> scheduleList = scheduleRepo.findByNameGroupAndNumberDayAndNumberWeek(nameGroup,i,numWeek);
+            List<Schedule> scheduleList = scheduleDataService.findByNameGroupAndNumberDayAndNumberWeek(nameGroup,i,numWeek);
             List<Couple> couples = getCouple(scheduleList);
             if(couples.size() != 0){
                 day.setCoupels(couples);

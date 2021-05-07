@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserRepo extends JpaRepository<User,Integer> {
+    Optional<User> findByIdEquals(Integer id);
     Optional<User> findUserByLoginEquals(String login);
     boolean existsByLogin(String login);
     User getUserByLogin(String login);

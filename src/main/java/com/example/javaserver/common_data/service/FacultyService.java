@@ -1,8 +1,6 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.client_model.FacultyIn;
 import com.example.javaserver.common_data.model.Faculty;
-import com.example.javaserver.common_data.repo.FacultyRepo;
 import com.example.javaserver.general.criteria.SearchCriteria;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.specification.CommonSpecification;
@@ -14,33 +12,23 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class FacultyService {
-    private final FacultyRepo facultyRepo;
+    private final FacultyDataService facultyDataService;
 
     @Autowired
-    public FacultyService(FacultyRepo facultyRepo) {
-        this.facultyRepo = facultyRepo;
+    public FacultyService(FacultyDataService facultyDataService) {
+        this.facultyDataService = facultyDataService;
     }
 
-    public Message create(FacultyIn facultyIn) {
-        if (facultyIn.shortName == null || facultyIn.fullName == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Факультет должен иметь короткое и полное имя");
-        }
-
-        Faculty faculty = new Faculty();
-        faculty.setShortName(facultyIn.shortName);
-        faculty.setFullName(facultyIn.fullName);
-
-        facultyRepo.save(faculty);
-        return new Message("Факультет успешно создан");
+    public Faculty create(Faculty faculty) {
+        return facultyDataService.save(faculty);
     }
 
     public Message delete(Set<Long> ids) {
-        facultyRepo.deleteAllByIdIn(ids);
+        facultyDataService.deleteAllByIdIn(ids);
         return new Message("Найденные факультеты были успешно удалены");
     }
 
@@ -51,12 +39,7 @@ public class FacultyService {
             String shortName,
             String fullName
     ) {
-        Optional<Faculty> facultyOptional = facultyRepo.findById(id);
-        if (!facultyOptional.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Факультет с указанным id не существует");
-        }
-        Faculty faculty = facultyOptional.get();
-
+        Faculty faculty = facultyDataService.getById(id);
         if (shortName != null) {
             try {
                 faculty.setShortName(shortName.equals("null") ? null : shortName);
@@ -77,19 +60,19 @@ public class FacultyService {
     }
 
     public Collection<Faculty> getAll() {
-        return facultyRepo.findAllBy();
+        return facultyDataService.findAllBy();
     }
 
     public Collection<Faculty> criteriaSearch(Set<SearchCriteria> criteria) {
         try {
             Specification<Faculty> specification = CommonSpecification.of(criteria);
-            return facultyRepo.findAll(specification);
+            return facultyDataService.findAll(specification);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Критерии поиска некорректны");
         }
     }
 
     public Collection<Faculty> searchByIds(Set<Long> ids) {
-        return facultyRepo.findAllByIdIn(ids);
+        return facultyDataService.findAllByIdIn(ids);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.javaserver.common_data.controller;
 
-import com.example.javaserver.common_data.controller.client_model.SubjectSemesterIn;
+import com.example.javaserver.common_data.controller.dto.SubjectSemesterDto;
+import com.example.javaserver.common_data.controller.mapper.SubjectSemesterMapper;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.service.SubjectSemesterService;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -17,19 +18,25 @@ import java.util.Set;
 @RequestMapping("/subject-semester")
 public class SubjectSemesterController {
     private final SubjectSemesterService subjectSemesterService;
+    private final SubjectSemesterMapper subjectSemesterMapper;
 
     @Autowired
-    public SubjectSemesterController(SubjectSemesterService subjectSemesterService) {
+    public SubjectSemesterController(SubjectSemesterService subjectSemesterService, SubjectSemesterMapper subjectSemesterMapper) {
         this.subjectSemesterService = subjectSemesterService;
+        this.subjectSemesterMapper = subjectSemesterMapper;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"ADMIN"})
-    public Message create(
-            @RequestBody SubjectSemesterIn subjectSemesterIn
+    public SubjectSemesterDto create(
+            @RequestBody SubjectSemesterDto subjectSemesterDto
     ) {
-        return subjectSemesterService.create(subjectSemesterIn);
+        return subjectSemesterMapper.toDto(
+                subjectSemesterService.create(
+                        subjectSemesterMapper.toEntity(subjectSemesterDto)
+                )
+        );
     }
 
     @DeleteMapping
@@ -67,35 +74,43 @@ public class SubjectSemesterController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<SubjectSemester> search() {
-        return subjectSemesterService.getAll();
+    public Collection<SubjectSemesterDto> search() {
+        return subjectSemesterMapper.toDto(
+                subjectSemesterService.getAll()
+        );
     }
 
     @PostMapping("/criteria-search")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<SubjectSemester> criteriaSearch(
+    public Collection<SubjectSemesterDto> criteriaSearch(
             @RequestBody Set<SearchCriteria> criteria
     ) {
-        return subjectSemesterService.criteriaSearch(criteria);
+        return subjectSemesterMapper.toDto(
+                subjectSemesterService.criteriaSearch(criteria)
+        );
     }
 
-    @PostMapping("/search-by-ids")
+    @GetMapping("/search-by-ids")
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<SubjectSemester> searchByIds(
-            @RequestBody Set<Long> ids
+    public Collection<SubjectSemesterDto> searchByIds(
+            @RequestParam("ids") Set<Long> ids
     ) {
-        return subjectSemesterService.searchByIds(ids);
+        return subjectSemesterMapper.toDto(
+                subjectSemesterService.searchByIds(ids)
+        );
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    public Collection<SubjectSemester> searchBySubjectIdAndGroupIds(
+    public Collection<SubjectSemesterDto> searchBySubjectIdAndGroupIds(
             @RequestParam("subjectId") Long subjectId,
             @RequestParam("groupId") Set<Long> groupIds
     ) {
-        return subjectSemesterService.searchBySubjectIdAndGroupIds(subjectId, groupIds);
+        return subjectSemesterMapper.toDto(
+                subjectSemesterService.searchBySubjectIdAndGroupIds(subjectId, groupIds)
+        );
     }
 }

@@ -1,25 +1,20 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.client_model.StudyGroupI;
-import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
-import com.example.javaserver.common_data.repo.DepartmentRepo;
-import com.example.javaserver.common_data.repo.StudyGroupRepo;
-import com.example.javaserver.common_data.repo.SubjectRepo;
-import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
-import com.example.javaserver.user.repo.UserRepo;
+import com.example.javaserver.user.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -27,74 +22,61 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudyGroupService {
-    private final StudyGroupRepo studyGroupRepo;
-    private final SubjectSemesterRepo subjectSemesterRepo;
-    private final SubjectRepo subjectRepo;
-    private final UserRepo userRepo;
-    private final DepartmentRepo departmentRepo;
+    private final StudyGroupDataService studyGroupDataService;
+    private final SubjectSemesterDataService findSubjectSemestersByIdIn;
+    private final SubjectDataService subjectDataService;
+    private final UserDataService userDataService;
 
     @Autowired
-    public StudyGroupService(StudyGroupRepo studyGroupRepo, SubjectSemesterRepo subjectSemesterRepo, SubjectRepo subjectRepo, UserRepo userRepo, DepartmentRepo departmentRepo) {
-        this.studyGroupRepo = studyGroupRepo;
-        this.subjectSemesterRepo = subjectSemesterRepo;
-        this.subjectRepo = subjectRepo;
-        this.userRepo = userRepo;
-        this.departmentRepo = departmentRepo;
+    public StudyGroupService(StudyGroupDataService studyGroupDataService, SubjectSemesterDataService findSubjectSemestersByIdIn, SubjectDataService subjectDataService, UserDataService userDataService) {
+        this.findSubjectSemestersByIdIn = findSubjectSemestersByIdIn;
+        this.studyGroupDataService = studyGroupDataService;
+        this.subjectDataService = subjectDataService;
+        this.userDataService = userDataService;
     }
 
-
-    public Message create(StudyGroupI studyGroupI) {
-        StudyGroup studyGroup = new StudyGroup(studyGroupI);
-        Optional<Department> department = departmentRepo.findById(studyGroupI.getIdDepartment());
-        if(studyGroupRepo.existsByShortName(studyGroupI.getShortName())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка, данная группа уже существует");
-        }
-        if(department.isPresent()){
-            studyGroup.setDepartment(department.get());
-        }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ошибка, данного департамента не существует");
-        }
-        studyGroupRepo.save(studyGroup);
-        return new Message("Учебная группа успешно создана");
+    public StudyGroup create(StudyGroup studyGroup) {
+        return studyGroupDataService.save(studyGroup);
     }
 
-    public Collection<StudyGroup> searchByIds(Set<Long> ids) {
-        return studyGroupRepo.findAllByIdIn(ids);
+    public StudyGroup getById(Long id) {
+        return studyGroupDataService.findByIdEquals(id);
     }
 
-    public StudyGroup get(Long id){
-        if(id != null){
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(id);
-            if(!studyGroup.isPresent()){
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
-            }
-            return studyGroup.get();
+    public Set<StudyGroup> getAll() {
+        return studyGroupDataService.getAll();
+    }
+
+    public Set<StudyGroup> getByIds(Set<Long> ids) {
+        Set<StudyGroup> groups = studyGroupDataService.findAllByIdIn(ids);
+        if (groups.size() == ids.size()) {
+            return groups;
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Такой группы не существует");
+            Collection<Long> foundIds = groups.stream()
+                    .map(StudyGroup::getId)
+                    .collect(Collectors.toSet());
+            Collection<Long> notFoundIds = ids.stream()
+                    .filter(i -> !foundIds.contains(i))
+                    .collect(Collectors.toSet());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Группы с id: " + Arrays.toString(notFoundIds.toArray()) + " не существуют");
         }
     }
 
     @Transactional
     public Message enroll(Long studyGroupId, Set<Integer> userIds) {
-        Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
-        }
-
-        Set<User> users = userRepo.getUsersByIdIn(userIds);
-        group.get().getStudents().addAll(users);
+        StudyGroup group = studyGroupDataService.getById(studyGroupId);
+        Set<User> users = userDataService.getUsersByIdIn(userIds);
+        group.getStudents().addAll(users);
         return new Message("Пользователи были добавлены в группу");
     }
 
     @Transactional
     public Message addSubjectSemesters(Long studyGroupId, Set<Long> subjectSemesterIds) {
-        Optional<StudyGroup> group = studyGroupRepo.findById(studyGroupId);
-        if (!group.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Учебная группа с указанным id не найдена");
-        }
+        StudyGroup group = studyGroupDataService.getById(studyGroupId);
 
-        Set<SubjectSemester> subjectSemesters = subjectSemesterRepo.findSubjectSemestersByIdIn(subjectSemesterIds);
-        group.get().getSubjectSemesters().addAll(subjectSemesters);
+        Set<SubjectSemester> subjectSemesters = findSubjectSemestersByIdIn.findSubjectSemestersByIdIn(subjectSemesterIds);
+        group.getSubjectSemesters().addAll(subjectSemesters);
         return new Message("Семестры были успешно добавлены для группы");
     }
 
@@ -103,12 +85,7 @@ public class StudyGroupService {
             userId = userDetails.getId();
         }
 
-        Optional<User> userO = userRepo.findById(userId);
-        if (!userO.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет пользователя с указанным (явно или по токену) id");
-        }
-        User user = userO.get();
-
+        User user = userDataService.getById(userId);
         if (!user.getRole().equals(UserRole.TEACHER)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Пользователь не является преподавателем");
         }
@@ -121,14 +98,8 @@ public class StudyGroupService {
     }
 
     public Collection<StudyGroup> getGroupsBySubject(Long subjectId){
-        Optional<Subject> subjectO = subjectRepo.findById(subjectId);
-        if (!subjectO.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нет предмета с указанным id");
-        }
-        Subject subject = subjectO.get();
-
-        return subjectSemesterRepo
-                .findAllBySubjectEquals(subject)
+        Subject subject = subjectDataService.getById(subjectId);
+        return subject.getSemesters()
                 .stream()
                 .map(SubjectSemester::getStudyGroup)
                 .collect(Collectors.toSet());
