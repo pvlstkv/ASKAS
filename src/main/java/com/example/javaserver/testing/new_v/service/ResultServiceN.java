@@ -64,14 +64,14 @@ public class ResultServiceN {
         List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserIdN(userId, subjectId);
         List<Theme> themes = themeRepo.findAllById(themeIds);
         User user = userRepo.findById(userId).get();
-        List<PassedThemeDto> passedThemeOuts = new ArrayList<>();
+        List<PassedThemeDto> passedThemeDtos = new ArrayList<>();
         for (Theme theme : themes) {
             List<PassedTestN> passedTestNS = passedTestRepoN.findAllByUserAndTheme(user, theme);
             List<Integer> ratings = new ArrayList<>();
             passedTestNS.forEach(item -> ratings.add(item.getRatingInPercent()));
-            passedThemeOuts.add(new PassedThemeDto(theme, ratings));
+            passedThemeDtos.add(new PassedThemeDto(theme, ratings));
         }
-        return passedThemeOuts;
+        return passedThemeDtos;
     }
 
     public List<PassedTestPerUserDto> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {

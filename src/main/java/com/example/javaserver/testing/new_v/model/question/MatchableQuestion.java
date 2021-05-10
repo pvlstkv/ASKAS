@@ -5,6 +5,7 @@ import com.example.javaserver.testing.new_v.config.QuestionType;
 import com.example.javaserver.testing.new_v.model.answer.MatchableAnswerOption;
 import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.testing.theme.Theme;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class MatchableQuestion extends QuestionData implements Serializable {
 
     @OneToMany(mappedBy = "matchableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("answerList")
     private List<MatchableAnswerOption> matchableAnswerOptionList;
 
     public MatchableQuestion() {

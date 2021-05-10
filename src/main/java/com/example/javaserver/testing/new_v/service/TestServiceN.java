@@ -248,7 +248,7 @@ public class TestServiceN {
         double rightAnswerDegree = 0;
         boolean userAnswerIsRight;
         List<PassedWriteableAnswer> userAnswerList = new ArrayList<>();
-        List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionWriteList();
+        List<WriteableAnswerOption> originalAnswers = ((WriteableQuestion) checkQuestion.getOriginalQuestion()).getWriteableAnswerOptionList();
         String userAns = ((List<String>) checkQuestion.getUserAnswers()).get(0);
         userAnswerIsRight = false;
         for (WriteableAnswerOption rightAnswer : originalAnswers) {

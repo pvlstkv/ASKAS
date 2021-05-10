@@ -1,5 +1,6 @@
 package com.example.javaserver.academic_performance.model;
 
+import com.example.javaserver.study.controller.dto.WorkDto;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.user.model.User;
 
@@ -11,13 +12,13 @@ public class TaskPerformancePerUser {
     private String lastName;
     private String patronymic;
     private Integer userId;
-    private List<Work> works = new ArrayList<>();
+    private List<WorkDto> works = new ArrayList<>();
 
     public TaskPerformancePerUser() {
 
     }
 
-    public TaskPerformancePerUser(String firstName, String lastName, String patronymic, Integer userId, List<Work> works) {
+    public TaskPerformancePerUser(String firstName, String lastName, String patronymic, Integer userId, List<WorkDto> works) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.patronymic = patronymic;
@@ -25,7 +26,7 @@ public class TaskPerformancePerUser {
         this.works = works;
     }
 
-    public TaskPerformancePerUser(User user, List<Work> works) {
+    public TaskPerformancePerUser(User user, List<WorkDto> works) {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.patronymic = user.getPatronymic();
@@ -72,15 +73,15 @@ public class TaskPerformancePerUser {
         this.userId = userId;
     }
 
-    public List<Work> getWorks() {
+    public List<WorkDto> getWorks() {
         return works;
     }
 
-    public void setWorks(List<Work> works) {
+    public void setWorks(List<WorkDto> works) {
         this.works = works;
     }
 
-    public void addWorks(List<Work> works) {
+    public void addWorks(List<WorkDto> works) {
         if (works != null) {
             this.works.addAll(works);
         }

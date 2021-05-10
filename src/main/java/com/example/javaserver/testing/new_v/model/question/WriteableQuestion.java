@@ -5,6 +5,7 @@ import com.example.javaserver.testing.new_v.config.QuestionType;
 import com.example.javaserver.testing.new_v.model.answer.WriteableAnswerOption;
 import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.study.model.UserFile;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 import javax.persistence.CascadeType;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class WriteableQuestion extends QuestionData {
 
     @OneToMany(mappedBy = "writeableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("answerList")
     private List<WriteableAnswerOption> writeableAnswerOptionList;
 
     public WriteableQuestion() {
@@ -42,12 +44,11 @@ public class WriteableQuestion extends QuestionData {
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
 
-
-    public List<WriteableAnswerOption> getAnswerOptionWriteList() {
+    public List<WriteableAnswerOption> getWriteableAnswerOptionList() {
         return writeableAnswerOptionList;
     }
 
-    public void setAnswerOptionWriteList(List<WriteableAnswerOption> writeableAnswerOptionList) {
+    public void setWriteableAnswerOptionList(List<WriteableAnswerOption> writeableAnswerOptionList) {
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
 }

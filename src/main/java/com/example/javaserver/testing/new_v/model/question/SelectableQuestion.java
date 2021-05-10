@@ -5,6 +5,7 @@ import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.testing.new_v.config.QuestionType;
 import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.testing.new_v.model.answer.AnswerOption;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -18,6 +19,7 @@ import java.util.Set;
 public class SelectableQuestion extends QuestionData {
 
     @OneToMany(mappedBy = "selectableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("answerList")
     private List<AnswerOption> answerOptionList;
 
     public SelectableQuestion(QuestionData questionData) {

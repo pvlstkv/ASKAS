@@ -53,7 +53,7 @@ public class CustomQuestionMapper {
         } else if (question.getQuestionType().equals(QuestionType.WRITE)) {
             WriteableQuestion writeableQuestion = new WriteableQuestion(questionData);
             List<WriteableAnswerOption> answers = extractWriteableAnswerOptionList((ArrayList<Map<String, Object>>) question.getAnswers(), writeableQuestion);
-            writeableQuestion.setAnswerOptionWriteList(answers);
+            writeableQuestion.setWriteableAnswerOptionList(answers);
             return writeableQuestion;
         } else {
             MatchableQuestion matchableQuestion = new MatchableQuestion(questionData);
