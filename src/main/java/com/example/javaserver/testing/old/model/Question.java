@@ -25,7 +25,7 @@ public class Question implements Serializable {
     private String question;
     // todo like the required annotation like the question field
     private QuestionType questionType;
-    //    @JsonIgnore
+
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AnswerChoice> answerChoiceList = new ArrayList<>();
     private Double complexity;
@@ -55,7 +55,9 @@ public class Question implements Serializable {
         this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
                 new AnswerChoice(strAns, false)).collect(Collectors.toList());
         if (this.answerChoiceList.size() == 0) {
-            this.answerChoiceList.add(new AnswerChoice(questionIn.getRightAnswers().get(0), true));
+            questionIn.getRightAnswers().forEach(it ->
+                    this.answerChoiceList.add(new AnswerChoice(it, true))
+            );
             return;
         }
         this.answerChoiceList.stream().filter(answerChoice -> questionIn.getRightAnswers().contains(answerChoice.getAnswer()))

@@ -13,15 +13,9 @@ public class AnswerChoice implements Serializable {
     private Integer id;
     private String answer;
     private Boolean isRight;
-    @OneToOne
-    @JsonProperty("fileIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
-    private UserFile file;
 
-    @ManyToOne()
+    @ManyToOne
     @JsonIgnore
-//    @JoinColumn(name = "question_id")
     private Question question;
 
     public AnswerChoice() {
@@ -60,11 +54,6 @@ public class AnswerChoice implements Serializable {
 
     public void setQuestion(Question question) {
         this.question = question;
-    }
-
-    public AnswerChoice(String answer, Question question) {
-        this.answer = answer;
-//        this.question = question;
     }
 
     public AnswerChoice(String answer) {

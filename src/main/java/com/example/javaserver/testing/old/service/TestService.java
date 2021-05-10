@@ -1,6 +1,8 @@
 package com.example.javaserver.testing.old.service;
 
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.testing.old.config.QuestionType;
+import com.example.javaserver.testing.old.model.AnswerChoice;
 import com.example.javaserver.testing.old.model.Question;
 import com.example.javaserver.testing.old.model.dto.AnswerInOut;
 import com.example.javaserver.testing.old.model.dto.QuestionOut;
@@ -59,11 +61,38 @@ public class TestService {
         Collections.shuffle(questions4Test);
         countOfQuestions = Math.min(countOfQuestions, questions4Test.size());
         questions4Test = questions4Test.subList(0, countOfQuestions);
+
+        return prepareQuestionForTest(questions4Test);
+    }
+
+    private List<QuestionOut> prepareQuestionForTest(List<Question> questions) {
         List<QuestionOut> questionsOut = new ArrayList<>();
-        for (Question originalQuestion : questions4Test) {
+        for (Question originalQuestion : questions) {
+            if (originalQuestion.getQuestionType().equals(QuestionType.CHOOSE) || originalQuestion.getQuestionType().equals(QuestionType.SEQUENCE)) {
+                Collections.shuffle(originalQuestion.getAnswerChoiceList());
+            } else if (originalQuestion.getQuestionType().equals(QuestionType.MATCH)) {
+                shuffleMatchAnswers(originalQuestion);
+            }
             questionsOut.add(new QuestionOut(originalQuestion));
         }
         return questionsOut;
+    }
+
+    private void shuffleMatchAnswers(Question originalQuestion) {
+        List<AnswerChoice> keys = new ArrayList<>();
+        List<AnswerChoice> values = new ArrayList<>();
+        for (int i = 0; i < originalQuestion.getAnswerChoiceList().size(); i += 2) {
+            keys.add(originalQuestion.getAnswerChoiceList().get(i));
+            values.add(originalQuestion.getAnswerChoiceList().get(i + 1));
+        }
+        Collections.shuffle(keys);
+        Collections.shuffle(values);
+        List<AnswerChoice> shuffledAnswers = new ArrayList<>();
+        for (int i = 0; i < keys.size(); i++) {
+            shuffledAnswers.add(keys.get(i));
+            shuffledAnswers.add(values.get(i));
+        }
+        originalQuestion.setAnswerChoiceList(shuffledAnswers);
     }
 
     public PassedTest checkTest(List<AnswerInOut> incomingQuestionsWithUserAnswer, UserDetailsImp userDetails) {
@@ -84,9 +113,10 @@ public class TestService {
             currentPassedQuestion.setPassedTest(passedTest);
             switch (currentCheckingQuestion.getQuestionType()) {
                 case MATCH:
-                    // todo there are some problems...
+                    totalRating += checkMatchTypeQuestion(currentCheckingQuestion,
+                            oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
                     break;
-                case WRITE:
+                case WRITE: // write and choose are checking by one method
                 case CHOOSE:
                     totalRating += checkChooseAndWriteTypeQuestion(currentCheckingQuestion,
                             oneAnswer.getAnswers(), currentPassedQuestion, userAnswers);
@@ -130,7 +160,7 @@ public class TestService {
         for (String userAnswer : listOfUserAnswers) {
             userAnswerIsRight = false;
             for (String rightAnswer : listOfRightAnswers) {
-                if (rightAnswer.equals(userAnswer)) {
+                if (rightAnswer.toLowerCase().equals(userAnswer.toLowerCase())) {
                     userAnswerIsRight = true;
                     // if user gave right answers more than in the original question, then the answer is making true and adding points
                     if (listOfUserAnswers.size() <= listOfRightAnswers.size()) {
@@ -144,6 +174,32 @@ public class TestService {
         return rightAnswersCounter;
     }
 
+    private double checkMatchTypeQuestion(Question checkingQuestion,
+                                          List<String> listOfUserAnswers,
+                                          PassedQuestion passedQuestion,
+                                          List<UserAnswer> userAnswers4Saving) {
+        double rightAnswersCounter = 0;
+        List<String> originalAnswers = checkingQuestion.getAnswerChoiceList().stream().map(AnswerChoice::getAnswer).collect(Collectors.toList());
+        boolean userAnswerIsRight;
+        for (int i = 0; i < originalAnswers.size(); i += 2) {
+            for (int j = 0; j < listOfUserAnswers.size(); j += 2) {
+                if (originalAnswers.get(i).equals(listOfUserAnswers.get(j))) {
+                    if (originalAnswers.get(i + 1).equals(listOfUserAnswers.get(j + 1))) {
+                        userAnswerIsRight = true;
+                        rightAnswersCounter += 1 / (originalAnswers.size() / 2.0);
+                    } else {
+                        userAnswerIsRight = false;
+                    }
+                    userAnswers4Saving.add(new UserAnswer(listOfUserAnswers.get(j), userAnswerIsRight, passedQuestion));
+                    userAnswers4Saving.add(new UserAnswer(listOfUserAnswers.get(j + 1), userAnswerIsRight, passedQuestion));
+                    break;
+                }
+            }
+        }
+        return rightAnswersCounter;
+    }
+
+
     private double checkSequenceTypeQuestion(Question checkingQuestion,
                                              List<String> listOfUserAnswers,
                                              PassedQuestion passedQuestion,
@@ -152,8 +208,9 @@ public class TestService {
         List<String> rightSequence = checkingQuestion.fetchRightAnswers();
         int sizeRS = rightSequence.size();
         if (listOfUserAnswers.size() != sizeRS) {
-            userAnswers4Saving = listOfUserAnswers.stream().map(item -> new UserAnswer(item, false, passedQuestion))
-                    .collect(Collectors.toList());
+            for (String userAnswer : listOfUserAnswers) {
+                userAnswers4Saving.add(new UserAnswer(userAnswer, false, passedQuestion));
+            }
             return 0.0;
         }
         for (int i = 0; i < sizeRS; i++) {
@@ -161,6 +218,7 @@ public class TestService {
                 rightAnswersCounter += 1.0 / sizeRS;
                 userAnswers4Saving.add(new UserAnswer(listOfUserAnswers.get(i), true, passedQuestion));
             } else {
+                rightAnswersCounter = 0;
                 userAnswers4Saving.forEach(item -> item.setRight(false));
                 break;
             }
