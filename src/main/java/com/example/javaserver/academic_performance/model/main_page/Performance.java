@@ -1,4 +1,4 @@
-package com.example.javaserver.academic_performance.model;
+package com.example.javaserver.academic_performance.model.main_page;
 
 public class Performance {
     private Progress tests;
