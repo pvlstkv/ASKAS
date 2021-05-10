@@ -2,8 +2,9 @@ package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
-import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UserDto;
 import com.example.javaserver.user.controller.dto.UpdateUser;
+import com.example.javaserver.user.controller.mapper.UserMapper;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,37 +21,45 @@ import java.util.Set;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
     @GetMapping
-    public User getUserInfo(
+    public UserDto getUserInfo(
             @RequestParam(required = false) Integer id,
             @AuthenticationPrincipal UserDetailsImp userDetails
             ){
-        return  userService.getUser(userDetails,id);
+        return  userMapper.toDto(
+                userService.getUser(userDetails,id)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     @GetMapping("/list")
-    public List<User> getUserList(
+    public Collection<UserDto> getUserList(
     ){
-        return userService.getListUser();
+        return userMapper.toDto(
+                userService.getListUser()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"USER", "TEACHER", "ADMIN"})
-    @GetMapping("/search-by")
-    public Collection<User> searchByIds(
-            @RequestParam("id") Set<Integer> ids
+    @GetMapping("/search-by-ids")
+    public Collection<UserDto> searchByIds(
+            @RequestParam("ids") Set<Integer> ids
     ) {
-        return userService.getByIds(ids);
+        return userMapper.toDto(
+                userService.getByIds(ids)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -66,13 +75,12 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ADMIN"})
-    @PatchMapping
+    @PutMapping("/edit")
     public Message patchUser(
-            @RequestBody UserI userI
-
+            @RequestBody UserDto userDto
 
             ){
-        return userService.updateUser(userI);
+        return userService.updateUser(userDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -1,8 +1,6 @@
 package com.example.javaserver.common_data.controller.mapper;
 
-import com.example.javaserver.common_data.controller.dto.DepartmentDto;
 import com.example.javaserver.common_data.controller.dto.FacultyDto;
-import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.Faculty;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +12,7 @@ import java.util.Collection;
 
 @Component
 @Mapper(componentModel = "spring", uses = {
-        DepartamentIdMapper.class
+        DepartmentIdMapper.class
 })
 public interface FacultyMapper {
     @Mappings({

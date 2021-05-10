@@ -2,7 +2,7 @@ package com.example.javaserver.user.controller;
 
 import com.example.javaserver.general.config.JwtUtil;
 import com.example.javaserver.general.model.Message;
-import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UserDto;
 import com.example.javaserver.general.service.RequestHandlerService;
 import com.example.javaserver.user.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +28,9 @@ public class RegistrationController {
     @PostMapping("/registration")
     public Message regUser(
             @RequestHeader("token") String token,
-            @RequestBody UserI userI
+            @RequestBody UserDto userDto
     ){
-        return authService.regUser(userI);
+        return authService.regUser(userDto);
     }
 
 }

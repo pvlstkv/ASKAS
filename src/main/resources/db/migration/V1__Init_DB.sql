@@ -1,6 +1,8 @@
- create table "passed_testn" ("id"  bigserial not null, "passed_at" timestamp, "rating_in_percent" int4, "theme_id" int8, "user_id" int4, primary key ("id"));
+ create table "conference" ("id"  bigserial not null, "token" varchar(255), "user_id" int4, primary key ("id"));
+     create table "passed_testn" ("id"  bigserial not null, "passed_at" timestamp, "rating_in_percent" int4, "theme_id" int8, "user_id" int4, primary key ("id"));
      create table "answer_choices" ("id"  serial not null, "answer" varchar(255), "is_right" boolean, "question_id" int8, primary key ("id"));
      create table "answer_options" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "file_id" int8, "selectable_question_id" int8, primary key ("id"));
+     create table "conference_group" ("conference_id" int8 not null, "group_id" int8 not null, primary key ("conference_id", "group_id"));
      create table "departments" ("id"  bigserial not null, "created_at" timestamp, "full_name" varchar(255), "short_name" varchar(255), "updated_at" timestamp, "faculty_id" int8, primary key ("id"));
      create table "faculties" ("id"  bigserial not null, "created_at" timestamp, "full_name" varchar(255), "short_name" varchar(255), "updated_at" timestamp, primary key ("id"));
      create table "file_literature" ("literature_id" int8 not null, "file_id" int8 not null, primary key ("literature_id", "file_id"));
@@ -22,9 +24,9 @@
      create table "questions_user_files" ("question_id" int8 not null, "user_files_id" int8 not null, primary key ("question_id", "user_files_id"));
      create table "schedule" ("id"  bigserial not null, "info" varchar(255), "name_group" varchar(255), "number_day" int4, "number_week" int4, "pair_number" int4, "place" varchar(255), "subgroup" int4, "subject" varchar(255), "teacher" varchar(255), "type_subject" int4, primary key ("id"));
      create table "semester_marks" ("id"  bigserial not null, "mark" int4, "subject_semester_id" int8, "user_id" int4, primary key ("id"));
-     create table "study_groups" ("id"  bigserial not null, "code" int4, "created_at" timestamp, "full_name" varchar(255), "group_number" int4, "number_of_semester" int4, "short_name" varchar(255), "updated_at" timestamp, "year_of_study_start" int4, "department_id" int8, primary key ("id"));
+     create table "study_groups" ("id"  bigserial not null, "code" int4, "created_at" timestamp, "full_name" varchar(50), "group_number" int4, "number_of_semester" int4, "short_name" varchar(50), "updated_at" timestamp, "year_of_study_start" int4, "department_id" int8, primary key ("id"));
      create table "subject_semesters" ("id"  bigserial not null, "control_type" int4, "created_at" timestamp, "has_course_project" boolean, "has_course_work" boolean, "name" varchar(255), "updated_at" timestamp, "study_group_id" int8, "subject_id" int8, primary key ("id"));
-     create table "subjects" ("id"  bigserial not null, "created_at" timestamp, "decryption" varchar(255), "name" varchar(255), "updated_at" timestamp, "department_id" int8, primary key ("id"));
+     create table "subjects" ("id"  bigserial not null, "created_at" timestamp, "decryption" varchar(1000000), "name" varchar(50), "updated_at" timestamp, "department_id" int8, primary key ("id"));
      create table "task_semester" ("task_id" int8 not null, "semester_id" int8 not null, primary key ("task_id", "semester_id"));
      create table "tasks" ("id"  bigserial not null, "description" varchar(1000000), "title" varchar(50), "type" int4, "user_id" int4, primary key ("id"));
      create table "teacher_subject" ("user_id" int4 not null, "subject_id" int8 not null, primary key ("subject_id", "user_id"));
@@ -35,11 +37,14 @@
      create table "writeable_answer_options" ("id"  bigserial not null, "answer" varchar(255), "is_strict" boolean, "writeable_question_id" int8, primary key ("id"));
      alter table "questionsn_user_files" add constraint UK_pnnrgr67n8hp24s09c9ggc6j6 unique ("user_files_id");
      alter table "questions_user_files" add constraint UK_25tcrgiqifjkbtivh4xlarsx5 unique ("user_files_id");
+     alter table "conference" add constraint "FK27ftffvfa3f8x9fvrbhitncn8" foreign key ("user_id") references "users";
      alter table "passed_testn" add constraint "FKlckfy7mgtt7al0vm1f2xlbkm3" foreign key ("theme_id") references "themes";
      alter table "passed_testn" add constraint "FK5baihg6undnpt7crn22m0djfy" foreign key ("user_id") references "users";
      alter table "answer_choices" add constraint "FKnif18tj14hlbbqdtyw0fhrftj" foreign key ("question_id") references "questions";
      alter table "answer_options" add constraint "FK51fss21qjkrv5kc6c3ai7d88x" foreign key ("file_id") references "files";
      alter table "answer_options" add constraint "FKrjjb54iqlnrvl28hr31jbiv3v" foreign key ("selectable_question_id") references "questionsn";
+     alter table "conference_group" add constraint "FKlu06qq185o1l7rujhy9ow6pj7" foreign key ("group_id") references "study_groups";
+     alter table "conference_group" add constraint "FKibapaprc979sjo6jgi8m6p6ey" foreign key ("conference_id") references "conference";
      alter table "departments" add constraint "FK3s8plsoc0lynf5j8oi7b5q3u1" foreign key ("faculty_id") references "faculties";
      alter table "file_literature" add constraint "FKhldya1kk0qfkuiwbcb7ccrlbb" foreign key ("file_id") references "files";
      alter table "file_literature" add constraint "FKt0ml5dgjje6mv7dk3nj6txs1a" foreign key ("literature_id") references "literature";

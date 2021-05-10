@@ -7,7 +7,8 @@ import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.config.JwtUtil;
 import com.example.javaserver.user.controller.dto.TokenIO;
-import com.example.javaserver.user.controller.dto.UserI;
+import com.example.javaserver.user.controller.dto.UserDto;
+import com.example.javaserver.user.controller.mapper.UserMapper;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.example.javaserver.user.repo.UserRepo;
@@ -25,13 +26,16 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final StudyGroupRepo studyGroupRepo;
     private final DepartmentRepo departmentRepo;
+    private final UserMapper userMapper;
+
 
     @Autowired
-    public AuthService(UserRepo userRepo, JwtUtil jwtUtil, StudyGroupRepo studyGroupRepo, DepartmentRepo departmentRepo) {
+    public AuthService(UserRepo userRepo, JwtUtil jwtUtil, StudyGroupRepo studyGroupRepo, DepartmentRepo departmentRepo, UserMapper userMapper) {
         this.userRepo = userRepo;
         this.jwtUtil = jwtUtil;
         this.studyGroupRepo = studyGroupRepo;
         this.departmentRepo = departmentRepo;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -56,44 +60,44 @@ public class AuthService {
     }
 
     @Transactional
-    public Message regUser(UserI userI){
-        if(userI.getLogin() == null){
+    public Message regUser(UserDto userDto){
+        if(userDto.getLogin() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите логин");
         }
-        if(userI.getPassword() == null){
+        if(userDto.getPassword() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите пароль");
         }
-        if(userI.getEmail() == null){
+        if(userDto.getEmail() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите вашу почту");
         }
-        if (userI.getFirstName() == null){
+        if (userDto.getFirstName() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите ваше Имя");
         }
-        if(userI.getLastName() == null){
+        if(userDto.getLastName() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите вашу фамилию");
         }
         /*if(userI.getPatronymic() == null){
             return new ResponseEntity<>(new Message("Введите ваше отчество"),HttpStatus.BAD_REQUEST);
         }*/
-        if(userI.getPhone() == null){
+        if(userDto.getPhone() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Введите ваш телефон");
         }
-        if(userI.getRole() == null){
+        if(userDto.getRole() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите роль");
         }
 
-        if(userRepo.existsByLogin(userI.getLogin())){
+        if(userRepo.existsByLogin(userDto.getLogin())){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователя с таким логином уже существует");
         }
 
-        if(userI.getRole().equals(UserRole.ADMIN)){
-            User user = new User(userI);
+        if(userDto.getRole().equals(UserRole.ADMIN)){
+            User user = userMapper.toEntity(userDto);
             userRepo.save(user);
             return new Message("Пользователь с ролью: админ успешно создан");
 
-        }else if(userI.getRole().equals(UserRole.TEACHER)){
-            User user = new User(userI);
-            Optional<Department> department = departmentRepo.findByShortName(userI.getDepartmentName());
+        }else if(userDto.getRole().equals(UserRole.TEACHER)){
+            User user = userMapper.toEntity(userDto);
+            Optional<Department> department = departmentRepo.findById(userDto.getDepartmentId());
             if(department.isPresent()){
                 user.setDepartment(department.get());
             }else {
@@ -101,9 +105,9 @@ public class AuthService {
             }
             userRepo.save(user);
             return new Message("Пользователь с ролью: преподаватель успешно создан");
-        }else if(userI.getRole().equals(UserRole.USER)){
-            User user = new User(userI);
-            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(userI.getStudyGroupId());
+        }else if(userDto.getRole().equals(UserRole.USER)){
+            User user = userMapper.toEntity(userDto);
+            Optional<StudyGroup> studyGroup = studyGroupRepo.findById(userDto.getStudyGroupId());
             if(studyGroup.isPresent()){
                 user.setStudyGroup(studyGroup.get());
             }else {

@@ -1,16 +1,11 @@
 package com.example.javaserver.common_data.model;
 
 
+import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -22,23 +17,19 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 50)
     private String name;
 
+    @Column(length = 1_000_000)
     private String decryption;
 
     private OffsetDateTime createdAt;
 
     private OffsetDateTime updatedAt;
 
-//    @JsonProperty("themeIds")
-//    @JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
-//    @JsonIdentityReference(alwaysAsId=true)
-//    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<Theme> themes;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Theme> themes;
 
-    @JsonProperty("teacherIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToMany
     @JoinTable(
             name = "teacher_subject",
@@ -46,24 +37,18 @@ public class Subject {
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> teachers;
 
-    @JsonProperty("subjectSemesterIds")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
-    @JsonProperty("departmentId")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     private Department department;
-
-    public Subject() {
-    }
 
     @PreRemove
     private void removeHandler() {
         teachers.forEach(u -> u.getTeachingSubjects().remove(this));
+    }
+
+    public Subject() {
     }
 
     public Subject(String name) {
@@ -90,13 +75,13 @@ public class Subject {
         this.id = id;
     }
 
-//    public Set<Theme> getThemes() {
-//        return themes;
-//    }
-//
-//    public void setThemes(Set<Theme> themes) {
-//        this.themes = themes;
-//    }
+    public Set<Theme> getThemes() {
+        return themes;
+    }
+
+    public void setThemes(Set<Theme> themes) {
+        this.themes = themes;
+    }
 
     public String getDecryption() {
         return decryption;
