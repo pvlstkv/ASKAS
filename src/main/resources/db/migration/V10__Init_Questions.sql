@@ -432,7 +432,7 @@ values ((select id from answer_option where answer like 'переход'),
         (select id from question_data where question like 'Сопоставьте элементы граф-схемы автомата'),
         (select id from answer_option where answer like 'дуга'));
 
-/*25дд question*/
+/*25 question*/
 insert
 into question_data
 (question_discriminator, complexity, question, question_type, subject_id, theme_id)
@@ -451,3 +451,22 @@ values ('автомат мура', false, ((select id
                                  from question_data
                                  where question like
                                        'Автомат, у которого состояния проставляются на операторных вершинах?')));
+
+/*26 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Последовательность программы', 3,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Конечные автоматы'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('начало', true,
+        (select id from question_data where question_data.question like 'Последовательность программы'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('блок логики', true,
+        (select id from question_data where question_data.question like 'Последовательность программы'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('конец', true,
+        (select id from question_data where question_data.question like 'Последовательность программы'));

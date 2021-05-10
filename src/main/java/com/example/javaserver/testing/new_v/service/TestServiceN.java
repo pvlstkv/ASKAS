@@ -113,6 +113,8 @@ public class TestServiceN {
                 totalRightAnsDegree = treatSelectQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             } else if (originalQuestion.get().getQuestionType().equals(QuestionType.MATCH)) {
                 totalRightAnsDegree = treatMatchQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+            } else if (originalQuestion.get().getQuestionType().equals(QuestionType.SEQUENCE)) {
+                totalRightAnsDegree = treatSequenceQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             }
         }
         totalRightAnsDegree = Math.round(totalRightAnsDegree * 100 / questionListForCheck.size());
@@ -179,6 +181,52 @@ public class TestServiceN {
 
     }
 
+    private double treatSequenceQuestion(List<AfterCheckQuestionDto> afterCheckQuestionList, PassedTestN passedTestN, List<PassedQuestionData> passedQuestions, double totalRightAnsDegree, CheckTestDto questionForCheck, Optional<QuestionData> originalQuestion) {
+        PassedSelectableQuestion passedSelectableQuestion = new PassedSelectableQuestion(originalQuestion.get(), passedTestN);
+        CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedSelectableQuestion);
+        checkSequenceQuestion(checkQuestion);
+        totalRightAnsDegree += checkQuestion.getRating();
+
+        passedSelectableQuestion.setUserAnswers((List<PassedSelectableAnswer>) checkQuestion.getUserAnswers());
+        passedQuestions.add(passedSelectableQuestion);
+
+        List<UserSelectableAnswer> userAnswerIds = new ArrayList<>();
+        passedSelectableQuestion.getUserAnswers().forEach(it -> userAnswerIds.add(new UserSelectableAnswer(it.getUserAnswer().getId(), it.getRight())));
+
+        afterCheckQuestionList.add(new AfterCheckQuestionDto(originalQuestion.get(), userAnswerIds));
+        return totalRightAnsDegree;
+    }
+
+    private void checkSelectQuestion(CheckQuestion checkQuestion) {
+        double rightAnswerDegree = 0;
+        boolean userAnswerIsRight;
+        List<PassedSelectableAnswer> userAnswerList = new ArrayList<>();
+        List<AnswerOption> originalRightAnswers = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
+                .stream().filter(AnswerOption::getRight).collect(Collectors.toList());
+        List<Long> userAnswerIds = new ArrayList<>();
+        ((List<Integer>) checkQuestion.getUserAnswers()).forEach(it -> userAnswerIds.add(it.longValue()));
+        for (Long userAnsId : userAnswerIds) {
+            userAnswerIsRight = false;
+            for (AnswerOption origAns : originalRightAnswers) {
+                if (origAns.getId().equals(userAnsId)) {
+                    // if user gave right answers more than in the original question, then the answer is making true and adding points
+                    if (userAnswerIds.size() <= originalRightAnswers.size()) {
+                        rightAnswerDegree += 1.0 / originalRightAnswers.size();
+                        userAnswerIsRight = true;
+                    }
+                    break;
+                }
+            }
+            Optional<AnswerOption> userAnswerOption = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
+                    .stream().filter(it -> it.getId().equals(userAnsId)).findFirst();
+            PassedSelectableAnswer passedAnswer = new PassedSelectableAnswer(userAnswerOption.get(), userAnswerIsRight,
+                    (PassedSelectableQuestion) checkQuestion.getPassedQuestion());
+            userAnswerList.add(passedAnswer);
+        }
+        checkQuestion.setUserAnswers(userAnswerList);
+        checkQuestion.setRating(rightAnswerDegree);
+    }
+
     private void checkMatchQuestion(CheckQuestion checkQuestion) {
         double rightAnswerDegree = 0;
         boolean userAnswerIsRight;
@@ -214,36 +262,6 @@ public class TestServiceN {
         checkQuestion.setRating(rightAnswerDegree);
     }
 
-    private void checkSelectQuestion(CheckQuestion checkQuestion) {
-        double rightAnswerDegree = 0;
-        boolean userAnswerIsRight;
-        List<PassedSelectableAnswer> userAnswerList = new ArrayList<>();
-        List<AnswerOption> originalRightAnswers = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
-                .stream().filter(AnswerOption::getRight).collect(Collectors.toList());
-        List<Long> userAnswerIds = new ArrayList<>();
-        ((List<Integer>) checkQuestion.getUserAnswers()).forEach(it -> userAnswerIds.add(it.longValue()));
-        for (Long userAnsId : userAnswerIds) {
-            userAnswerIsRight = false;
-            for (AnswerOption origAns : originalRightAnswers) {
-                if (origAns.getId().equals(userAnsId)) {
-                    // if user gave right answers more than in the original question, then the answer is making true and adding points
-                    if (userAnswerIds.size() <= originalRightAnswers.size()) {
-                        rightAnswerDegree += 1.0 / originalRightAnswers.size();
-                        userAnswerIsRight = true;
-                    }
-                    break;
-                }
-            }
-            Optional<AnswerOption> userAnswerOption = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
-                    .stream().filter(it -> it.getId().equals(userAnsId)).findFirst();
-            PassedSelectableAnswer passedAnswer = new PassedSelectableAnswer(userAnswerOption.get(), userAnswerIsRight,
-                    (PassedSelectableQuestion) checkQuestion.getPassedQuestion());
-            userAnswerList.add(passedAnswer);
-        }
-        checkQuestion.setUserAnswers(userAnswerList);
-        checkQuestion.setRating(rightAnswerDegree);
-    }
-
     private void checkWriteQuestion(CheckQuestion checkQuestion) {
         double rightAnswerDegree = 0;
         boolean userAnswerIsRight;
@@ -273,6 +291,33 @@ public class TestServiceN {
         checkQuestion.setRating(rightAnswerDegree);
     }
 
+    private void checkSequenceQuestion(CheckQuestion checkQuestion) {
+        double rightAnswerDegree = 1;
+        boolean userAnswerIsRight = true;
+        List<PassedSelectableAnswer> userAnswerList = new ArrayList<>();
+        List<AnswerOption> originalRightAnswers = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList();
+        List<Long> userAnswerIds = new ArrayList<>();
+        ((List<Integer>) checkQuestion.getUserAnswers()).forEach(it -> userAnswerIds.add(it.longValue()));
+//        if (userAnswerIds.size() < originalRightAnswers.size()){
+//            checkQuestion.s
+//            return;
+//        }
+        for (int i = 0; i < originalRightAnswers.size(); i++) {
+            if (!userAnswerIds.get(i).equals(originalRightAnswers.get(i).getId())) {
+                rightAnswerDegree = 0;
+                userAnswerIsRight = false;
+            }
+            int finalI = i;
+            Optional<AnswerOption> userAnswerOption = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList()
+                    .stream().filter(it -> it.getId().equals(userAnswerIds.get(finalI))).findFirst();
+            PassedSelectableAnswer passedAnswer = new PassedSelectableAnswer(userAnswerOption.get(), userAnswerIsRight,
+                    (PassedSelectableQuestion) checkQuestion.getPassedQuestion());
+            userAnswerList.add(passedAnswer);
+        }
+        checkQuestion.setUserAnswers(userAnswerList);
+        checkQuestion.setRating(rightAnswerDegree);
+    }
+
     private void shuffleMatchableQuestion(MatchableQuestion matchableQuestion) {
         List<AnswerOption> keys = new ArrayList<>();
         List<AnswerOption> values = new ArrayList<>();
@@ -292,7 +337,6 @@ public class TestServiceN {
     private void shuffleSelectableQuestion(SelectableQuestion selectableQuestion) {
         Collections.shuffle(selectableQuestion.getAnswerOptionList());
     }
-
 
     private User fetchUser(UserDetailsImp userDetails) {
         Optional<User> user = userRepo.findById(userDetails.getId());
