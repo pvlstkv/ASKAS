@@ -1,18 +1,11 @@
 package com.example.javaserver.common_data.model;
 
-import com.example.javaserver.testing.model.Question;
-import com.example.javaserver.testing.model.Theme;
+
+import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.user.model.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -44,23 +37,18 @@ public class Subject {
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> teachers;
 
-//    @OneToMany(mappedBy = "subject")
-//    private List<Question> question;
-
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SubjectSemester> semesters;
 
     @ManyToOne
     private Department department;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> question;
-
-    public Subject() { }
-
     @PreRemove
     private void removeHandler() {
         teachers.forEach(u -> u.getTeachingSubjects().remove(this));
+    }
+
+    public Subject() {
     }
 
     public Subject(String name) {
@@ -133,14 +121,6 @@ public class Subject {
 
     public void setDepartment(Department department) {
         this.department = department;
-    }
-
-    public List<Question> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(List<Question> question) {
-        this.question = question;
     }
 
     public Set<User> getTeachers() {
