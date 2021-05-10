@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "matchable_answer_options")
 public class MatchableAnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

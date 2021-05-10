@@ -1,7 +1,6 @@
 package com.example.javaserver.testing.new_v.model.saving_result.question;
 
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
-import com.example.javaserver.testing.new_v.model.saving_result.answer.Answerable;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedMatchableAnswer;
 import com.example.javaserver.testing.new_v.model.question.QuestionData;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("match")
-public class PassedMatchableQuestion extends PassedQuestionData implements Serializable, Questionable {
+public class PassedMatchableQuestion extends PassedQuestionData implements Serializable {
 
     @OneToMany(mappedBy = "passedMatchableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PassedMatchableAnswer> userAnswers;
@@ -52,8 +51,4 @@ public class PassedMatchableQuestion extends PassedQuestionData implements Seria
         this.userAnswers = userAnswers;
     }
 
-    @Override
-    public List<Answerable> getAnswers() {
-        return Collections.singletonList((Answerable) userAnswers);
-    }
 }

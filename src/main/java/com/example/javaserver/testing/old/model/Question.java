@@ -16,14 +16,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-//@Table(name = "questions")
+@Table(name = "questions")
 public class Question implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
+    @Lob
     private String question;
-    // todo like the required annotation like the question field
+
     private QuestionType questionType;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)

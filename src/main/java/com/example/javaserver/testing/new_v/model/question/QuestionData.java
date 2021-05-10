@@ -13,16 +13,15 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "question_discriminator",
         discriminatorType = DiscriminatorType.STRING)
-
+@Table(name = "questionsN")
 public class QuestionData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @Column(columnDefinition = "TEXT") todo @Lob or something not like varchar(255)
+    @Lob
     private String question;
     // todo like the required annotation like the question field
     private QuestionType questionType;
-    //    @JsonIgnore
     private Double complexity;
     // todo how to do
 

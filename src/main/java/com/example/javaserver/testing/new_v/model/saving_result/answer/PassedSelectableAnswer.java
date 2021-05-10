@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-public class PassedSelectableAnswer implements Serializable, Answerable {
+@Table(name = "passed_selectable_answers")
+public class PassedSelectableAnswer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

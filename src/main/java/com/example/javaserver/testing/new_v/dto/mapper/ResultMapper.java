@@ -4,7 +4,6 @@ import com.example.javaserver.testing.new_v.config.QuestionType;
 import com.example.javaserver.testing.new_v.dto.answer.for_test.result.*;
 import com.example.javaserver.testing.new_v.model.question.QuestionData;
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
-import com.example.javaserver.testing.new_v.model.saving_result.answer.Answerable;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedMatchableAnswer;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedSelectableAnswer;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedWriteableAnswer;

@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "passed_question_discriminator",
         discriminatorType = DiscriminatorType.STRING)
+@Table(name = "passed_questionsN")
 public class PassedQuestionData implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

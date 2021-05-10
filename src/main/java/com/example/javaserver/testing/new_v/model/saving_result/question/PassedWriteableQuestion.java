@@ -1,7 +1,6 @@
 package com.example.javaserver.testing.new_v.model.saving_result.question;
 
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
-import com.example.javaserver.testing.new_v.model.saving_result.answer.Answerable;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedWriteableAnswer;
 import com.example.javaserver.testing.new_v.model.question.QuestionData;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("write")
-public class PassedWriteableQuestion extends PassedQuestionData implements Serializable, Questionable {
+public class PassedWriteableQuestion extends PassedQuestionData implements Serializable {
 
     @OneToMany(mappedBy = "passedWriteableQuestion",
             cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,8 +46,4 @@ public class PassedWriteableQuestion extends PassedQuestionData implements Seria
         this.userAnswers = userAnswers;
     }
 
-    @Override
-    public List<Answerable> getAnswers() {
-        return Collections.singletonList((Answerable) userAnswers);
-    }
 }
