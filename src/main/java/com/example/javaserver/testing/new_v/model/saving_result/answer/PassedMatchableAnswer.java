@@ -8,14 +8,13 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "passed_matchable_answers")
-public class PassedMatchableAnswer implements Serializable {
+public class PassedMatchableAnswer implements Serializable, Answerable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @OneToOne
     private AnswerOption key;
+
     @OneToOne
     private AnswerOption value;
 

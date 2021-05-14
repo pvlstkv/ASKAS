@@ -1,4 +1,4 @@
-//package com.example.javaserver.testing.new_v.dto.test;
+package com.example.javaserver.testing.new_v.dto.test;//package com.example.javaserver.testing.new_v.dto.test;
 //
 //import com.example.javaserver.testing.new_v.dto.answer.for_test.result.AfterCheckTestDto;
 //
