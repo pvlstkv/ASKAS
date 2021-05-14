@@ -14,7 +14,7 @@ public class Conference {
 
     private String token;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "conference_group",
             joinColumns = {@JoinColumn(name = "conference_id")},
