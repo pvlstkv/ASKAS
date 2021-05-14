@@ -54,9 +54,6 @@ public class ResultService {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
         checkResult = checkResult.checkIfExistsInDB(new Subject(subjectId), subjectRepo, checkResult);
-        if (!checkResult.getItsOK()) {
-            throw checkResult.getResponseStatusException();
-        }
         List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserId(userId, subjectId);
         List<Theme> themes = themeRepo.findAllById(themeIds);
         User user = userRepo.findById(userId).get();

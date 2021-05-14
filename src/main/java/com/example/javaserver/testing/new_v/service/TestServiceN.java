@@ -64,8 +64,6 @@ public class TestServiceN {
     public Set<QuestionDataDto> createTest(Long themeId, Integer countOfQuestions) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
-        if (!checkResult.getItsOK())
-            throw checkResult.getResponseStatusException();
         if (countOfQuestions == null) {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
@@ -128,6 +126,7 @@ public class TestServiceN {
         passedTestN.setPassedAt(OffsetDateTime.now());
         passedTestN.setUser(fetchUser(userDetails));
         passedTestN.setTheme(originalQuestion.getTheme());
+        passedTestN.setPassedAt(OffsetDateTime.now());
         passedTestRepoN.save(passedTestN);
     }
 
@@ -298,10 +297,6 @@ public class TestServiceN {
         List<AnswerOption> originalRightAnswers = ((SelectableQuestion) checkQuestion.getOriginalQuestion()).getAnswerOptionList();
         List<Long> userAnswerIds = new ArrayList<>();
         ((List<Integer>) checkQuestion.getUserAnswers()).forEach(it -> userAnswerIds.add(it.longValue()));
-//        if (userAnswerIds.size() < originalRightAnswers.size()){
-//            checkQuestion.s
-//            return;
-//        }
         for (int i = 0; i < originalRightAnswers.size(); i++) {
             if (!userAnswerIds.get(i).equals(originalRightAnswers.get(i).getId())) {
                 rightAnswerDegree = 0;
