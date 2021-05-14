@@ -60,7 +60,7 @@ public class QuestionService {
             questionRepo.save(newQuestion);
         }
     }
-
+    
     public void deleteManyQuestions(List<Long> ids) {
         ids.forEach(questionRepo::deleteById);
     }
