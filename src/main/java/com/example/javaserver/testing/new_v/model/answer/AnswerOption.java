@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "answer_options")
 public class AnswerOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
