@@ -169,4 +169,9 @@ public class ConferenceService {
         }
         return user.getStudyGroup().getConferences();
     }
+
+    public Set<Conference> getByTeacherId(UserDetailsImp userDetails) {
+        User user = userService.getById(userDetails.getId());
+        return conferenceRepo.findAllByUserEquals(user);
+    }
 }
