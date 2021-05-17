@@ -18,6 +18,8 @@
     </properties>
 
     <dependencies>
+
+
         <!-- mapstruct for converting dto to models and vice versa -->
         <dependency>
             <groupId>org.mapstruct</groupId>
