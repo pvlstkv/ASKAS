@@ -1,6 +1,7 @@
 package com.example.javaserver.testing.new_v.model.saving_result.question;
 
 import com.example.javaserver.testing.new_v.model.saving_result.PassedTestN;
+import com.example.javaserver.testing.new_v.model.saving_result.answer.Answerable;
 import com.example.javaserver.testing.new_v.model.saving_result.answer.PassedSelectableAnswer;
 import com.example.javaserver.testing.new_v.model.question.QuestionData;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("choose_and_seq")
-public class PassedSelectableQuestion extends PassedQuestionData implements Serializable {
+public class PassedSelectableQuestion extends PassedQuestionData implements Serializable, Questionable {
 
     @OneToMany(mappedBy = "passedSelectableQuestion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PassedSelectableAnswer> userAnswers;
@@ -45,4 +46,8 @@ public class PassedSelectableQuestion extends PassedQuestionData implements Seri
         this.userAnswers = userAnswers;
     }
 
+    @Override
+    public List<Answerable> getAnswers() {
+        return Collections.singletonList((Answerable) userAnswers);
+    }
 }

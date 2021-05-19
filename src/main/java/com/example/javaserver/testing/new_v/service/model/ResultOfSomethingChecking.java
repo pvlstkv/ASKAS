@@ -1,11 +1,10 @@
 package com.example.javaserver.testing.new_v.service.model;
 
 import com.example.javaserver.common_data.model.Subject;
-import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.common_data.repo.SubjectRepo;
-
 import com.example.javaserver.testing.new_v.model.question.QuestionData;
 import com.example.javaserver.testing.new_v.repo.question.QuestionDataRepo;
+import com.example.javaserver.testing.theme.Theme;
 import com.example.javaserver.testing.theme.ThemeRepo;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
@@ -18,7 +17,6 @@ public class ResultOfSomethingChecking {
     private Theme theme;
     private QuestionData question;
     private User user;
-    private ResponseStatusException responseStatusException;
     private Boolean itsOK;
     private String errors;
     private static String doesntExistById = " с id %d в базе данных не существует. " +
@@ -29,7 +27,6 @@ public class ResultOfSomethingChecking {
         this.theme = oldResult.getTheme();
         this.question = oldResult.getQuestion();
         this.user = oldResult.getUser();
-        this.responseStatusException = oldResult.getResponseStatusException();
         this.itsOK = oldResult.getItsOK();
         this.errors = oldResult.getErrors();
     }
@@ -54,13 +51,12 @@ public class ResultOfSomethingChecking {
     }
 
     private static ResultOfSomethingChecking checkSubject(Subject subject, SubjectRepo repo, ResultOfSomethingChecking result) {
-        subject = repo.findById(subject.getId()).orElse(null);
-        if (subject == null) {
+        Subject subjectFromDB = repo.findById(subject.getId()).orElse(null);
+        if (subjectFromDB == null) {
             String response = String.format("Предмета" + doesntExistById, subject.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseStatusException(
-                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors);
         }
         result.setItsOK(true);
         result.setSubject(subject);
@@ -68,57 +64,54 @@ public class ResultOfSomethingChecking {
     }
 
     private static ResultOfSomethingChecking checkTheme(Theme theme, ThemeRepo repo, ResultOfSomethingChecking result) {
-        theme = repo.findById(theme.getId()).orElse(null);
-        if (theme == null) {
+        Theme themeFromDB = repo.findById(theme.getId()).orElse(null);
+        if (themeFromDB == null) {
             String response = String.format("Темы" + doesntExistById, theme.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseStatusException(
-                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors);
         }
         result.setItsOK(true);
-        result.setTheme(theme);
+        result.setTheme(themeFromDB);
         return result;
     }
 
     private static ResultOfSomethingChecking checkQuestion(QuestionData question, QuestionDataRepo repo, ResultOfSomethingChecking result) {
-        question = repo.findById(question.getId()).orElse(null);
-        if (question == null) {
+        QuestionData questionFromDB = repo.findById(question.getId()).orElse(null);
+        if (questionFromDB == null) {
             String response = String.format("Вопроса" + doesntExistById, question.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseStatusException(
-                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors);
         }
         result.setItsOK(true);
-        result.setQuestion(question);
+        result.setQuestion(questionFromDB);
         return result;
     }
 
     private static ResultOfSomethingChecking checkUser(User user, UserRepo repo, ResultOfSomethingChecking result) {
-        user = repo.findById(user.getId()).orElse(null);
-        if (user == null) {
+        User userFromDB = repo.findById(user.getId()).orElse(null);
+        if (userFromDB == null) {
             String response = String.format("Пользователя" + doesntExistById, user.getId());
             result.errors += response;
             result.setItsOK(false);
-            result.setResponseStatusException(
-                    new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors));
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, result.errors);
         }
         result.setItsOK(true);
-        result.setUser(user);
+        result.setUser(userFromDB);
         return result;
     }
+
 
     public ResultOfSomethingChecking() {
         this.errors = "";
     }
 
-    public ResultOfSomethingChecking(Subject subject, Theme theme, QuestionData question, User user, ResponseStatusException responseStatusException, Boolean itsOK, String errors) {
+    public ResultOfSomethingChecking(Subject subject, Theme theme, QuestionData question, User user, Boolean itsOK, String errors) {
         this.subject = subject;
         this.theme = theme;
         this.question = question;
         this.user = user;
-        this.responseStatusException = responseStatusException;
         this.itsOK = itsOK;
         this.errors = errors;
     }
@@ -170,14 +163,6 @@ public class ResultOfSomethingChecking {
 
     public void setTheme(Theme theme) {
         this.theme = theme;
-    }
-
-    public ResponseStatusException getResponseStatusException() {
-        return responseStatusException;
-    }
-
-    public void setResponseStatusException(ResponseStatusException responseStatusException) {
-        this.responseStatusException = responseStatusException;
     }
 
     public static String getDoesntExistById() {

@@ -48,8 +48,6 @@ public class TestService {
     public List<QuestionOut> createTest(Long themeId, Integer countOfQuestions) {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new Theme(themeId), themeRepo, checkResult);
-        if (!checkResult.getItsOK())
-            throw checkResult.getResponseStatusException();
         if (countOfQuestions == null) {
             countOfQuestions = checkResult.getTheme().getQuestionQuantityInTest();
             if (countOfQuestions == null)
@@ -104,9 +102,6 @@ public class TestService {
             userAnswers.clear();
             ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
             checkResult = checkResult.checkIfExistsInDB(new Question(oneAnswer.getQuestionId()), questionRepo, checkResult);
-            if (!checkResult.getItsOK()) {
-                throw checkResult.getResponseStatusException();
-            }
             PassedQuestion currentPassedQuestion = new PassedQuestion();
             Question currentCheckingQuestion = checkResult.getQuestion();
             currentPassedQuestion.setQuestion(currentCheckingQuestion);

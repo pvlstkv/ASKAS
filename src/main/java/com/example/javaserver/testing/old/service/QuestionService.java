@@ -39,8 +39,6 @@ public class QuestionService {
         ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
         checkResult = checkResult.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
         checkResult = checkResult.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
-        if (!checkResult.getItsOK())
-            throw checkResult.getResponseStatusException();
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             // можно добавить проверку на существовние добаляемого вопроса
             Question newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
@@ -55,20 +53,14 @@ public class QuestionService {
         // it's need to check a subject and theme
         checkResult = checkResult.checkIfExistsInDB(new Subject(testIn.getSubjectId()), subjectRepo, checkResult);
         checkResult = checkResult.checkIfExistsInDB(new Theme(testIn.getThemeId()), themeRepo, checkResult);
-        if (!checkResult.getItsOK())
-            throw checkResult.getResponseStatusException();
         for (QuestionIn oneRawQuestion : testIn.getQuestionIns()) {
             checkResult = checkResult.checkIfExistsInDB(new Question(oneRawQuestion.getId()), questionRepo, checkResult);
-            if (!checkResult.getItsOK()) {
-                throw checkResult.getResponseStatusException();
-            }
             Question newQuestion = new Question(oneRawQuestion, checkResult.getSubject(), checkResult.getTheme());
             newQuestion.getAnswerChoiceList().forEach(answerChoice -> answerChoice.setQuestion(newQuestion));
             questionRepo.save(newQuestion);
         }
     }
-
-
+    
     public void deleteManyQuestions(List<Long> ids) {
         ids.forEach(questionRepo::deleteById);
     }

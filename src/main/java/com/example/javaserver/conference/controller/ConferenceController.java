@@ -108,4 +108,15 @@ public class ConferenceController {
                 conferenceService.getByStudentId(studentId)
         );
     }
+
+    @GetMapping("/teaching")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({ "TEACHER", "ADMIN" })
+    public Collection<ConferenceDto> getByTeacherId(
+            @AuthenticationPrincipal UserDetailsImp userDetails
+    ) {
+        return conferenceMapper.toDto(
+                conferenceService.getByTeacherId(userDetails)
+        );
+    }
 }

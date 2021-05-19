@@ -7,8 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "passed_writeable_answers")
-public class PassedWriteableAnswer implements Serializable {
+public class PassedWriteableAnswer implements Serializable, Answerable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
