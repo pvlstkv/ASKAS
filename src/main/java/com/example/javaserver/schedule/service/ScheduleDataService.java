@@ -25,7 +25,7 @@ public class ScheduleDataService {
     }
 
     public List<Schedule> findByTeacherAndNumberDayAndNumberWeek(String nameTeacher, Integer numberDay, Integer numberWeek){
-        List<Schedule> scheduleList = (List<Schedule>) scheduleRepo.findByNameGroupAndNumberDayAndNumberWeek(nameTeacher,numberDay,numberWeek);
+        List<Schedule> scheduleList =  scheduleRepo.findByTeacherAndNumberDayAndNumberWeek(nameTeacher,numberDay,numberWeek);
         return scheduleList;
     }
 
