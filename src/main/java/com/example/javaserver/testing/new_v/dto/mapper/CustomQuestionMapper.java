@@ -127,7 +127,7 @@ public class CustomQuestionMapper {
             if (pairId != null) {
                 id = pairId.longValue();
             }
-            WriteableAnswerOption answerOption = new WriteableAnswerOption(id, (String) pair.get("answer"), (Boolean) pair.get("isStrict"));
+            WriteableAnswerOption answerOption = new WriteableAnswerOption(id, ((String) pair.get("answer")).trim(), (Boolean) pair.get("isStrict"));
             answerOption.setWriteableQuestion(writeableQuestion);
             fetchedAnswers.add(answerOption);
         }

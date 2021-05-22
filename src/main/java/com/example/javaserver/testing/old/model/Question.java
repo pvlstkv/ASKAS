@@ -53,10 +53,10 @@ public class Question implements Serializable {
         this.theme = theme;
         this.questionType = questionIn.getQuestionType();
         this.answerChoiceList = questionIn.getAnswers().stream().map(strAns ->
-                new AnswerChoice(strAns, false)).collect(Collectors.toList());
+                new AnswerChoice(strAns.trim(), false)).collect(Collectors.toList());
         if (this.answerChoiceList.size() == 0) {
             questionIn.getRightAnswers().forEach(it ->
-                    this.answerChoiceList.add(new AnswerChoice(it, true))
+                    this.answerChoiceList.add(new AnswerChoice(it.trim(), true))
             );
             return;
         }
