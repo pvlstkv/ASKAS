@@ -101,12 +101,12 @@ values ('Вершины', TRUE, (select id from question where question like 'О
 insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
-values ('Ромбики', TRUE, (select id from question where question like 'Основные элементы граф-схемы автомата'));
+values ('Ромбики', FALSE, (select id from question where question like 'Основные элементы граф-схемы автомата'));
 
 insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
-values ('Квадратики', TRUE, (select id from question where question like 'Основные элементы граф-схемы автомата'));
+values ('Квадратики', FALSE, (select id from question where question like 'Основные элементы граф-схемы автомата'));
 
 /*6 question*/
 insert
@@ -135,14 +135,14 @@ values (3, 'Логическая функция, которая преобраз
 insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
-values ('Отриацание', TRUE,
+values ('Отрицание', TRUE,
         (select id from question where question like 'Логическая функция, которая преобразует 0 в 1 и наоборот?'));
 
 /*8 question*/
 insert
 into "question"
 ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1', 1,
+values (3, 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0', 1,
         (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
@@ -151,12 +151,12 @@ into "answer_choice"
 ("answer", "is_right", "question_id")
 values ('И', TRUE, (select id
                     from question
-                    where question like 'Логическая функция, которая дает единицу, когда только оба операнда 1'));
+                    where question like 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0'));
 /*9 question*/
 insert
 into "question"
 ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, 'Логическая функция, которая дает 0, когда только оба операнда 0', 1,
+values (3, 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1', 1,
         (select id from subjects where name like 'АЛМ'),
         (select id from themes where name like 'Логические функции'));
 
@@ -165,7 +165,7 @@ into "answer_choice"
 ("answer", "is_right", "question_id")
 values ('Или', TRUE, (select id
                       from question
-                      where question like 'Логическая функция, которая дает 0, когда только оба операнда 0'));
+                      where question like 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1'));
 
 /*10 question*/
 insert
@@ -209,7 +209,7 @@ values (3,
 insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
-values ('Истинности', TRUE, (select id
+values ('истинности', TRUE, (select id
                              from question
                              where question like
                                    'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?'));
@@ -279,7 +279,7 @@ values ('процессор', TRUE, (select id
 insert
 into "question"
 ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, '16 битный аккумуляторный регистр (большими буквами)', 1,
+values (3, '16 битный аккумуляторный регистр', 1,
         (select id from subjects where name like 'Архитектура процессоров'),
         (select id from themes where name like 'Процессоры'));
 
@@ -287,13 +287,13 @@ insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
 values ('AX', TRUE,
-        (select id from question where question like '16 битный аккумуляторный регистр (большими буквами)'));
+        (select id from question where question like '16 битный аккумуляторный регистр'));
 
 /*18 question*/
 insert
 into "question"
 ("complexity", "question", "question_type", "subject_id", "theme_id")
-values (3, '16 битный регистр, исопльзуемый в команде loop (большими буквами)', 1,
+values (3, '16 битный регистр, исопльзуемый в команде loop', 1,
         (select id from subjects where name like 'Архитектура процессоров'),
         (select id from themes where name like 'Процессоры'));
 
@@ -301,7 +301,7 @@ insert
 into "answer_choice"
 ("answer", "is_right", "question_id")
 values ('CX', TRUE,
-        (select id from question where question like '16 битный аккумуляторный регистр (большими буквами)'));
+        (select id from question where question like '16 битный регистр, исопльзуемый в команде loop'));
 
 /*19 question*/
 insert
@@ -346,11 +346,11 @@ values ('Мили', true,
         (select id from question_data where question_data.question like 'Выберите конечные детерминирование автоматы'));
 insert
 into answer_option (answer, is_right, selectable_question_id)
-values ('Мура', false,
+values ('Мура', true,
         (select id from question_data where question_data.question like 'Выберите конечные детерминирование автоматы'));
 insert
 into answer_option (answer, is_right, selectable_question_id)
-values ('Мира', false,
+values ('МиЫра', false,
         (select id from question_data where question_data.question like 'Выберите конечные детерминирование автоматы'));
 insert
 into answer_option (answer, is_right, selectable_question_id)
