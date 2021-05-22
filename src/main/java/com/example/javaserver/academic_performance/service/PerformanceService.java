@@ -1,25 +1,29 @@
 package com.example.javaserver.academic_performance.service;
 
-import com.example.javaserver.academic_performance.model.Performance;
-import com.example.javaserver.academic_performance.model.Progress;
+
 import com.example.javaserver.academic_performance.model.TaskPerformance;
 import com.example.javaserver.academic_performance.model.TaskPerformancePerUser;
+import com.example.javaserver.academic_performance.model.main_page.Performance;
+import com.example.javaserver.academic_performance.model.main_page.Progress;
 import com.example.javaserver.common_data.model.Mark;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.common_data.service.SubjectService;
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.study.controller.dto.WorkDto;
+import com.example.javaserver.study.controller.mapper.WorkMapper;
 import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.TaskType;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
 import com.example.javaserver.study.repo.WorkRepo;
 import com.example.javaserver.study.service.TaskService;
-import com.example.javaserver.testing.model.dto.PassedTestOut;
-import com.example.javaserver.testing.model.dto.PassedThemeOut;
-import com.example.javaserver.testing.repo.ThemeRepo;
-import com.example.javaserver.testing.service.ResultService;
+import com.example.javaserver.testing.new_v.service.ResultServiceN;
+import com.example.javaserver.testing.old.model.dto.PassedThemeOut;
+import com.example.javaserver.testing.old.service.ResultService;
+import com.example.javaserver.testing.theme.ThemeRepo;
+import com.example.javaserver.testing.theme.dto.theme.PassedThemeDto;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +36,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class PerformanceService {
-
+    private final WorkMapper workMapper;
+    private final ResultServiceN resultServiceN;
     private final SubjectService subjectService;
     private final ResultService resultService;
     private final TaskService taskService;
@@ -45,7 +50,9 @@ public class PerformanceService {
             "Пожалуйста проверьте корретность введенных данных.";
 
     @Autowired
-    public PerformanceService(SubjectService subjectService, ResultService resultService, TaskService taskService, ThemeRepo themeRepo, SubjectSemesterRepo subjectSemesterRepo, TaskRepo taskRepo, UserRepo userRepo, WorkRepo workRepo) {
+    public PerformanceService(WorkMapper workMapper, ResultServiceN resultServiceN, SubjectService subjectService, ResultService resultService, TaskService taskService, ThemeRepo themeRepo, SubjectSemesterRepo subjectSemesterRepo, TaskRepo taskRepo, UserRepo userRepo, WorkRepo workRepo) {
+        this.workMapper = workMapper;
+        this.resultServiceN = resultServiceN;
         this.subjectService = subjectService;
         this.resultService = resultService;
         this.taskService = taskService;
@@ -54,6 +61,31 @@ public class PerformanceService {
         this.taskRepo = taskRepo;
         this.userRepo = userRepo;
         this.workRepo = workRepo;
+    }
+
+
+    public List<TaskPerformancePerUser> formStudyLogPerGroup(Long groupId) {
+        List<User> users = retrieveLastnameSortedUsersByGroupId(groupId);
+        Set<SubjectSemester> semesters = subjectSemesterRepo.findAllByStudyGroupId(groupId);
+        Collection<Long> semesterIds = new ArrayList<>();
+        semesters.forEach(subjectSemester -> semesterIds.add(subjectSemester.getId()));
+        Collection<Task> tasks = taskRepo.findAllBySemestersIdIn(semesterIds);
+        List<TaskPerformancePerUser> allGroupPerformance = new ArrayList<>();
+        for (User user : users) {
+            TaskPerformancePerUser performancePerUser = new TaskPerformancePerUser(user);
+            for (Task task : tasks) {
+                List<Work> works = workRepo.findAllByUserIdAndTaskId(user.getId(), task.getId());
+                performancePerUser.addWorks((List<WorkDto>) workMapper.toDto(works));
+            }
+            allGroupPerformance.add(performancePerUser);
+        }
+        return allGroupPerformance;
+    }
+
+    private List<User> retrieveLastnameSortedUsersByGroupId(Long groupId) {
+        List<User> users = userRepo.findAllByStudyGroupId(groupId);
+        return users.stream().sorted(Comparator.comparing(User::getLastName).thenComparing(User::getFirstName))
+                .collect(Collectors.toList());
     }
 
     public TaskPerformance formTaskPerformanceByGroup(Long groupId, Long taskId) {
@@ -76,10 +108,10 @@ public class PerformanceService {
                     .filter(it -> (it.getMark().getValue() != Mark.NOT_PASSED.getValue()))
                     .reduce((first, second) -> second);
             if (!bestWork.isPresent()) {
-                performancePerUser.setWork(null);
+                performancePerUser.setWorks(null);
                 continue;
             }
-            performancePerUser.setWork(bestWork.get());
+            performancePerUser.setWorks(Collections.singletonList(workMapper.toDto(bestWork.get())));
             if (bestWork.get().getMark().getValue() == Mark.NOT_PASSED.getValue()) {
                 continue;
             }
@@ -122,6 +154,13 @@ public class PerformanceService {
             for (PassedThemeOut passedThemeOut : passedThemeOuts) {
                 int border = 50;
                 if (passedThemeOut.haveOneNormalRating(border)) {
+                    done++;
+                }
+            }
+            List<PassedThemeDto> passedThemeDtos = resultServiceN.fetchUserPassedThemesBySubjectIdAndUserId(userId, subject.getId(), userDetails);
+            for (PassedThemeDto passedTheme : passedThemeDtos) {
+                int border = 50;
+                if (passedTheme.haveOneNormalRating(border)) {
                     done++;
                 }
             }

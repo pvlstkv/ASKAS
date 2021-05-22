@@ -26,21 +26,12 @@ public class Department implements Serializable {
 
     private OffsetDateTime updatedAt;
 
-    @JsonProperty("facultyId")
-    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @ManyToOne
     private Faculty faculty;
 
-    @JsonProperty("studyGroupIds")
-    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<StudyGroup> studyGroups;
 
-    @JsonProperty("subjectIds")
-    @JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    @JsonIdentityReference(alwaysAsId=true)
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Subject> subjects;
 
