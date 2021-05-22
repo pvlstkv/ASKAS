@@ -8,7 +8,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email.com',
+values ('anton@email.com',
         'Антон',
         'Мамакин',
         'Сергеевич',
@@ -16,7 +16,7 @@ values ('email.com',
         'user1',
         '001',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТАПбд-31'));
 
 insert into users(email,
                   first_name,
@@ -27,7 +27,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email1.com',
+values ('pavel@email1.com',
         'Павел',
         'Астуков',
         'Николаевич',
@@ -35,7 +35,7 @@ values ('email1.com',
         'user2',
         '002',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТАПбд-31'));
 
 insert into users(email,
                   first_name,
@@ -46,7 +46,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email2.com',
+values ('alex@email2.com',
         'Алексей',
         'Шишикин',
         '',
@@ -54,7 +54,7 @@ values ('email2.com',
         'user3',
         '003',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ИВТАПбд-31'));
 /*создание 3 студентов группы РТ факультета  РТФ*/
 insert into users(email,
                   first_name,
@@ -65,7 +65,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email4.com',
+values ('tanya@email4.com',
         'Татьяна',
         'Яровова',
         'Серьгеевна',
@@ -73,7 +73,7 @@ values ('email4.com',
         'user4',
         '004',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'РТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'РТбд-31'));
 
 insert into users(email,
                   first_name,
@@ -84,7 +84,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email5.com',
+values ('damir@email5.com',
         'Дамир',
         'Саитов',
         '',
@@ -92,7 +92,7 @@ values ('email5.com',
         'user5',
         '005',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'РТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'РТбд-31'));
 
 insert into users(email,
                   first_name,
@@ -103,7 +103,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email6.com',
+values ('misha@email6.com',
         'Михаил',
         'Соловьев',
         '',
@@ -111,7 +111,7 @@ values ('email6.com',
         'user6',
         '006',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'РТ'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'РТбд-31'));
 
 /*создание 3 студентов группы ИНЯЗ факультета  ГМ*/
 
@@ -124,7 +124,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email7.com',
+values ('nastya@email7.com',
         'Анастасия',
         'Кузнецова',
         'Серьгеевна',
@@ -132,7 +132,7 @@ values ('email7.com',
         'user7',
         '007',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'НемЯз'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ГМУбд-11'));
 
 insert into users(email,
                   first_name,
@@ -143,7 +143,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email8.com',
+values ('jenya@email8.com',
         'Евгения',
         'Чернова',
         '',
@@ -151,7 +151,7 @@ values ('email8.com',
         'user8',
         '007',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'НемЯз'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ГМУбд-11'));
 insert into users(email,
                   first_name,
                   last_name,
@@ -161,7 +161,7 @@ insert into users(email,
                   phone,
                   role,
                   study_group_id)
-values ('email9.com',
+values ('sasha@email9.com',
         'Александра',
         'Белова',
         'Владимировна',
@@ -169,5 +169,5 @@ values ('email9.com',
         'user9',
         '008',
         0,
-        (SELECT id FROM study_groups WHERE short_name LIKE 'НемЯз'));
+        (SELECT id FROM study_groups WHERE short_name LIKE 'ГМУбд-11'));
 
