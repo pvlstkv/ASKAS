@@ -10,6 +10,9 @@ import java.util.Set;
 public class DepartmentDto {
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    public Long id;
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
     @NotEmpty
     @Size(min = 1, max = 50)

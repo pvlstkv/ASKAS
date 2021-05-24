@@ -1,6 +1,5 @@
 package com.example.javaserver.common_data.service;
 
-import com.example.javaserver.common_data.controller.dto.DepartmentDto;
 import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.Faculty;
 import com.example.javaserver.general.criteria.SearchCriteria;
@@ -14,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 
 @Service

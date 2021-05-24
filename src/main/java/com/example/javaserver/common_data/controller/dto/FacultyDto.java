@@ -7,6 +7,10 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class FacultyDto {
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    public Long id;
+
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Size(min = 1, max = 50)
     public String shortName;
