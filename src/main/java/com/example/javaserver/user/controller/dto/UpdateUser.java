@@ -5,8 +5,26 @@ public class UpdateUser {
     private String password;
     private String email;
     private String phone;
+    private Long idGroup;
+    private Long idDepartment;
 
     public UpdateUser() {
+    }
+
+    public Long getIdGroup() {
+        return idGroup;
+    }
+
+    public void setIdGroup(Long idGroup) {
+        this.idGroup = idGroup;
+    }
+
+    public Long getIdDepartment() {
+        return idDepartment;
+    }
+
+    public void setIdDepartment(Long idDepartment) {
+        this.idDepartment = idDepartment;
     }
 
     public String getLogin() {

@@ -1,5 +1,6 @@
 package com.example.javaserver.user.service;
 
+import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
@@ -22,11 +23,13 @@ public class UserService {
 
     private final UserRepo userRepo;
     private final StudyGroupRepo studyGroupRepo;
+    private final DepartmentRepo departmentRepo;
 
     @Autowired
-    public UserService(UserRepo userRepo, StudyGroupRepo studyGroupRepo) {
+    public UserService(UserRepo userRepo, StudyGroupRepo studyGroupRepo, DepartmentRepo departmentRepo) {
         this.userRepo = userRepo;
         this.studyGroupRepo = studyGroupRepo;
+        this.departmentRepo = departmentRepo;
     }
 
     public User getUser(UserDetailsImp userDetails, Integer id){
@@ -100,9 +103,13 @@ public class UserService {
             if(userDto.getPassword() != null){
                 user.get().setPassword(userDto.getPassword());
             }
+            if(userDto.getEmail() != null){
+                user.get().setEmail(userDto.getEmail());
+            }
             if(userDto.getFirstName() != null){
                 user.get().setFirstName(userDto.getFirstName());
             }
+
             if(userDto.getLastName() != null){
                 user.get().setLastName(userDto.getLastName());
             }
@@ -111,6 +118,13 @@ public class UserService {
             }
             if(userDto.getPhone() != null){
                 user.get().setPhone(userDto.getPhone());
+            }
+            if(userDto.getDepartmentId() != null){
+                if(departmentRepo.existsById(userDto.getDepartmentId())){
+                    user.get().setDepartment(departmentRepo.findById(userDto.getDepartmentId()).get());
+                }else {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Такой кафедры не существует");
+                }
             }
             if(userDto.getStudyGroupId() != null){
                 if(studyGroupRepo.existsById(userDto.getStudyGroupId())){
