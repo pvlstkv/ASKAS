@@ -11,7 +11,7 @@ values (1,
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'ИВТ'),
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
         (select id from subjects where name like 'АЛМ'));
 
 /*2 subject*/
@@ -27,7 +27,7 @@ values (1,
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'ИВТ'),
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
         (select id from subjects where name like 'Архитектура процессоров'));
 
 /*3 subject*/
@@ -59,7 +59,7 @@ values (1,
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'НемЯз'),
+        (select id from study_groups where short_name like 'ГМУбд-11'),
         (select id from subjects where name like 'Англиский язык'));
 
 /*5 subject*/
@@ -75,7 +75,7 @@ values (1,
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'РТ'),
+        (select id from study_groups where short_name like 'РТбд-31'),
         (select id from subjects where name like 'электротехника'));
 
 /*6 subject*/
@@ -91,5 +91,5 @@ values (1,
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'ИВТ'),
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
         (select id from subjects where name like 'Англиский язык'));

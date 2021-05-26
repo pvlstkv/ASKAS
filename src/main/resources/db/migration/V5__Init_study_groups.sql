@@ -11,7 +11,7 @@ values (111,
         'информатика и вычислительная техника',
         1,
         1,
-        'ИВТ',
+        'ИВТАПбд-31',
         2020,
         (SELECT id FROM departments WHERE short_name LIKE 'ВТ'));
 
@@ -28,7 +28,7 @@ values (111,
         'немецкий язык',
         1,
         3,
-        'НемЯз',
+        'ГМУбд-11',
         2020,
         (SELECT id FROM departments WHERE short_name LIKE 'ИНЯЗ'));
 
@@ -45,7 +45,7 @@ values (111,
         'радиотехника',
         1,
         5,
-        'РТ',
+        'РТбд-31',
         2020,
         (SELECT id FROM departments WHERE short_name LIKE 'РФ'));
 

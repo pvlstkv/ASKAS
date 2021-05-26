@@ -151,15 +151,14 @@ public class TestService {
                                                    List<UserAnswer> userAnswers4Saving) {
         double rightAnswersCounter = 0;
         List<String> listOfRightAnswers = checkingQuestion.fetchRightAnswers();
-        boolean userAnswerIsRight;
         for (String userAnswer : listOfUserAnswers) {
-            userAnswerIsRight = false;
+            boolean userAnswerIsRight = false;
             for (String rightAnswer : listOfRightAnswers) {
-                if (rightAnswer.toLowerCase().equals(userAnswer.toLowerCase())) {
-                    userAnswerIsRight = true;
+                if (rightAnswer.equalsIgnoreCase(userAnswer.trim())) {
                     // if user gave right answers more than in the original question, then the answer is making true and adding points
                     if (listOfUserAnswers.size() <= listOfRightAnswers.size()) {
                         rightAnswersCounter += 1.0 / listOfRightAnswers.size();
+                        userAnswerIsRight = true;
                     }
                     break;
                 }
