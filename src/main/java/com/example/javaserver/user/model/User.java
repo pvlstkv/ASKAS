@@ -4,6 +4,7 @@ import com.example.javaserver.common_data.model.Department;
 import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.common_data.model.Subject;
 import com.example.javaserver.conference.model.Conference;
+import com.example.javaserver.study.model.UserFile;
 import com.example.javaserver.user.controller.dto.UserDto;
 
 import javax.persistence.*;
@@ -31,6 +32,12 @@ public class User implements Serializable {
     private String patronymic;
 
     private String phone;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    private UserFile avatar;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserContact> userContacts;
 
     @ManyToOne
     private StudyGroup studyGroup;
@@ -150,6 +157,22 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public UserFile getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(UserFile avatar) {
+        this.avatar = avatar;
+    }
+
+    public Set<UserContact> getUserContacts() {
+        return userContacts;
+    }
+
+    public void setUserContacts(Set<UserContact> userContacts) {
+        this.userContacts = userContacts;
     }
 
     public StudyGroup getStudyGroup() {

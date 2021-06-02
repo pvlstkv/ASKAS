@@ -1,13 +1,12 @@
 package com.example.javaserver.user.controller.dto;
 
-import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 public class UserDto {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -59,6 +58,12 @@ public class UserDto {
     private String phone;
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private Long avatarId;
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private Set<Long> userContactIds;
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
     @NotEmpty
     @Size(min = 1, max = 50)
@@ -83,18 +88,6 @@ public class UserDto {
 
     public void setStudyGroupId(Long studyGroupId) {
         this.studyGroupId = studyGroupId;
-    }
-
-    public UserDto(User user) {
-        this.id = user.getId();
-        this.login = user.getLogin();
-        this.email = user.getEmail();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.patronymic = user.getPatronymic();
-        this.phone = user.getPhone();
-        this.role = user.getRole();
-
     }
 
     public Integer getId() {
@@ -151,6 +144,22 @@ public class UserDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
+    }
+
+    public Set<Long> getUserContactIds() {
+        return userContactIds;
+    }
+
+    public void setUserContactIds(Set<Long> userContactIds) {
+        this.userContactIds = userContactIds;
     }
 
     public Long getDepartmentId() {

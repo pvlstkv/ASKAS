@@ -1,11 +1,8 @@
 package com.example.javaserver.user.controller.mapper;
 
 
-import com.example.javaserver.common_data.controller.dto.StudyGroupDto;
 import com.example.javaserver.common_data.controller.mapper.DepartmentIdMapper;
-import com.example.javaserver.common_data.controller.mapper.SemesterIdMapper;
 import com.example.javaserver.common_data.controller.mapper.StudyGroupIdMapper;
-import com.example.javaserver.common_data.model.StudyGroup;
 import com.example.javaserver.user.controller.dto.UserDto;
 import com.example.javaserver.user.model.User;
 import org.mapstruct.Mapper;
@@ -19,12 +16,14 @@ import java.util.Collection;
 @Component
 @Mapper(componentModel = "spring", uses = {
         DepartmentIdMapper.class,
-        StudyGroupIdMapper.class
+        StudyGroupIdMapper.class,
+        UserContactIdMapper.class
 })
 public interface UserMapper {
     @Mappings({
             @Mapping(source = "department", target = "departmentId"),
             @Mapping(source = "studyGroup", target = "studyGroupId"),
+            @Mapping(source = "userContacts", target = "userContactIds")
     })
     UserDto toDto(final User user);
 
@@ -32,7 +31,8 @@ public interface UserMapper {
 
     @Mappings({
             @Mapping(source = "departmentId", target = "department"),
-            @Mapping(source = "studyGroupId", target = "studyGroup", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+            @Mapping(source = "studyGroupId", target = "studyGroup", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS),
+            @Mapping(source = "userContactIds", target = "userContacts", nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
     })
     User toEntity(final UserDto userDto);
 
