@@ -10,6 +10,12 @@ values (0, 784159, 'application/zip', 18, 'Work', 1);
 insert into files(access_level, content_length, content_type, link_count, name, user_id)
 values (0, 94333, 'image/jpeg', 12, 'Scheme', 1);
 
+insert into files(access_level, content_length, content_type, link_count, name, user_id)
+values (0, 68836, 'image/jpeg', 5, 'Avatar', 1);
+
+insert into files(access_level, content_length, content_type, link_count, name, user_id)
+values (0, 370279, 'image/png', 1, 'AvatarTeacher', 1);
+
 
 
 insert into file_task(task_id, file_id)
@@ -159,3 +165,13 @@ values (17, 3);
 
 insert into file_work(work_id, file_id)
 values (18, 3);
+
+
+
+update users
+set avatar_id = 5
+where id between 2 and 6;
+
+update users
+set avatar_id = 6
+where id = 11;
