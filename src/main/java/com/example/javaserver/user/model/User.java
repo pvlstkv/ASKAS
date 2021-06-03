@@ -164,6 +164,12 @@ public class User implements Serializable {
     }
 
     public void setAvatar(UserFile avatar) {
+        if (this.avatar != null) {
+            this.avatar.decLinkCount();
+        }
+        if (avatar != null) {
+            avatar.incLinkCount();
+        }
         this.avatar = avatar;
     }
 

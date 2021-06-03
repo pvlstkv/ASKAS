@@ -89,6 +89,12 @@ public class Task implements Serializable {
     }
 
     public void setUserFiles(Set<UserFile> userFiles) {
+        if (this.userFiles != null) {
+            this.userFiles.forEach(UserFile::decLinkCount);
+        }
+        if (userFiles != null) {
+            userFiles.forEach(UserFile::incLinkCount);
+        }
         this.userFiles = userFiles;
     }
 

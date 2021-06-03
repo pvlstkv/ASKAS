@@ -4,6 +4,7 @@ import com.example.javaserver.common_data.repo.DepartmentRepo;
 import com.example.javaserver.common_data.repo.StudyGroupRepo;
 import com.example.javaserver.general.model.Message;
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.study.service.UserFileService;
 import com.example.javaserver.user.controller.dto.UserDto;
 import com.example.javaserver.user.controller.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepo userRepo;
     private final StudyGroupRepo studyGroupRepo;
     private final DepartmentRepo departmentRepo;
+    private UserFileService userFileService;
 
     @Autowired
     public UserService(UserRepo userRepo, StudyGroupRepo studyGroupRepo, DepartmentRepo departmentRepo) {
@@ -83,6 +85,8 @@ public class UserService {
             user.get().setEmail(updateUser.getEmail());
         if(updateUser.getPhone() != null)
             user.get().setPhone(updateUser.getPhone());
+        if(updateUser.getAvatarId() != null)
+            user.get().setAvatar(userFileService.getById(updateUser.getAvatarId()));
         userRepo.save(user.get());
         return new Message("Информация обновлена");
 
@@ -118,6 +122,9 @@ public class UserService {
             }
             if(userDto.getPhone() != null){
                 user.get().setPhone(userDto.getPhone());
+            }
+            if(userDto.getAvatarId() != null){
+                user.get().setAvatar(userFileService.getById(userDto.getAvatarId()));
             }
             if(userDto.getDepartmentId() != null){
                 if(departmentRepo.existsById(userDto.getDepartmentId())){
@@ -155,4 +162,8 @@ public class UserService {
         }
     }
 
+    @Autowired
+    public void setUserFileService(UserFileService userFileService) {
+        this.userFileService = userFileService;
+    }
 }

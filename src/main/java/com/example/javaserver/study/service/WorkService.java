@@ -54,9 +54,6 @@ public class WorkService {
             work.setMark(null);
         }
 
-        Set<UserFile> userFiles = work.getUserFiles();
-        userFiles.forEach(UserFile::incLinkCount);
-
         return workRepo.save(work);
     }
 
@@ -79,9 +76,6 @@ public class WorkService {
 
         Task task = workToPut.getTask();
         Set<UserFile> userFiles = workToPut.getUserFiles();
-
-        work.getUserFiles().forEach(UserFile::decLinkCount);
-        userFiles.forEach(UserFile::incLinkCount);
 
         work.setTask(task);
         work.setUserFiles(userFiles);

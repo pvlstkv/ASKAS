@@ -5,6 +5,7 @@ public class UpdateUser {
     private String password;
     private String email;
     private String phone;
+    private Long avatarId;
     private Long idGroup;
     private Long idDepartment;
 
@@ -57,5 +58,13 @@ public class UpdateUser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Long avatarId) {
+        this.avatarId = avatarId;
     }
 }

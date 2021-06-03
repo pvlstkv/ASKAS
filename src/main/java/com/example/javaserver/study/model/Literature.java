@@ -103,6 +103,12 @@ public class Literature implements Serializable {
     }
 
     public void setFiles(Set<UserFile> files) {
+        if (this.files != null) {
+            this.files.forEach(UserFile::decLinkCount);
+        }
+        if (files != null) {
+            files.forEach(UserFile::incLinkCount);
+        }
         this.files = files;
     }
 

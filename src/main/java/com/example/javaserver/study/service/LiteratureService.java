@@ -44,10 +44,7 @@ public class LiteratureService {
     @Transactional
     public Literature create(Literature literature, UserDetailsImp userDetails) {
         User user = userService.getById(userDetails.getId());
-
         literature.setUser(user);
-        literature.getFiles().forEach(UserFile::incLinkCount);
-
         return literatureRepo.save(literature);
     }
 
@@ -64,20 +61,14 @@ public class LiteratureService {
         }
         Literature literature = literatureO.get();
 
-        Set<SubjectSemester> semesters = literatureToPut.getSemesters();
-
-        Set<UserFile> files = literatureToPut.getFiles();
-        literature.getFiles().forEach(UserFile::decLinkCount);
-        files.forEach(UserFile::incLinkCount);
-
-        literature.setSemesters(semesters);
+        literature.setSemesters(literatureToPut.getSemesters());
         literature.setType(literatureToPut.getType());
         literature.setTitle(literatureToPut.getTitle());
         literature.setAuthors(literatureToPut.getAuthors());
         literature.setDescription(literatureToPut.getDescription());
-        literature.setFiles(files);
+        literature.setFiles(literatureToPut.getFiles());
 
-        return literature;
+        return literatureRepo.save(literature);
     }
 
     public  Collection<Literature> getAll() {

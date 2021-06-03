@@ -45,9 +45,6 @@ public class TaskService {
     @Transactional
     public Task create(Task task, UserDetailsImp userDetails) {
         User user = userService.getById(userDetails.getId());
-
-        task.getUserFiles().forEach(UserFile::incLinkCount);
-
         task.setUser(user);
         return taskRepo.save(task);
     }
@@ -67,9 +64,6 @@ public class TaskService {
 
         Set<UserFile> userFiles = taskToPut.getUserFiles();
         Set<SubjectSemester> semesters = taskToPut.getSemesters();
-
-        task.getUserFiles().forEach(UserFile::decLinkCount);
-        userFiles.forEach(UserFile::incLinkCount);
 
         task.setType(taskToPut.getType());
         task.setTitle(taskToPut.getTitle());
