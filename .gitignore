@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### minio sys ###
-#/deployments/minio/data/.minio.sys
+/deployments/minio/data/.minio.sys
