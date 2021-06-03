@@ -32,7 +32,7 @@ public class ScheduleService {
             for (int j = 1; j < 120; j++) {
                 part = i;
                 numberGroup = j;
-                baseUrl = "https://www.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
+                baseUrl = "https://old.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
                 try {
                     parserService.parserGroup(baseUrl);
                 } catch (IOException e){
