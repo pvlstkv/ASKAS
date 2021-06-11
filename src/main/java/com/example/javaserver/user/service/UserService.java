@@ -10,6 +10,7 @@ import com.example.javaserver.user.controller.dto.UpdateUser;
 import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -162,6 +163,7 @@ public class UserService {
         }
     }
 
+    @Lazy
     @Autowired
     public void setUserFileService(UserFileService userFileService) {
         this.userFileService = userFileService;
