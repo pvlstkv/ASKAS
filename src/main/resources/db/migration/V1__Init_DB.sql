@@ -33,6 +33,7 @@ create table "tasks" ("id"  bigserial not null, "description" varchar(1000000), 
 create table "teacher_subject" ("user_id" int4 not null, "subject_id" int8 not null, primary key ("subject_id", "user_id"));
 create table "themes" ("id"  bigserial not null, "attempt_number_in_test" int4, "created_at" timestamp, "decryption" varchar(255), "name" varchar(255), "question_quantity_in_test" int4, "updated_at" timestamp, "subject_id" int8, primary key ("id"));
 create table "user_answers" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "passed_question_id" int8, primary key ("id"));
+
 create table "user_contacts" ("id"  bigserial not null, "type" varchar(255), "value" varchar(255), "user_id" int4, primary key ("id"));
 create table "users" ("id"  serial not null, "email" varchar(255), "first_name" varchar(255), "last_name" varchar(255), "login" varchar(255), "password" varchar(255), "patronymic" varchar(255), "phone" varchar(255), "role" int4, "avatar_id" int8, "department_id" int8, "study_group_id" int8, primary key ("id"));
 create table "works" ("id"  bigserial not null, "created_at" timestamp, "mark" int4, "student_comment" varchar(1000000), "teacher_comment" varchar(1000000), "updated_at" timestamp, "task_id" int8, "user_id" int4, primary key ("id"));
