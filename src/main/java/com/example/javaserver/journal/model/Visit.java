@@ -1,16 +1,18 @@
 package com.example.javaserver.journal.model;
 
+import com.example.javaserver.audit.Auditable;
 import com.example.javaserver.user.model.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 @Api(value = "Visit is a class responsible for visiting by one group")
 @Entity
 @Table(name = "visits")
 @Data
-public class Visit {
+public class Visit extends Auditable<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(notes = "The database generated visit ID")

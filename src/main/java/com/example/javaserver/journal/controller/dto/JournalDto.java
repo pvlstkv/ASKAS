@@ -2,11 +2,7 @@ package com.example.javaserver.journal.controller.dto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
-
-
-import lombok.*;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
@@ -34,8 +30,12 @@ public class JournalDto {
     @NotNull(message = "visits may not be null")
     private Collection<VisitDto> visits;
 
+
     @ApiModelProperty(notes = "Id of a filling out teacher")
-    @NotNull
-    @NotNull(message = "teacherId may not be null")
     private Long teacherId;
+    @ApiModelProperty(notes = "A date of creating journal")
+    private long createdDate;
+
+    @ApiModelProperty(notes = "A date of updating journal")
+    private long lastModifiedDate;
 }

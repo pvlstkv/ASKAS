@@ -1,9 +1,11 @@
 package com.example.javaserver.journal.controller.mapper;
 
-import com.example.javaserver.journal.controller.dto.JournalDto;
-import com.example.javaserver.journal.model.Journal;
 import com.example.javaserver.common_data.controller.mapper.StudyGroupIdMapper;
 import com.example.javaserver.common_data.controller.mapper.SubjectSemesterIdMapper;
+import com.example.javaserver.general.config.time_converter.DateMapper;
+import com.example.javaserver.general.config.time_converter.OffsetDateTimeConverter;
+import com.example.javaserver.journal.controller.dto.JournalDto;
+import com.example.javaserver.journal.model.Journal;
 import com.example.javaserver.user.controller.mapper.UserIdMapper;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,8 @@ import java.util.List;
         UserIdMapper.class,
         SubjectSemesterIdMapper.class,
         StudyGroupIdMapper.class,
-        VisitMapper.class},
+        VisitMapper.class,
+        DateMapper.class},
         unmappedTargetPolicy = ReportingPolicy.ERROR, builder = @Builder(disableBuilder = true)
 )
 @Component
@@ -42,8 +45,11 @@ public interface JournalMapper {
     @Mappings({
             @Mapping(source = "subjectSemester", target = "subjectSemesterId"),
             @Mapping(source = "studyGroup", target = "studyGroupId"),
-            @Mapping(source = "teacher", target = "teacherId")
-//            @Mapping(target = "")
+            @Mapping(source = "teacher", target = "teacherId"),
+            @Mapping(source = "createdDate", target = "createdDate",
+                    qualifiedBy = OffsetDateTimeConverter.class),
+            @Mapping(source = "lastModifiedDate", target = "lastModifiedDate",
+                    qualifiedBy = OffsetDateTimeConverter.class)
 
     })
     JournalDto toDto(Journal journal);

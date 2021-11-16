@@ -1,9 +1,11 @@
 package com.example.javaserver.journal.controller;
 
-import com.example.javaserver.journal.controller.dto.JournalDto;
-import com.example.javaserver.journal.controller.mapper.JournalMapper;
-import com.example.javaserver.journal.service.JournalService;
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.journal.controller.dto.JournalDto;
+import com.example.javaserver.journal.controller.dto.PagedJournalDto;
+import com.example.javaserver.journal.controller.mapper.JournalMapper;
+import com.example.javaserver.journal.controller.mapper.PagedJournalMapper;
+import com.example.javaserver.journal.service.JournalService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,13 @@ import java.util.List;
 public class JournalController {
     private final JournalMapper journalMapper;
     private final JournalService journalService;
+    private final PagedJournalMapper pagedJournalMapper;
 
     @Autowired
-    public JournalController(JournalMapper journalMapper, JournalService journalService) {
+    public JournalController(JournalMapper journalMapper, JournalService journalService, PagedJournalMapper pagedJournalMapper) {
         this.journalMapper = journalMapper;
         this.journalService = journalService;
+        this.pagedJournalMapper = pagedJournalMapper;
     }
 
     @ApiOperation(value = "create a one journal")
@@ -58,13 +62,18 @@ public class JournalController {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     @GetMapping
-    public List<JournalDto> getBySemesterIdAndGroupId(
+    public PagedJournalDto getBySemesterIdAndGroupId(
             @RequestParam("semesterId") Long semesterId,
             @RequestParam("groupId") Long groupId,
-            @AuthenticationPrincipal UserDetailsImp userDetails
+            @RequestParam(required = false) Long timeAfter,
+            @RequestParam(required = false) Long timeBefore,
+            @RequestParam(required = false, defaultValue = "0") Long pageNumber,
+            @RequestParam(required = false, defaultValue = "5") Long pageSize
+
     ) {
-        return journalMapper.toDtoList(
-                journalService.getBySemesterIdAndGroupId(semesterId, groupId)
+        return pagedJournalMapper.toPagedJournalDto(
+                journalService.getBySemesterIdAndGroupId(semesterId, groupId, timeAfter, timeBefore,
+                        pageNumber, pageSize)
         );
     }
 }
