@@ -2,11 +2,7 @@ package com.example.javaserver.journal.controller.dto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
-
-import jdk.jfr.Name;
-import lombok.*;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
@@ -29,4 +25,10 @@ public class VisitDto {
 
     @ApiModelProperty(notes = "Any teacher comment")
     private String comment;
+
+    @ApiModelProperty(notes = "A date of creating journal")
+    private long createdDate;
+
+    @ApiModelProperty(notes = "A date of updating journal")
+    private long lastModifiedDate;
 }

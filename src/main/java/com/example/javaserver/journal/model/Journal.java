@@ -6,12 +6,10 @@ import com.example.javaserver.common_data.model.SubjectSemester;
 import com.example.javaserver.user.model.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.time.OffsetDateTime;
 import java.util.Collection;
 @Api(value = "Journal is a class responsible for visiting by one group")
 @EqualsAndHashCode(callSuper = true)
