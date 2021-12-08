@@ -12,4 +12,8 @@ public class PagedJournal {
     private List<Journal> journals;
     private Long currentPage;
     private Long totalPage;
+
+    public PagedJournal(List<Journal> journals) {
+        this.journals = journals;
+    }
 }

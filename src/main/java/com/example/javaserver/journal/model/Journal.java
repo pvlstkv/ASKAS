@@ -10,7 +10,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.Collection;
+
 @Api(value = "Journal is a class responsible for visiting by one group")
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -33,7 +35,7 @@ public class Journal extends Auditable<Integer> {
     @ApiModelProperty(notes = "StudyGroup to which the journal belongs")
     private StudyGroup studyGroup;
 
-    @OneToMany(mappedBy = "journal", cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(mappedBy = "journal", cascade = CascadeType.ALL, orphanRemoval = true)
     @ApiModelProperty(notes = "A list of visits by students of any study group")
     private Collection<Visit> visits;
 
@@ -41,4 +43,14 @@ public class Journal extends Auditable<Integer> {
     @ApiModelProperty(notes = "A teacher who fills out a journal")
     private User teacher;
 
+    @ApiModelProperty(notes = "A date of a lesson/class when the journal is filled in")
+    private OffsetDateTime lessonDate;
+
+    public void putNewVisits(Collection<Visit> newVisits) {
+        this.visits.clear();
+        newVisits.forEach(visit -> {
+            visit.setJournal(this);
+            this.visits.add(visit);
+        });
+    }
 }

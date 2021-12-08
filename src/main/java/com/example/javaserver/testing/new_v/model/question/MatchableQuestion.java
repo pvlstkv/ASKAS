@@ -54,4 +54,12 @@ public class MatchableQuestion extends QuestionData implements Serializable {
         this.matchableAnswerOptionList = matchableAnswerOptionList;
     }
 
+    public void putNewAnswers(List<MatchableAnswerOption> matchableAnswerOptionList){
+        this.matchableAnswerOptionList.clear();
+        matchableAnswerOptionList.forEach(it->{
+            it.setMatchableQuestion(this);
+            this.matchableAnswerOptionList.add(it);
+        });
+    }
+
 }

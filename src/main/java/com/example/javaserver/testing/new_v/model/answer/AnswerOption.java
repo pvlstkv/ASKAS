@@ -20,7 +20,7 @@ public class AnswerOption {
     private UserFile file;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private SelectableQuestion selectableQuestion;
 
     public AnswerOption() {

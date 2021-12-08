@@ -51,4 +51,12 @@ public class WriteableQuestion extends QuestionData {
     public void setWriteableAnswerOptionList(List<WriteableAnswerOption> writeableAnswerOptionList) {
         this.writeableAnswerOptionList = writeableAnswerOptionList;
     }
+
+    public void putNewAnswers(List<WriteableAnswerOption> writeableAnswerOptionList){
+        this.writeableAnswerOptionList.clear();
+        writeableAnswerOptionList.forEach(it->{
+            it.setWriteableQuestion(this);
+            this.writeableAnswerOptionList.add(it);
+        });
+    }
 }
