@@ -25,9 +25,11 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 public abstract class Auditable<U> {
 
     @CreatedBy
+    @Column(updatable = false)
     protected U createdBy;
 
     @CreatedDate
+    @Column(updatable = false)
     protected OffsetDateTime createdDate;
 
     @LastModifiedDate

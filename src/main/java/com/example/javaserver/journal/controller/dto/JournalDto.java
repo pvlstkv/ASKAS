@@ -30,12 +30,15 @@ public class JournalDto {
     @NotNull(message = "visits may not be null")
     private Collection<VisitDto> visits;
 
-
     @ApiModelProperty(notes = "Id of a filling out teacher")
     private Long teacherId;
-    @ApiModelProperty(notes = "A date of creating journal")
+
+    @ApiModelProperty(notes = "A date of creating journal (In UNIX milliseconds)")
     private long createdDate;
 
-    @ApiModelProperty(notes = "A date of updating journal")
+    @ApiModelProperty(notes = "A date of updating journal (In UNIX milliseconds)")
     private long lastModifiedDate;
+
+    @ApiModelProperty(notes = "A date of a lesson/class when the journal is filled in (In UNIX milliseconds)")
+    private Long lessonDate;
 }

@@ -19,7 +19,7 @@
      create table "file_task" ("task_id" int8 not null, "file_id" int8 not null, primary key ("task_id", "file_id"));
      create table "file_work" ("work_id" int8 not null, "file_id" int8 not null, primary key ("work_id", "file_id"));
      create table "files" ("id"  bigserial not null, "access_level" int4, "content_length" int8, "content_type" varchar(255), "link_count" int4, "name" varchar(50), "user_id" int4, primary key ("id"));
-     create table "journals" ("id"  bigserial not null, "created_by" int4, "created_date" timestamp, "last_modified_by" int4, "last_modified_date" timestamp, "comment" varchar(255), "study_group_id" int8, "subject_semester_id" int8, "teacher_id" int4, primary key ("id"));
+     create table "journals" ("id"  bigserial not null, "created_by" int4, "created_date" timestamp, "last_modified_by" int4, "last_modified_date" timestamp, "comment" varchar(255), "lesson_date" timestamp, "study_group_id" int8, "subject_semester_id" int8, "teacher_id" int4, primary key ("id"));
      create table "literature" ("id"  bigserial not null, "authors" varchar(50), "description" varchar(1000000), "title" varchar(50), "type" int4, "user_id" int4, primary key ("id"));
      create table "literature_semester" ("literature_id" int8 not null, "semester_id" int8 not null, primary key ("literature_id", "semester_id"));
      create table "passed_questions" ("id"  bigserial not null, "passed_test_id" int8, "question_id" int8, primary key ("id"));

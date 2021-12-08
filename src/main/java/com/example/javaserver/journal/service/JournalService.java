@@ -48,13 +48,30 @@ public class JournalService {
         journal.setStudyGroup(journalToSave.getStudyGroup());
         journal.setSubjectSemester(journalToSave.getSubjectSemester());
         journal.setTeacher(journalToSave.getTeacher());
-        journal.setVisits(journalToSave.getVisits());
+        journal.putNewVisits(journalToSave.getVisits());
         journalRepo.save(journal);
     }
 
     public PagedJournal getBySemesterIdAndGroupId(Long semesterId, Long groupId,
                                                   Long timeAfter, Long timeBefore,
                                                   Long pageNumber, Long pageSize) {
+        if (pageSize < 1 || pageNumber < 1) {
+            return getNotPagedJournal(semesterId, groupId, timeAfter, timeBefore);
+        }
+        return getPagedJournal(semesterId, groupId, timeAfter, timeBefore, pageNumber, pageSize);
+    }
+
+    private PagedJournal getNotPagedJournal(Long semesterId, Long groupId,
+                                            Long timeAfter, Long timeBefore) {
+        OffsetDateTime after = getTimeAfter(timeAfter);
+        OffsetDateTime before = getTimeBefore(timeBefore);
+
+        var journals = journalRepo.findAllBySubjectSemesterIdAndStudyGroupIdAndCreatedDateAfterAndCreatedDateBefore(
+                semesterId, groupId, after, before);
+        return new PagedJournal(journals);
+    }
+
+    private PagedJournal getPagedJournal(Long semesterId, Long groupId, Long timeAfter, Long timeBefore, Long pageNumber, Long pageSize) {
         Pageable pageRequest = PageRequest.of(pageNumber.intValue() - 1, pageSize.intValue(), // -1 because page starts from 0
                 Sort.by("createdDate").descending());
         Page<Journal> journals;
