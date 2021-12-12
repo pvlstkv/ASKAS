@@ -36,7 +36,7 @@ public class QuestionData {
     @JsonIgnore
     private Theme theme;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JsonIgnore
     private Subject subject;
 

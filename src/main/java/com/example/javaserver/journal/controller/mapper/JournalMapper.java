@@ -3,7 +3,8 @@ package com.example.javaserver.journal.controller.mapper;
 import com.example.javaserver.common_data.controller.mapper.StudyGroupIdMapper;
 import com.example.javaserver.common_data.controller.mapper.SubjectSemesterIdMapper;
 import com.example.javaserver.general.config.time_converter.DateMapper;
-import com.example.javaserver.general.config.time_converter.OffsetDateTimeConverter;
+import com.example.javaserver.general.config.time_converter.MilliToOffsetDateTimeConverter;
+import com.example.javaserver.general.config.time_converter.OffsetDateTimeToMilliConverter;
 import com.example.javaserver.journal.controller.dto.JournalDto;
 import com.example.javaserver.journal.model.Journal;
 import com.example.javaserver.user.controller.mapper.UserIdMapper;
@@ -30,6 +31,8 @@ public interface JournalMapper {
             @Mapping(target = "lastModifiedBy", ignore = true),
             @Mapping(target = "createdDate", ignore = true),
             @Mapping(target = "lastModifiedDate", ignore = true),
+            @Mapping(source = "lessonDate", target = "lessonDate",
+                    qualifiedBy = MilliToOffsetDateTimeConverter.class)
 
     })
     Journal toEntity(JournalDto journalDto);
@@ -47,9 +50,11 @@ public interface JournalMapper {
             @Mapping(source = "studyGroup", target = "studyGroupId"),
             @Mapping(source = "teacher", target = "teacherId"),
             @Mapping(source = "createdDate", target = "createdDate",
-                    qualifiedBy = OffsetDateTimeConverter.class),
+                    qualifiedBy = OffsetDateTimeToMilliConverter.class),
             @Mapping(source = "lastModifiedDate", target = "lastModifiedDate",
-                    qualifiedBy = OffsetDateTimeConverter.class)
+                    qualifiedBy = OffsetDateTimeToMilliConverter.class),
+            @Mapping(source = "lessonDate", target = "lessonDate",
+                    qualifiedBy = OffsetDateTimeToMilliConverter.class)
 
     })
     JournalDto toDto(Journal journal);

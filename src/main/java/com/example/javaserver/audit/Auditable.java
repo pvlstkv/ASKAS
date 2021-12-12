@@ -18,9 +18,11 @@ import java.time.OffsetDateTime;
 public abstract class Auditable<U> {
 
     @CreatedBy
+    @Column(updatable = false)
     protected U createdBy;
 
     @CreatedDate
+    @Column(updatable = false)
     protected OffsetDateTime createdDate;
 
     @LastModifiedDate

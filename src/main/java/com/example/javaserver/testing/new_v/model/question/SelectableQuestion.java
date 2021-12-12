@@ -53,8 +53,16 @@ public class SelectableQuestion extends QuestionData {
         this.answerOptionList = answerOptionList;
     }
 
-
     public SelectableQuestion(List<AnswerOption> answerOptionList) {
         this.answerOptionList = answerOptionList;
+    }
+
+    public void putNewAnswers(List<AnswerOption> answerOptionList) {
+        this.answerOptionList.clear();
+        answerOptionList.forEach(it -> {
+            it.setSelectableQuestion(this);
+            this.answerOptionList.add(it);
+        });
+//        this.answerOptionList.add(this.answerOptionList.get(0));
     }
 }

@@ -1,5 +1,8 @@
 package com.example.javaserver.testing.new_v.service;
 
+import com.example.javaserver.testing.new_v.config.QuestionType;
+import com.example.javaserver.testing.new_v.model.question.MatchableQuestion;
+import com.example.javaserver.testing.new_v.model.question.WriteableQuestion;
 import com.example.javaserver.testing.new_v.repo.question.MatchableQuestionRepo;
 import com.example.javaserver.testing.new_v.repo.question.QuestionDataRepo;
 import com.example.javaserver.testing.new_v.repo.question.SelectableQuestionRepo;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
+import java.text.MessageFormat;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,9 +46,49 @@ public class QuestionServiceN {
         for (QuestionDataDto questionDataDto : testDto.getQuestionDataDtoList()) {
             QuestionData questionData = customQuestionMapper.toEntity(questionDataDto, testDto.getThemeId(), testDto.getSubjectId());
             System.out.println(questionData);
-//            if (questionData.getQuestionType().equals(QuestionType.SELECT)) {
             questionDataRepo.save(questionData);
-//            }
+        }
+    }
+
+    @Transactional
+    public void updateQuestions(TestDto testDto) {
+        for (QuestionDataDto questionDataDto : testDto.getQuestionDataDtoList()) {
+            QuestionData questionData = customQuestionMapper.toEntity(questionDataDto, testDto.getThemeId(), testDto.getSubjectId());
+            Optional<QuestionData> optionalQuestionData = questionDataRepo.findById(questionData.getId());
+            if (optionalQuestionData.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        MessageFormat.format("Вопроса с id {0} не существует", questionData.getId()));
+            }
+            QuestionData questionDataFromDb = optionalQuestionData.get();
+            if (!questionDataFromDb.getQuestionType().equals(questionData.getQuestionType())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        MessageFormat.format("Тип вопроса с id {0} не совпадает с имееющимся в бд {1}",
+                                questionData.getId(), questionDataFromDb.getQuestionType().toString()));
+            }
+            updateFields(questionData, questionDataFromDb);
+            questionDataRepo.save(questionDataFromDb);
+        }
+    }
+
+    private void updateFields(QuestionData questionData, QuestionData questionDataFromDb) {
+        questionDataFromDb.setQuestion(questionData.getQuestion());
+        questionDataFromDb.setQuestionType(questionData.getQuestionType());
+        questionDataFromDb.setComplexity(questionData.getComplexity());
+        questionDataFromDb.setSubject(questionData.getSubject());
+        questionDataFromDb.setTheme(questionData.getTheme());
+
+        if (questionData.getQuestionType().equals(QuestionType.SELECT)
+                || questionData.getQuestionType().equals(QuestionType.SEQUENCE)) {
+            SelectableQuestion selectableQuestion = (SelectableQuestion) questionDataFromDb;
+            selectableQuestion.putNewAnswers(((SelectableQuestion) questionData).getAnswerOptionList());
+
+        } else if (questionData.getQuestionType().equals(QuestionType.MATCH)) {
+            MatchableQuestion matchableQuestion = (MatchableQuestion) questionDataFromDb;
+            matchableQuestion.putNewAnswers(((MatchableQuestion) questionData).getMatchableAnswerOptionList());
+
+        } else { // WRITE type
+            WriteableQuestion writeableQuestion = (WriteableQuestion) questionDataFromDb;
+            writeableQuestion.putNewAnswers(((WriteableQuestion) questionData).getWriteableAnswerOptionList());
         }
     }
 
@@ -59,12 +103,6 @@ public class QuestionServiceN {
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "вопроса с id = " + id + "не существует");
         }
-
-    }
-
-    private void createSelectableQuestion(QuestionDataDto questionDataDto) {
-        SelectableQuestion question = new SelectableQuestion();
-
     }
 
 }

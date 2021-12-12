@@ -34,7 +34,7 @@ public class QuestionControllerN {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"TEACHER", "ADMIN"})
     public void update(@RequestBody TestDto testDto) {
-        questionServiceN.saveQuestions(testDto);
+        questionServiceN.updateQuestions(testDto);
     }
 
     @DeleteMapping("/questions")
