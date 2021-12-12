@@ -9,6 +9,9 @@ import java.util.Set;
 
 @Data
 public class ActionResponseDto {
+    @ApiParam(name = "id")
+    private Long id;
+
     @ApiParam(name = "title")
     private String title;
 

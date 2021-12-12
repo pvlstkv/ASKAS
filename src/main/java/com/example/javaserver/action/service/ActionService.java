@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ActionService {
@@ -36,7 +37,8 @@ public class ActionService {
     }
 
     public List<Action> getAll(){
-        return (List<Action>) actionRepo.findAll();
+        List<Action> all = (List<Action>) actionRepo.findAll();
+        return all;
     }
 
     public Action createAction(ActionRequestDto dto){
@@ -57,5 +59,9 @@ public class ActionService {
         Action action = byId1.get();
         action.getUsers().add(byId.get());
         return actionRepo.save(action);
+    }
+
+    public void delete(Long actionId){
+        actionRepo.deleteById(actionId);
     }
 }

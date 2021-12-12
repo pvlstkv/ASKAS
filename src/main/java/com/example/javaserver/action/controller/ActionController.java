@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/action")
@@ -40,9 +41,13 @@ public class ActionController {
     }
 
     @GetMapping("/all")
-    public List<ActionResponseDto> getAllAction(){
+    public ResponseEntity<List<ActionResponseDto>> getAllAction(){
 
-        return null;
+        return  ResponseEntity.ok(
+            actionService.getAll()
+                .stream()
+                .map(action -> actionMapper.toDto(action))
+                .collect(Collectors.toList()));
     }
 
     @GetMapping
@@ -66,7 +71,7 @@ public class ActionController {
 
     @DeleteMapping
     public ResponseEntity<Void> deleteActionById(@RequestParam Long id){
-
+        actionService.delete(id);
         return ResponseEntity.ok(null);
     }
 
