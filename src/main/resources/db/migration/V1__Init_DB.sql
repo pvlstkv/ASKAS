@@ -176,11 +176,14 @@ create table "journals"
     "last_modified_by"    int4,
     "last_modified_date"  timestamp,
     "comment"             varchar(255),
+    "lesson_date"         timestamp,
     "study_group_id"      int8,
     "subject_semester_id" int8,
     "teacher_id"          int4,
     primary key ("id")
 );
+
+
 create table "literature"
 (
     "id"          bigserial not null,
@@ -530,7 +533,7 @@ alter table "users_action"
     add constraint "FKlf06jhmk4g7ky5rtroe2p3ayf" foreign key ("user_id") references "users";
 alter table "users_action"
     add constraint "FKagse6r0u1qalmv1a27y9dw4mk" foreign key ("action_id") references "action";
- create table "answer_choice" ("id"  serial not null, "answer" varchar(255), "is_right" boolean, "question_id" int8, primary key ("id"));
+/* create table "answer_choice" ("id"  serial not null, "answer" varchar(255), "is_right" boolean, "question_id" int8, primary key ("id"));
      create table "answer_option" ("id"  bigserial not null, "answer" varchar(255), "is_right" boolean, "file_id" int8, "selectable_question_id" int8, primary key ("id"));
      create table "conference" ("id"  bigserial not null, "token" varchar(255), "user_id" int4, primary key ("id"));
      create table "matchable_answer_option" ("id"  bigserial not null, "key_id" int8, "matchable_question_id" int8, "value_id" int8, primary key ("id"));
@@ -640,3 +643,4 @@ alter table "users_action"
      alter table "works" add constraint "FKf0vrd9bu8xax6y5g4w70gg405" foreign key ("task_id") references "tasks";
      alter table "works" add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users"
 
+*/
