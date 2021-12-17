@@ -1,8 +1,13 @@
 package com.example.javaserver.journal.service;
 
+import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.journal.controller.dto.UserVisitDto;
 import com.example.javaserver.journal.controller.mapper.PagedJournal;
+import com.example.javaserver.journal.controller.mapper.UserVisit;
+import com.example.javaserver.journal.controller.mapper.VisitMapper;
 import com.example.javaserver.journal.model.Journal;
+import com.example.javaserver.journal.model.Visit;
 import com.example.javaserver.journal.repo.JournalRepo;
 import com.example.javaserver.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -19,6 +24,8 @@ import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +34,8 @@ import java.util.Optional;
 public class JournalService {
     private final JournalRepo journalRepo;
     private final UserService userService;
+    private final SubjectSemesterRepo subjectSemesterRepo;
+    private final VisitMapper visitMapper;
 
     @Transactional
     public void saveJournal(Journal journal, UserDetailsImp userDetailsImp) {
@@ -50,6 +59,27 @@ public class JournalService {
         journal.setTeacher(journalToSave.getTeacher());
         journal.putNewVisits(journalToSave.getVisits());
         journalRepo.save(journal);
+    }
+
+    public List<UserVisit> getByStudentIdAndSubjectId(Integer studentId, Long subjectId) {
+        var optionalSubjectSemester = subjectSemesterRepo.findBySubjectId(subjectId);
+        if (optionalSubjectSemester.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    MessageFormat.format("У предмета с id {0} не существует одного семестра", subjectId));
+        }
+        var journals = journalRepo.findAllBySubjectSemesterId(optionalSubjectSemester.get().getId());
+        if (journals.size() == 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    MessageFormat.format("У предмета с id {0} не существует журнала", subjectId));
+        }
+        List<UserVisit> studentVisits = new ArrayList<>();
+        for (Journal j : journals) {
+            var oneVisit = j.getVisits().stream().
+                    filter(it -> it.getUser().getId().equals(studentId)).findFirst();
+            oneVisit.ifPresent(visit -> studentVisits.add(new UserVisit(visit, j.getLessonDate())));
+        }
+        Collections.reverse(studentVisits);
+        return studentVisits;
     }
 
     public PagedJournal getBySemesterIdAndGroupId(Long semesterId, Long groupId,

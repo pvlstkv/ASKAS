@@ -3,8 +3,12 @@ package com.example.javaserver.journal.controller;
 import com.example.javaserver.general.model.UserDetailsImp;
 import com.example.javaserver.journal.controller.dto.JournalDto;
 import com.example.javaserver.journal.controller.dto.PagedJournalDto;
+import com.example.javaserver.journal.controller.dto.UserVisitDto;
+import com.example.javaserver.journal.controller.dto.VisitDto;
 import com.example.javaserver.journal.controller.mapper.JournalMapper;
 import com.example.javaserver.journal.controller.mapper.PagedJournalMapper;
+import com.example.javaserver.journal.controller.mapper.UserVisitMapper;
+import com.example.javaserver.journal.controller.mapper.VisitMapper;
 import com.example.javaserver.journal.service.JournalService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,12 +28,16 @@ public class JournalController {
     private final JournalMapper journalMapper;
     private final JournalService journalService;
     private final PagedJournalMapper pagedJournalMapper;
+    private final VisitMapper visitMapper;
+    private final UserVisitMapper userVisitMapper;
 
     @Autowired
-    public JournalController(JournalMapper journalMapper, JournalService journalService, PagedJournalMapper pagedJournalMapper) {
+    public JournalController(JournalMapper journalMapper, JournalService journalService, PagedJournalMapper pagedJournalMapper, VisitMapper visitMapper, UserVisitMapper userVisitMapper) {
         this.journalMapper = journalMapper;
         this.journalService = journalService;
         this.pagedJournalMapper = pagedJournalMapper;
+        this.visitMapper = visitMapper;
+        this.userVisitMapper = userVisitMapper;
     }
 
     @ApiOperation(value = "create a one journal")
@@ -74,6 +82,18 @@ public class JournalController {
         return pagedJournalMapper.toPagedJournalDto(
                 journalService.getBySemesterIdAndGroupId(semesterId, groupId, timeAfter, timeBefore,
                         pageNumber, pageSize)
+        );
+    }
+
+    @ApiOperation(value = "get journals by studentId and subjectId", response = List.class)
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN", "USER"})
+    @GetMapping("/per-user")
+    public List<UserVisitDto> getByStudentIdAndSubjectId(@RequestParam Integer studentId,
+                                                         @RequestParam Long subjectId
+    ) {
+        return userVisitMapper.toDtoList(
+                journalService.getByStudentIdAndSubjectId(studentId, subjectId)
         );
     }
 }
