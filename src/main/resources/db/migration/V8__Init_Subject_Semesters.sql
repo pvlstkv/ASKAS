@@ -7,12 +7,12 @@ insert into subject_semesters(control_type,
                               study_group_id,
                               subject_id)
 values (1,
-        'курс по алм для 1 го курса ИВТ',
+        'курс по Архитектуре процессоров для 1 го курса ИВТ',
         now(),
         true,
         false,
         (select id from study_groups where short_name like 'ИВТАПбд-31'),
-        (select id from subjects where name like 'АЛМ'));
+        (select id from subjects where name like 'Архитектура процессоров'));
 
 /*2 subject*/
 insert into subject_semesters(control_type,
@@ -23,12 +23,13 @@ insert into subject_semesters(control_type,
                               study_group_id,
                               subject_id)
 values (1,
-        'курс по Архитектуре процессоров для 1 го курса ИВТ',
+        'курс по алм для 1 го курса ИВТ',
         now(),
         true,
         false,
         (select id from study_groups where short_name like 'ИВТАПбд-31'),
-        (select id from subjects where name like 'Архитектура процессоров'));
+        (select id from subjects where name like 'АЛМ'));
+
 
 /*3 subject*/
 insert into subject_semesters(control_type,

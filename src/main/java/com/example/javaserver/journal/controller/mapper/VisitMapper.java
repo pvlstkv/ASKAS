@@ -8,6 +8,8 @@ import com.example.javaserver.user.controller.mapper.UserIdMapper;
 import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {
         UserIdMapper.class,
         DateMapper.class},
@@ -33,4 +35,6 @@ public interface VisitMapper {
             @Mapping(target = "lastModifiedDate", ignore = true),
     })
     Visit toEntity(VisitDto visitDto);
+
+    List<VisitDto> toDtoList(List<Visit> visits);
 }
