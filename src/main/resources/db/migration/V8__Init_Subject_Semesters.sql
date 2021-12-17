@@ -78,3 +78,19 @@ values (1,
         false,
         (select id from study_groups where short_name like 'РТбд-31'),
         (select id from subjects where name like 'электротехника'));
+
+/*6 subject*/
+insert into subject_semesters(control_type,
+                              name,
+                              created_at,
+                              has_course_project,
+                              has_course_work,
+                              study_group_id,
+                              subject_id)
+values (1,
+        'курс по Англиский язык  для 1 го курса ИВТ',
+        now(),
+        true,
+        false,
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
+        1024);
