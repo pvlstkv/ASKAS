@@ -83,6 +83,13 @@ public class ActionController {
         return ResponseEntity.ok(actionMapper.toDto(action));
     }
 
+    @PostMapping("/users/delete")
+    public ResponseEntity<ActionResponseDto> deleteTypeAction(@RequestParam @NotNull Long actionId,
+                                                              @RequestParam @NotNull Integer userId){
+        Action action = actionService.dellUser(actionId, userId);
+        return ResponseEntity.ok(actionMapper.toDto(action));
+    }
+
     @PostMapping("/type")
     public ResponseEntity<ActionType> createTypeAction(@RequestParam @NotNull String type){
         ActionType actionType = actionTypeService.createActionType(type);

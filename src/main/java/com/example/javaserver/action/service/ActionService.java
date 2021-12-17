@@ -61,6 +61,14 @@ public class ActionService {
         return actionRepo.save(action);
     }
 
+    public Action dellUser(Long actionId, Integer Userid){
+        Optional<User> byId = userRepo.findById(Userid);
+        Optional<Action> byId1 = actionRepo.findById(actionId);
+        Action action = byId1.get();
+        action.getUsers().remove(byId.get());
+        return actionRepo.save(action);
+    }
+
     public void delete(Long actionId){
         actionRepo.deleteById(actionId);
     }
