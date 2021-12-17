@@ -62,12 +62,12 @@ public class JournalService {
     }
 
     public List<UserVisit> getByStudentIdAndSubjectId(Integer studentId, Long subjectId) {
-        var optionalSubjectSemester = subjectSemesterRepo.findBySubjectId(subjectId);
-        if (optionalSubjectSemester.isEmpty()) {
+        var optionalSubjectSemester = subjectSemesterRepo.findBySubjectId(subjectId).get(0);
+        /*if (optionalSubjectSemester.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     MessageFormat.format("У предмета с id {0} не существует одного семестра", subjectId));
-        }
-        var journals = journalRepo.findAllBySubjectSemesterId(optionalSubjectSemester.get().getId());
+        }*/
+        var journals = journalRepo.findAllBySubjectSemesterId(optionalSubjectSemester.getId());
         if (journals.size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     MessageFormat.format("У предмета с id {0} не существует журнала", subjectId));

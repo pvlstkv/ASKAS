@@ -34,5 +34,5 @@ public interface SubjectSemesterRepo extends
 
     Set<SubjectSemester> findAllByStudyGroupId(Long studyGroupId);
 
-    Optional<SubjectSemester> findBySubjectId(Long id);
+    List<SubjectSemester> findBySubjectId(Long id);
 }
