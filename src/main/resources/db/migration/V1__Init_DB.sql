@@ -371,7 +371,7 @@ create table "action"
     "id"             bigserial not null,
     "action_date"    date,
     "description"    varchar(16200),
-    "title"          varchar(255),
+    "title"          varchar(2048),
     "action_type_id" int8      not null,
     primary key ("id")
 );
