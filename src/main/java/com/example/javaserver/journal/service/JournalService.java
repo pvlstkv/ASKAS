@@ -2,7 +2,10 @@ package com.example.javaserver.journal.service;
 
 import com.example.javaserver.common_data.repo.SubjectSemesterRepo;
 import com.example.javaserver.general.model.UserDetailsImp;
+import com.example.javaserver.journal.controller.dto.UserVisitDto;
 import com.example.javaserver.journal.controller.mapper.PagedJournal;
+import com.example.javaserver.journal.controller.mapper.UserVisit;
+import com.example.javaserver.journal.controller.mapper.VisitMapper;
 import com.example.javaserver.journal.model.Journal;
 import com.example.javaserver.journal.model.Visit;
 import com.example.javaserver.journal.repo.JournalRepo;
@@ -32,6 +35,7 @@ public class JournalService {
     private final JournalRepo journalRepo;
     private final UserService userService;
     private final SubjectSemesterRepo subjectSemesterRepo;
+    private final VisitMapper visitMapper;
 
     @Transactional
     public void saveJournal(Journal journal, UserDetailsImp userDetailsImp) {
@@ -57,7 +61,7 @@ public class JournalService {
         journalRepo.save(journal);
     }
 
-    public List<Visit> getByStudentIdAndSubjectId(Integer studentId, Long subjectId) {
+    public List<UserVisit> getByStudentIdAndSubjectId(Integer studentId, Long subjectId) {
         var optionalSubjectSemester = subjectSemesterRepo.findBySubjectId(subjectId);
         if (optionalSubjectSemester.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -68,11 +72,11 @@ public class JournalService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     MessageFormat.format("У предмета с id {0} не существует журнала", subjectId));
         }
-        List<Visit> studentVisits = new ArrayList<>();
+        List<UserVisit> studentVisits = new ArrayList<>();
         for (Journal j : journals) {
             var oneVisit = j.getVisits().stream().
                     filter(it -> it.getUser().getId().equals(studentId)).findFirst();
-            oneVisit.ifPresent(studentVisits::add);
+            oneVisit.ifPresent(visit -> studentVisits.add(new UserVisit(visit, j.getLessonDate())));
         }
         Collections.reverse(studentVisits);
         return studentVisits;
