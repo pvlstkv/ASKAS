@@ -14,13 +14,13 @@ values (lastval(),(select id from subject_semesters where name like 'курс п
 insert into literature(authors, description, title, type, user_id)
 values ('Власенко И Г', 'люблю симбирсофт', 'основы немемцого', 0,   (select id from users where login like 'teacher3'));
 insert into literature_semester(literature_id, semester_id)
-values (lastval(),(select id from subject_semesters where name like 'курс по Немецкий язык  для 2 го курса НемЯз'));
+values (lastval(),(select id from subject_semesters where name like 'курс по Англиский язык  для 3 го курса'));
 
 /*литература 4*/
 insert into literature(authors, description, title, type, user_id)
 values ('Пузова И Н', 'ви хаист ду', 'учи англ', 1,   (select id from users where login like 'teacher5'));
 insert into literature_semester(literature_id, semester_id)
-values (lastval(),(select id from subject_semesters where name like 'курс по Англиский язык  для 2 го курса НемЯз'));
+values (lastval(),(select id from subject_semesters where name like 'курс по Англиский язык  для 3 го курса'));
 
 /*литература 5*/
 insert into literature(authors, description, title, type, user_id)
