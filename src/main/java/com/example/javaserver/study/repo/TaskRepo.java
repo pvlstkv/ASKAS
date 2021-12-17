@@ -21,5 +21,8 @@ public interface TaskRepo extends
     Set<Task> findAllByIdIn(Set<Long> ids);
 
     Set<Task> findAllBySemestersIdIn(Collection<Long> semesterIds);
+
+    Collection<Task> findAllBySemestersId(Long subjectSemesterId);
+
 }
 

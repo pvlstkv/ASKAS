@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JournalRepo extends JpaRepository<Journal, Long> {
@@ -26,4 +27,5 @@ public interface JournalRepo extends JpaRepository<Journal, Long> {
     Collection<Journal> findAllBySubjectSemesterId(Long id);
 
 
+    List<Journal> findAllBySubjectSemesterIdAndStudyGroupId(Long subjectSemesterId, Long studyGroupId);
 }

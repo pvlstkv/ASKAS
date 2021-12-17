@@ -40,11 +40,11 @@ insert into subject_semesters(control_type,
                               study_group_id,
                               subject_id)
 values (1,
-        'курс по Немецкий язык  для 2 го курса НемЯз',
+        'курс по Немецкий язык  для 3 го курса НемЯз',
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'НемЯз'),
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
         (select id from subjects where name like 'Немецкий язык'));
 
 /*4 subject*/
@@ -56,11 +56,11 @@ insert into subject_semesters(control_type,
                               study_group_id,
                               subject_id)
 values (1,
-        'курс по Англиский язык  для 2 го курса НемЯз',
+        'курс по Англиский язык  для 3 го курса',
         now(),
         true,
         false,
-        (select id from study_groups where short_name like 'ГМУбд-11'),
+        (select id from study_groups where short_name like 'ИВТАПбд-31'),
         (select id from subjects where name like 'Англиский язык'));
 
 /*5 subject*/
