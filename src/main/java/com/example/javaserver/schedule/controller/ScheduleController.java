@@ -36,7 +36,7 @@ public class ScheduleController {
 
     @PostMapping("/update")
     @ResponseStatus(HttpStatus.OK)
-    @Secured({"ADMIN"})
+    //@Secured({"ADMIN"})
     public Message updateAllGroup(){
         scheduleService.iteratingThroughGroups();
         return new Message("Парсинг расписания запущено");
