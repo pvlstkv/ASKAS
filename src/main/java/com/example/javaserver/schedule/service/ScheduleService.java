@@ -28,8 +28,8 @@ public class ScheduleService {
         int part;
         int numberGroup;
         String baseUrl;
-        for (int i = 1; i < 4; i++) {
-            for (int j = 1; j < 120; j++) {
+        for (int i = 1; i < 5; i++) {
+            for (int j = 1; j < 180; j++) {
                 part = i;
                 numberGroup = j;
                 baseUrl = "https://old.ulstu.ru/schedule/students/part" + part + "/" + numberGroup + ".html";
