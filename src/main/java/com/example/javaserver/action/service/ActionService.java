@@ -64,4 +64,31 @@ public class ActionService {
     public void delete(Long actionId){
         actionRepo.deleteById(actionId);
     }
+
+    public Action updateAction(Long actionId, ActionRequestDto dto) {
+        Optional<Action> byId1 = actionRepo.findById(actionId);
+        if (byId1.isPresent()) {
+            Action action = byId1.get();
+            if (dto.getActionTypeId() != null) {
+                Optional<ActionType> byId = actionTypeRepo.findById(dto.getActionTypeId());
+                action.setActionType(byId.get());
+            }
+
+            if (dto.getActionDate() != null) {
+                action.setActionDate(dto.getActionDate());
+            }
+
+            if (dto.getDescription() != null) {
+                action.setDescription(dto.getDescription());
+            }
+
+            if (dto.getTitle() != null) {
+                action.setTitle(dto.getTitle());
+            }
+
+            return actionRepo.save(action);
+        } else {
+            return null;
+        }
+    }
 }
