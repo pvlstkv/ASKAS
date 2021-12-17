@@ -29,14 +29,6 @@ insert into task_semester(semester_id, task_id)
 values ((select id from subject_semesters where name like 'курс по Англиский язык  для 2 го курса НемЯз'),
         (select id from tasks where description like 'Написать рассказ о Лондоне на английском языке 10 предложений'));
 
-insert into task_semester(semester_id, task_id)
-values ((select id from subject_semesters where name like 'курс по Англиский язык  для 1 го курса ИВТ'),
-        (select id from tasks where description like 'Написать рассказ о себе на английском языке 10 предложений'));
-
-insert into task_semester(semester_id, task_id)
-values ((select id from subject_semesters where name like 'курс по Англиский язык  для 1 го курса ИВТ'),
-        (select id from tasks where description like 'Написать рассказ о Лондоне на английском языке 10 предложений'));
-
 /*Нем*/
 insert into task_semester(semester_id, task_id)
 values ((select id from subject_semesters where name like 'курс по Англиский язык  для 2 го курса НемЯз'),

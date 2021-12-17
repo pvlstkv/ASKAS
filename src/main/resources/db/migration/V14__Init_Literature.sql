@@ -28,8 +28,3 @@ values ('Меньшов Пирамида', 'люблю египет', 'треу�
 insert into literature_semester(literature_id, semester_id)
 values (lastval(),(select id from subject_semesters where name like 'курс электротехники для  3 курса РТ'));
 
-/*литература 6*/
-insert into literature(authors, description, title, type, user_id)
-values ('Беляева И В', 'фист учи', 'введение в англиский', 0,   (select id from users where login like 'teacher6'));
-insert into literature_semester(literature_id, semester_id)
-values (lastval(),(select id from subject_semesters where name like 'курс по Англиский язык  для 1 го курса ИВТ'));
