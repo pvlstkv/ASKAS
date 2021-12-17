@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface JournalRepo extends JpaRepository<Journal, Long> {
@@ -22,5 +23,5 @@ public interface JournalRepo extends JpaRepository<Journal, Long> {
     List<Journal> findAllBySubjectSemesterIdAndStudyGroupIdAndCreatedDateAfterAndCreatedDateBefore
             (Long semesterId, Long groupId, OffsetDateTime after, OffsetDateTime before);
 
-
+    List<Journal> findAllBySubjectSemesterIdAndStudyGroupId(Long subjectSemesterId, Long studyGroupId);
 }
