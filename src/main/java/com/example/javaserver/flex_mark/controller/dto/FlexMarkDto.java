@@ -9,8 +9,6 @@ public class FlexMarkDto {
 
     private FMConfigPerCriteriaDto visit;
 
-    private FMConfigPerCriteriaDto taskOnTime;
-
     private FMConfigPerCriteriaDto taskMark;
 
     private FMConfigPerCriteriaDto testMark;
