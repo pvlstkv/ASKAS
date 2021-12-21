@@ -39,7 +39,6 @@ create table "flex_mark"
     "study_group_id"      int8,
     "subject_semester_id" int8,
     "task_mark_id"        int8,
-    "task_on_time_id"     int8,
     "teacher_id"          int4,
     "test_mark_id"        int8,
     "visit_id"            int8,
@@ -141,7 +140,7 @@ create table "action"
     "id"             bigserial not null,
     "action_date"    date,
     "description"    varchar(16200),
-    "title"          varchar(2048),
+    "title"          varchar(16200),
     "action_type_id" int8      not null,
     primary key ("id")
 );
@@ -426,8 +425,6 @@ alter table "flex_mark"
 alter table "flex_mark"
     add constraint "FKgc2ebvuh5hvkmma13fw7xh7kq" foreign key ("task_mark_id") references "fmconfig_per_criteria";
 alter table "flex_mark"
-    add constraint "FKfeu8x6jsrqsx2v595jh1efvxo" foreign key ("task_on_time_id") references "fmconfig_per_criteria";
-alter table "flex_mark"
     add constraint "FKt689tp18e2n1a9xq2ypaqwprs" foreign key ("teacher_id") references "users";
 alter table "flex_mark"
     add constraint "FKgayp5rhvwh24pxk84cc7ev6lu" foreign key ("test_mark_id") references "fmconfig_per_criteria";
@@ -564,4 +561,4 @@ alter table "visits"
 alter table "works"
     add constraint "FKf0vrd9bu8xax6y5g4w70gg405" foreign key ("task_id") references "tasks";
 alter table "works"
-    add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users"
+    add constraint "FKmj239ekx8jm4krh6yp9pm5mqc" foreign key ("user_id") references "users";

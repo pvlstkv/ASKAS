@@ -22,6 +22,7 @@ import com.example.javaserver.testing.new_v.repo.question.QuestionDataRepo;
 import com.example.javaserver.testing.new_v.service.ResultServiceN;
 import com.example.javaserver.testing.old.model.dto.PassedThemeOut;
 import com.example.javaserver.testing.theme.dto.theme.PassedThemeDto;
+import com.example.javaserver.user.model.User;
 import com.example.javaserver.user.repo.UserRepo;
 import com.example.javaserver.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,7 @@ public class FMService {
     private final WorkRepo workRepo;
     private final ResultServiceN resultServiceN;
     private final QuestionDataRepo questionDataRepo;
+    private final UserRepo userRepo;
 
     @Transactional
     public void save(FlexMark flexMark, UserDetailsImp userDetailsImp) {
@@ -78,28 +80,37 @@ public class FMService {
         return config.get();
     }
 
-    public FlexMarkPerUser formFlexMark(Integer studentId, Long subjectSemesterId) {
-        var studyGroupId = userService.getById(studentId).getStudyGroup().getId();
-        var flexMark = flexMarkRepo.findBySubjectSemesterIdAndStudyGroupId(subjectSemesterId, studyGroupId);
-        if (flexMark.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    MessageFormat.format("Конфигурации с id {0} семестра," +
-                            " id {1} группы не найдено", subjectSemesterId, studyGroupId));
+    public List<FlexMarkPerUser> formFlexMark(Long studentGroupId, Long subjectSemesterId) {
+        var users = userRepo.findAllByStudyGroupId(studentGroupId);
+        List<FlexMarkPerUser> flexMarkPerGroup = new ArrayList<>();
+        for (User student : users) {
+            var studyGroupId = userService.getById(student.getId()).getStudyGroup().getId();
+            var flexMark = flexMarkRepo.findBySubjectSemesterIdAndStudyGroupId(subjectSemesterId, studyGroupId);
+            if (flexMark.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        MessageFormat.format("Конфигурации с id {0} семестра," +
+                                " id {1} группы не найдено", subjectSemesterId, studyGroupId));
+            }
+            FlexMarkPerUser flexMarkPerUser = new FlexMarkPerUser();
+
+            var visits = formVisitsMark(student.getId(), subjectSemesterId, flexMark.get());
+            flexMarkPerUser.setVisitMark(visits);
+
+            var tasks = formTasksMark(student.getId(), subjectSemesterId, flexMark.get().getTaskMark());
+            flexMarkPerUser.setTaskMark(tasks);
+
+            var tests = formTestMark(student.getId(), subjectSemesterId, flexMark.get().getTestMark());
+            flexMarkPerUser.setTestMark(tests);
+
+            double resultMark = (visits.getMark() + tasks.getMark() + tests.getMark()) / 3.0;
+            flexMarkPerUser.setResultMark((int) Math.round(resultMark));
+
+            flexMarkPerUser.setFirstName(student.getFirstName());
+            flexMarkPerUser.setLastName(student.getLastName());
+            flexMarkPerUser.setPatronymic(student.getPatronymic());
+            flexMarkPerGroup.add(flexMarkPerUser);
         }
-        FlexMarkPerUser flexMarkPerUser = new FlexMarkPerUser();
-
-        var visits = formVisitsMark(studentId, subjectSemesterId, flexMark.get());
-        flexMarkPerUser.setVisitMark(visits);
-
-        var tasks = formTasksMark(studentId, subjectSemesterId, flexMark.get().getTaskMark());
-        flexMarkPerUser.setTaskMark(tasks);
-
-        var tests = formTestMark(studentId, subjectSemesterId, flexMark.get().getTestMark());
-        flexMarkPerUser.setTestMark(tests);
-
-        double resultMark = (visits.getMark() + tasks.getMark() + tests.getMark()) / 3.0;
-        flexMarkPerUser.setResultMark((int) Math.round(resultMark));
-        return flexMarkPerUser;
+        return flexMarkPerGroup;
     }
 
     private FMPerCriteria formTestMark(Integer studentId, Long subjectSemesterId, FMConfigPerCriteria config) {
@@ -114,8 +125,8 @@ public class FMService {
             }
             totalScore += config.getIsBinaryMark() ? config.getPassedValue() : Mark.FIVE.getValue();
         }
-        if (passedScore == 0) {
-            passedScore = testsBySubject.size() *
+        if (totalScore == 0) {
+            totalScore = testsBySubject.size() *
                     (config.getIsBinaryMark() ? config.getPassedValue() : Mark.FIVE.getValue());
         }
         double successPercentage = passedScore * 100.0 / totalScore;

@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/flex-mark")
@@ -54,9 +55,9 @@ public class FMController {
     @GetMapping("/per-user")
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"TEACHER", "ADMIN", "USER"})
-    public FlexMarkPerUser getFMPerUser(@RequestParam Integer studentId,
-                                        @RequestParam Long subjectSemesterId) {
-        return fmService.formFlexMark(studentId, subjectSemesterId);
+    public List<FlexMarkPerUser> getFMPerUser(@RequestParam Long studentGroupId,
+                                              @RequestParam Long subjectSemesterId) {
+        return fmService.formFlexMark(studentGroupId, subjectSemesterId);
     }
 
 }

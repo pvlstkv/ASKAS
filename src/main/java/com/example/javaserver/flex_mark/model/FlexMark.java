@@ -21,9 +21,6 @@ public class FlexMark {
     private FMConfigPerCriteria visit;
 
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
-    private FMConfigPerCriteria taskOnTime;
-
-    @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
     private FMConfigPerCriteria taskMark;
 
     @OneToOne(cascade=CascadeType.ALL, orphanRemoval = true)
