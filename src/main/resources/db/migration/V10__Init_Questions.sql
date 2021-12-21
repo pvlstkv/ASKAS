@@ -470,3 +470,257 @@ insert
 into answer_option (answer, is_right, selectable_question_id)
 values ('конец', true,
         (select id from question_data where question_data.question like 'Последовательность программы'));
+
+/*27 question */
+insert into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq',3,'Порядок кэша в процессоре по объему от меньшего к большему', 3,
+        (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
+
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('L1', true,
+        (select id from question_data where question_data.question like 'Порядок кэша в процессоре по объему от меньшего к большему'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('L2', true,
+        (select id from question_data where question_data.question like 'Порядок кэша в процессоре по объему от меньшего к большему'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('L3', true,
+        (select id from question_data where question_data.question like 'Порядок кэша в процессоре по объему от меньшего к большему'));
+
+
+/*28 question */
+insert into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq',3,'Скорость работы памяти от медленной к быстрой', 3,
+        (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
+
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Жесткий диск', true,
+        (select id from question_data where question_data.question like 'Скорость работы памяти от медленной к быстрой'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Оперативная память', true,
+        (select id from question_data where question_data.question like 'Скорость работы памяти от медленной к быстрой'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Кэш процессора', true,
+        (select id from question_data where question_data.question like 'Скорость работы памяти от медленной к быстрой'));
+
+/*29 question */
+insert into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq',3,'Как называется процессор, имеюший два или более ядра', 0,
+        (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
+
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Многоядерный', true,
+        (select id from question_data where question_data.question like 'Как называется процессор, имеюший два или более ядра'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Многосложный', false,
+        (select id from question_data where question_data.question like 'Как называется процессор, имеюший два или более ядра'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Многопроцессорный', false,
+        (select id from question_data where question_data.question like 'Как называется процессор, имеюший два или более ядра'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('Многоуровневый', false,
+        (select id from question_data where question_data.question like 'Как называется процессор, имеюший два или более ядра'));
+
+/*30 question */
+insert into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq',3,'Регистр, используемый в качестве счетчика в команде loop', 0,
+        (select id from subjects where name like 'Архитектура процессоров'), (select id from themes where name like 'Процессоры'));
+
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('CX', true,
+        (select id from question_data where question_data.question like 'Регистр, используемый в качестве счетчика в команде loop'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('AX', false,
+        (select id from question_data where question_data.question like 'Регистр, используемый в качестве счетчика в команде loop'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('BX', false,
+        (select id from question_data where question_data.question like 'Регистр, используемый в качестве счетчика в команде loop'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('DX', false,
+        (select id from question_data where question_data.question like 'Регистр, используемый в качестве счетчика в команде loop'));
+
+/*31 question*/
+insert into question_data (question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('match', 3, 'Сопоставьте название команд и их действия', 2, (select id from subjects where name like 'Архитектура процессоров'),
+        (select id from themes where name like 'Процессоры'));
+insert
+into answer_option (answer)
+values ('jmp');
+insert
+into answer_option (answer)
+values ('безусловный переход');
+insert into matchable_answer_option (key_id, matchable_question_id, value_id)
+values ((select id from answer_option where answer like 'jmp'),
+        (select id from question_data where question like 'Сопоставьте название команд и их действия'),
+        (select id from answer_option where answer like 'безусловный переход'));
+insert
+into answer_option (answer)
+values ('cmp');
+insert
+into answer_option (answer)
+values ('сравнить два числа');
+insert into matchable_answer_option (key_id, matchable_question_id, value_id)
+values ((select id from answer_option where answer like 'cmp'),
+        (select id from question_data where question like 'Сопоставьте название команд и их действия'),
+        (select id from answer_option where answer like 'сравнить два числа'));
+insert
+into answer_option (answer)
+values ('mov');
+insert
+into answer_option (answer)
+values ('переместить значение');
+insert into matchable_answer_option (key_id, matchable_question_id, value_id)
+values ((select id from answer_option where answer like 'mov'),
+        (select id from question_data where question like 'Сопоставьте название команд и их действия'),
+        (select id from answer_option where answer like 'переместить значение'));
+
+
+/*32 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('write', 3, 'Английская аббревиатура центрального процессора', 1,
+           (select id from subjects where name like 'Архитектура процессоров'),
+       (select id from themes where name like 'Процессоры'));
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('cpu', false, ((select id
+                         from question_data
+                         where question like 'Английская аббревиатура центрального процессора')));
+
+
+/*32 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Логическая функция, преобразующая 0 в 1 и наоборот', 0,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('отрицание', true,
+        (select id from question_data where question_data.question like 'Логическая функция, преобразующая 0 в 1 и наоборот'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('и', false,
+        (select id from question_data where question_data.question like 'Логическая функция, преобразующая 0 в 1 и наоборот'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('или', false,
+        (select id from question_data where question_data.question like 'Логическая функция, преобразующая 0 в 1 и наоборот'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('исключающее или', false,
+        (select id from question_data where question_data.question like 'Логическая функция, преобразующая 0 в 1 и наоборот'));
+
+
+/*33 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0', 0,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('отрицание', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('и', true,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('или', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('исключающее или', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает единицу, когда только оба операнда 1, в остальных случаях 0'));
+
+
+/*34 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1', 0,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('отрицание', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('и', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('или', true,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('исключающее или', false,
+        (select id from question_data where question_data.question like 'Логическая функция, которая дает 0, когда только оба операнда 0, в остальных слуаях 1'));
+
+
+/*35 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1', 1,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('xor', false, ((select id
+                        from question_data
+                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1')));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('исключающее или', false, ((select id
+                        from question_data
+                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1')));
+
+
+/*36 question*/
+insert into question_data (question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('match', 3, 'Сопоставьте логическую операцию с ее названием', 2, (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
+insert
+into answer_option (answer)
+values ('A&&B');
+insert
+into answer_option (answer)
+values ('логическое и');
+insert into matchable_answer_option (key_id, matchable_question_id, value_id)
+values ((select id from answer_option where answer like 'A&&B'),
+        (select id from question_data where question like 'Сопоставьте логическую операцию с ее названием'),
+        (select id from answer_option where answer like 'логическое и'));
+insert
+into answer_option (answer)
+values ('A||B');
+insert
+into answer_option (answer)
+values ('логическое или');
+insert into matchable_answer_option (key_id, matchable_question_id, value_id)
+values ((select id from answer_option where answer like 'A||B'),
+        (select id from question_data where question like 'Сопоставьте логическую операцию с ее названием'),
+        (select id from answer_option where answer like 'логическое или'));
