@@ -12,4 +12,6 @@ public interface QuestionDataRepo extends JpaRepository<QuestionData, Long> {
     void deleteAllByIdIn(Set<Long> ids);
 
     List<QuestionData> findAllByThemeId(Long themeId);
+
+    List<QuestionData> findAllBySubjectId(Long id);
 }

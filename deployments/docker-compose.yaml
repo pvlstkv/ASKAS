@@ -1,6 +1,6 @@
 version: "3.1"
 services:
-  jserver:
+  javaserver:
     build:
       context: ../
       dockerfile: deployments/Dockerfile
@@ -13,7 +13,7 @@ services:
     ports:
       - "9099:8080"
   postgres:
-    image: postgres:12.6-alpine
+    image: postgres:13.1-alpine
     restart: always
     environment:
       POSTGRES_DB: "javaserver"

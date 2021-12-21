@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class FlexMarkPerUser {
 
-    private FMPerCriteria visit;
-
-    private FMPerCriteria taskOnTime;
+    private FMPerCriteria visitMark;
 
     private FMPerCriteria taskMark;
 
     private FMPerCriteria testMark;
+
+    private int resultMark;
 
 }

@@ -1,6 +1,9 @@
 package com.example.javaserver.flex_mark.service;
 
+import com.example.javaserver.academic_performance.model.main_page.Progress;
 import com.example.javaserver.common_data.model.Mark;
+import com.example.javaserver.common_data.model.Subject;
+import com.example.javaserver.common_data.service.SubjectService;
 import com.example.javaserver.flex_mark.controller.mapper.FMConfigPerCriteriaMapper;
 import com.example.javaserver.flex_mark.controller.mapper.FlexMarkMapper;
 import com.example.javaserver.flex_mark.model.FMConfigPerCriteria;
@@ -15,6 +18,10 @@ import com.example.javaserver.study.model.Task;
 import com.example.javaserver.study.model.Work;
 import com.example.javaserver.study.repo.TaskRepo;
 import com.example.javaserver.study.repo.WorkRepo;
+import com.example.javaserver.testing.new_v.repo.question.QuestionDataRepo;
+import com.example.javaserver.testing.new_v.service.ResultServiceN;
+import com.example.javaserver.testing.old.model.dto.PassedThemeOut;
+import com.example.javaserver.testing.theme.dto.theme.PassedThemeDto;
 import com.example.javaserver.user.repo.UserRepo;
 import com.example.javaserver.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -24,9 +31,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +45,8 @@ public class FMService {
     private final JournalRepo journalRepo;
     private final TaskRepo taskRepo;
     private final WorkRepo workRepo;
+    private final ResultServiceN resultServiceN;
+    private final QuestionDataRepo questionDataRepo;
 
     @Transactional
     public void save(FlexMark flexMark, UserDetailsImp userDetailsImp) {
@@ -82,11 +89,59 @@ public class FMService {
         FlexMarkPerUser flexMarkPerUser = new FlexMarkPerUser();
 
         var visits = formVisitsMark(studentId, subjectSemesterId, flexMark.get());
-        flexMarkPerUser.setVisit(visits);
+        flexMarkPerUser.setVisitMark(visits);
 
         var tasks = formTasksMark(studentId, subjectSemesterId, flexMark.get().getTaskMark());
         flexMarkPerUser.setTaskMark(tasks);
+
+        var tests = formTestMark(studentId, subjectSemesterId, flexMark.get().getTestMark());
+        flexMarkPerUser.setTestMark(tests);
+
+        double resultMark = (visits.getMark() + tasks.getMark() + tests.getMark()) / 3.0;
+        flexMarkPerUser.setResultMark((int) Math.round(resultMark));
         return flexMarkPerUser;
+    }
+
+    private FMPerCriteria formTestMark(Integer studentId, Long subjectSemesterId, FMConfigPerCriteria config) {
+        var passedThemes = resultServiceN.getPassedThemesByUserIdAndSubjectId(studentId, subjectSemesterId);
+        var testsBySubject = questionDataRepo.findAllBySubjectId(subjectSemesterId);
+        int totalScore = 0;
+        int passedScore = 0;
+        for (PassedThemeDto passedTheme : passedThemes) {
+            var bestResult = passedTheme.getRatings().stream().max(Integer::compare);
+            if (bestResult.isPresent()) {
+                passedScore += getMark(config, bestResult.get());
+            }
+            totalScore += config.getIsBinaryMark() ? config.getPassedValue() : Mark.FIVE.getValue();
+        }
+        if (passedScore == 0) {
+            passedScore = testsBySubject.size() *
+                    (config.getIsBinaryMark() ? config.getPassedValue() : Mark.FIVE.getValue());
+        }
+        double successPercentage = passedScore * 100.0 / totalScore;
+        FMPerCriteria fmPerCriteria = new FMPerCriteria();
+        setMark(fmPerCriteria, config, successPercentage);
+        return fmPerCriteria;
+    }
+
+    private int getMark(FMConfigPerCriteria fmConfigPerCriteria, double successPercentage) {
+        if (fmConfigPerCriteria.getIsBinaryMark()) {
+            if (fmConfigPerCriteria.getBinaryBorder() < successPercentage) {
+                return fmConfigPerCriteria.getPassedValue();
+            } else {
+                return 2; // оценка 2
+            }
+        } else {
+            if (fmConfigPerCriteria.getTwoThreeBorder() > successPercentage) {
+                return 2;
+            } else if (fmConfigPerCriteria.getThreeFourBorder() > successPercentage) {
+                return 3;
+            } else if (fmConfigPerCriteria.getFourFiveBorder() > successPercentage) {
+                return 4;
+            } else {
+                return 5;
+            }
+        }
     }
 
     private FMPerCriteria formTasksMark(Integer studentId, Long subjectSemesterId, FMConfigPerCriteria config) {
@@ -96,7 +151,7 @@ public class FMService {
         List<Long> workIds = new ArrayList<>();
         for (Task t : tasks) {
             var studentWorks = workRepo.findAllByUserIdAndTaskId(studentId, t.getId());
-            var bestStudentWork = findBest(studentWorks);
+            var bestStudentWork = findBestWork(studentWorks);
             if (bestStudentWork.isPresent()) {
                 workIds.add(bestStudentWork.get().getId());
                 if (bestStudentWork.get().getMark().equals(Mark.PASSED)) {
@@ -109,7 +164,7 @@ public class FMService {
                     passedScore += bestStudentWork.get().getMark().getValue();
                 }
             }
-            totalScore += Mark.FIVE.getValue();
+            totalScore += config.getIsBinaryMark() ? config.getPassedValue() : Mark.FIVE.getValue();
         }
         FMPerCriteria fmPerCriteria = new FMPerCriteria();
         fmPerCriteria.setDone(workIds.size());
@@ -120,7 +175,7 @@ public class FMService {
         return fmPerCriteria;
     }
 
-    private Optional<Work> findBest(List<Work> tasks) {
+    private Optional<Work> findBestWork(List<Work> tasks) {
         return tasks.stream().max((f, s) -> {
             if (f.getMark().getValue() > s.getMark().getValue()) {
                 return 1;
@@ -134,11 +189,7 @@ public class FMService {
         var studyGroup = student.getStudyGroup();
         var journals = journalRepo.findAllBySubjectSemesterIdAndStudyGroupId(
                 subjectSemesterId, studyGroup.getId());
-        if (journals.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    MessageFormat.format("Журнала группы с id {0} за семестр с id {1} не существует",
-                            studyGroup.getId(), subjectSemesterId));
-        }
+
         int total = journals.size();
         int visitedCount = 0;
         for (Journal j : journals) {
@@ -177,5 +228,6 @@ public class FMService {
             }
         }
     }
+
 
 }

@@ -71,6 +71,25 @@ public class ResultServiceN {
         return passedThemeDtos;
     }
 
+    public List<PassedThemeDto> getPassedThemesByUserIdAndSubjectId(Integer userId, Long subjectId) {
+        // todo set up the access control
+        ResultOfSomethingChecking checkResult = new ResultOfSomethingChecking();
+        checkResult = checkResult.checkIfExistsInDB(new User(userId), userRepo, checkResult);
+        checkResult = checkResult.checkIfExistsInDB(new Subject(subjectId), subjectRepo, checkResult);
+        List<Long> themeIds = themeRepo.fetchPassedThemeIdsByUserIdN(userId, subjectId);
+        List<Theme> themes = themeRepo.findAllById(themeIds);
+        User user = userRepo.findById(userId).get();
+        List<PassedThemeDto> passedThemeDtos = new ArrayList<>();
+        for (Theme theme : themes) {
+            List<PassedTestN> passedTestNS = passedTestRepoN.findAllByUserAndTheme(user, theme);
+            List<Integer> ratings = new ArrayList<>();
+            passedTestNS.forEach(item -> ratings.add(item.getRatingInPercent()));
+            passedThemeDtos.add(new PassedThemeDto(theme, ratings));
+        }
+        return passedThemeDtos;
+    }
+
+
     public List<PassedTestPerUserDto> fetchPassedThemesUsersByGroupId(Long groupId, Long themeId) {
         List<User> users = userRepo.findAllByStudyGroupId(groupId);
         List<PassedTestPerUserDto> results = new ArrayList<>();
