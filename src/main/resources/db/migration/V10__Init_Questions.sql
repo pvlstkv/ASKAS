@@ -683,7 +683,7 @@ values ('исключающее или', false,
 insert
 into question_data
 (question_discriminator, complexity, question, question_type, subject_id, theme_id)
-values ('choose_and_seq', 3, 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1', 1,
+values ('write', 3, 'Логическая функция, которая дает 0, когда только оба операнда равны друг другу, в остальных слуаях 1', 1,
         (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Логические функции'));
 
 insert
@@ -691,14 +691,14 @@ into writeable_answer_option
 (answer, is_strict, writeable_question_id)
 values ('xor', false, ((select id
                         from question_data
-                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1')));
+                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равны друг другу, в остальных слуаях 1')));
 
 insert
 into writeable_answer_option
 (answer, is_strict, writeable_question_id)
 values ('исключающее или', false, ((select id
                         from question_data
-                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равный друг другу, в остальных слуаях 1')));
+                        where question like 'Логическая функция, которая дает 0, когда только оба операнда равны друг другу, в остальных слуаях 1')));
 
 
 /*36 question*/
@@ -724,3 +724,104 @@ insert into matchable_answer_option (key_id, matchable_question_id, value_id)
 values ((select id from answer_option where answer like 'A||B'),
         (select id from question_data where question like 'Сопоставьте логическую операцию с ее названием'),
         (select id from answer_option where answer like 'логическое или'));
+
+
+
+
+/*37 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('write', 3, 'Один из методов минимизации лог.функций: карты ...?', 1,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('карно', false, ((select id
+                        from question_data
+                        where question like 'Один из методов минимизации лог.функций: карты ...?')));
+
+
+/*39 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('write', 3, 'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?', 1,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('истинности', false, ((select id
+                          from question_data
+                          where question like 'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?')));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('истиности', false, ((select id
+                               from question_data
+                               where question like 'Таблица, где представлены всевозможные наборы операндов и всевозможные соотвествуюшие значения лог. функции ...?')));
+
+
+/*40 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('write', 3, 'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)', 1,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('квайна', false, ((select id
+                               from question_data
+                               where question like 'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)')));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('квайн', false, ((select id
+                           from question_data
+                           where question like 'Метод минимизации, использующий операции попарного неполного склеивания и элементарного поглощения (Фамилия)')));
+
+
+/*41 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('write', 3, 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)', 1,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
+
+insert
+into writeable_answer_option
+(answer, is_strict, writeable_question_id)
+values ('1', false, ((select id
+                           from question_data
+                           where question like 'Результат логической функции х1 И х2 = 1, чему равны операнды? (Число)')));
+
+/*42 question*/
+insert
+into question_data
+(question_discriminator, complexity, question, question_type, subject_id, theme_id)
+values ('choose_and_seq', 3, 'Конъюнкция это логическое ...?', 0,
+        (select id from subjects where name like 'АЛМ'), (select id from themes where name like 'Минимизация логические функции'));
+
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('отрицание', false,
+        (select id from question_data where question_data.question like 'Конъюнкция это логическое ...?'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('и', true,
+        (select id from question_data where question_data.question like 'Конъюнкция это логическое ...?'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('или', false,
+        (select id from question_data where question_data.question like 'Конъюнкция это логическое ...?'));
+insert
+into answer_option (answer, is_right, selectable_question_id)
+values ('исключающее или', false,
+        (select id from question_data where question_data.question like 'Конъюнкция это логическое ...?'));
+
