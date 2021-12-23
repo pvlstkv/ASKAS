@@ -107,10 +107,13 @@ public class TestServiceN {
             }
             if (originalQuestion.get().getQuestionType().equals(QuestionType.WRITE)) {
                 totalRightAnsDegree = treatWriteQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+
             } else if (originalQuestion.get().getQuestionType().equals(QuestionType.SELECT)) {
                 totalRightAnsDegree = treatSelectQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+
             } else if (originalQuestion.get().getQuestionType().equals(QuestionType.MATCH)) {
                 totalRightAnsDegree = treatMatchQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
+
             } else if (originalQuestion.get().getQuestionType().equals(QuestionType.SEQUENCE)) {
                 totalRightAnsDegree = treatSequenceQuestion(afterCheckQuestionList, passedTestN, passedQuestions, totalRightAnsDegree, questionForCheck, originalQuestion);
             }
@@ -167,7 +170,12 @@ public class TestServiceN {
         CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedMatchableQuestion);
         checkMatchQuestion(checkQuestion);
         totalRightAnsDegree += checkQuestion.getRating();
-
+//        List<PassedMatchableAnswer> userAnswers;
+//        try {
+//            userAnswers = (List<PassedMatchableAnswer>) checkQuestion.getUserAnswers();
+//        }catch (ClassCastException classCastException){
+//
+//        }
         passedMatchableQuestion.setUserAnswers((List<PassedMatchableAnswer>) checkQuestion.getUserAnswers());
         passedQuestions.add(passedMatchableQuestion);
 
@@ -234,11 +242,16 @@ public class TestServiceN {
         List<MatchPair> userAnswerPairs = new ArrayList<>();
         List<MatchPair> originalAnswerPairs = new ArrayList<>();
         for (LinkedHashMap<String, Integer> userPair : ((List<LinkedHashMap<String, Integer>>) checkQuestion.getUserAnswers())) {
+            Object keyId = userPair.get("key");
+            var valueId = userPair.get("value");
+            AnswerOption key = originalAnswers.stream().filter(
+                    it -> !it.getValue().getId().equals(valueId.longValue())).findFirst().get().getKey();
+            if ((keyId instanceof Integer)) {
+                key = answerOptionRepo.findById(((Integer) keyId).longValue()).get();
+            }
+            var value = answerOptionRepo.findById(valueId.longValue()).get();
             userAnswerList.add(new PassedMatchableAnswer(
-                    answerOptionRepo.findById(userPair.get("key").longValue()).get(),
-                    answerOptionRepo.findById(userPair.get("value").longValue()).get(),
-                    false, (PassedMatchableQuestion) checkQuestion.getPassedQuestion()
-            ));
+                    key, value, false, (PassedMatchableQuestion) checkQuestion.getPassedQuestion()));
         }
         for (MatchableAnswerOption originalPair : originalAnswers) {
             originalAnswerPairs.add(new MatchPair(
