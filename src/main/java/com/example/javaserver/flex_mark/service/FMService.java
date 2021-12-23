@@ -105,6 +105,7 @@ public class FMService {
             double resultMark = (visits.getMark() + tasks.getMark() + tests.getMark()) / 3.0;
             flexMarkPerUser.setResultMark((int) Math.round(resultMark));
 
+            flexMarkPerUser.setStudentId(student.getId());
             flexMarkPerUser.setFirstName(student.getFirstName());
             flexMarkPerUser.setLastName(student.getLastName());
             flexMarkPerUser.setPatronymic(student.getPatronymic());
