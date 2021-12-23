@@ -189,7 +189,9 @@ public class FMService {
 
     private Optional<Work> findBestWork(List<Work> tasks) {
         return tasks.stream().max((f, s) -> {
-            if (f.getMark().getValue() > s.getMark().getValue()) {
+            var first = f.getMark() == null ? Mark.UNSATISFACTORILY.getValue() : f.getMark().getValue();
+            var second = s.getMark() == null ? Mark.UNSATISFACTORILY.getValue() : s.getMark().getValue();
+            if (first > second) {
                 return 1;
             }
             return -1;
