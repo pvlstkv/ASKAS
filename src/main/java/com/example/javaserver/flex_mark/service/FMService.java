@@ -166,6 +166,9 @@ public class FMService {
             var bestStudentWork = findBestWork(studentWorks);
             if (bestStudentWork.isPresent()) {
                 workIds.add(bestStudentWork.get().getId());
+                if (bestStudentWork.get().getMark() == null) {
+                    bestStudentWork.get().setMark(Mark.UNSATISFACTORILY);
+                }
                 if (bestStudentWork.get().getMark().equals(Mark.PASSED)) {
                     passedScore += config.getPassedValue();
                     totalScore += config.getPassedValue();
