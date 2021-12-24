@@ -53,31 +53,69 @@ values (now(), 5, 'heh', 'alright',
 
 /*АЛМ*/
 insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
-values (now(), 5, 'heh', 'красава',
+values (now(), 5, 'выполненная первая лабораторная работа', 'принято',
         (select id from tasks where description like 'Сдать 1 лабораторную работу'),
         (select id from users where login like 'user1'));
 
 insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
-values (now(), 4, 'heh', 'норм',
+values (now(), 5, '2 лаб работа', 'окей',
+        (select id from tasks where description like 'Сдать 2 лабораторную работу'),
+        (select id from users where login like 'user1'));
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 4, '2лр', 'норм',
         (select id from tasks where description like 'Сдать 2 лабораторную работу'),
         (select id from users where login like 'user2'));
 
 insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
-values (now(), 4, 'heh', 'норм',
+values (now(), 4, '2 работа', 'зачтено',
         (select id from tasks where description like 'Сдать 2 лабораторную работу'),
         (select id from users where login like 'user3'));
 
 insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
-values (now(), 5, 'heh', '+++++++',
+values (now(), 5, '3 работа', 'зачтено',
+        (select id from tasks where description like 'Сдать 3 лабораторную работу'),
+        (select id from users where login like 'user3'));
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, '3 лаб работа', 'засчитано',
         (select id from tasks where description like 'Сдать 3 лабораторную работу'),
         (select id from users where login like 'user2'));
 
 /*Архитектура процессоров*/
 insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
-values (now(), 5, 'heh', '+++++++',
+values (now(), 5, 'вот моя работа', 'сойдет',
         (select id from tasks where description like 'Написать Hello world на Ассемблере'),
         (select id from users where login like 'user2'));
 
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, 'вот еще моя работа', 'принято',
+        (select id from tasks where description like 'Написать Калькулятор на Ассемблере'),
+        (select id from users where login like 'user2'));
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, 'вот моя работа', 'сойдет',
+        (select id from tasks where description like 'Написать Hello world на Ассемблере'),
+        (select id from users where login like 'user3'));
+
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, 'вот еще моя работа', 'принято',
+        (select id from tasks where description like 'Написать Калькулятор на Ассемблере'),
+        (select id from users where login like 'user3'));
+
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, 'вот моя работа', 'сойдет',
+        (select id from tasks where description like 'Написать Hello world на Ассемблере'),
+        (select id from users where login like 'user4'));
+
+
+insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
+values (now(), 5, 'вот еще моя работа', 'принято',
+        (select id from tasks where description like 'Написать Калькулятор на Ассемблере'),
+        (select id from users where login like 'user4'));
 -- insert into works(created_at, mark, student_comment, teacher_comment, task_id, user_id)
 -- values (now(), 4, 'heh', 'нелпохо',
 --         (select id from tasks where description like 'Написать Hello world на Ассемблере'),
