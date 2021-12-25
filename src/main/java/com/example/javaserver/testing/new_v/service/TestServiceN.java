@@ -170,12 +170,6 @@ public class TestServiceN {
         CheckQuestion checkQuestion = new CheckQuestion(originalQuestion.get(), questionForCheck.getAnswers(), passedMatchableQuestion);
         checkMatchQuestion(checkQuestion);
         totalRightAnsDegree += checkQuestion.getRating();
-//        List<PassedMatchableAnswer> userAnswers;
-//        try {
-//            userAnswers = (List<PassedMatchableAnswer>) checkQuestion.getUserAnswers();
-//        }catch (ClassCastException classCastException){
-//
-//        }
         passedMatchableQuestion.setUserAnswers((List<PassedMatchableAnswer>) checkQuestion.getUserAnswers());
         passedQuestions.add(passedMatchableQuestion);
 
@@ -236,7 +230,6 @@ public class TestServiceN {
 
     private void checkMatchQuestion(CheckQuestion checkQuestion) {
         double rightAnswerDegree = 0;
-        boolean userAnswerIsRight;
         List<PassedMatchableAnswer> userAnswerList = new ArrayList<>();
         List<MatchableAnswerOption> originalAnswers = ((MatchableQuestion) checkQuestion.getOriginalQuestion()).getMatchableAnswerOptionList();
         List<MatchPair> userAnswerPairs = new ArrayList<>();

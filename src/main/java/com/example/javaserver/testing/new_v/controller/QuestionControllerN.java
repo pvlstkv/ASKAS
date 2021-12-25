@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -25,9 +26,7 @@ public class QuestionControllerN {
     @ResponseStatus(HttpStatus.CREATED)
     @Secured({"TEACHER", "ADMIN"})
     public void create(@RequestBody TestDto testDto) {
-        System.out.println(testDto);
         questionServiceN.saveQuestions(testDto);
-        int s = 0;
     }
 
     @PutMapping("/questions")
@@ -44,6 +43,12 @@ public class QuestionControllerN {
         questionServiceN.deleteQuestions(ids);
     }
 
+    @GetMapping("/questions")
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"TEACHER", "ADMIN"})
+    public List<QuestionData> getByThemeId(@RequestParam Long themeId){
+        return questionServiceN.getByThemeId(themeId);
+    }
 
     @GetMapping("/question")
     public QuestionData get(@RequestParam Long id) {

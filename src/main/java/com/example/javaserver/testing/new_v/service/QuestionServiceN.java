@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -105,4 +106,8 @@ public class QuestionServiceN {
         }
     }
 
+    public List<QuestionData> getByThemeId(Long themeId) {
+        var questions = questionDataRepo.findAllByThemeId(themeId);
+        return questions;
+    }
 }
